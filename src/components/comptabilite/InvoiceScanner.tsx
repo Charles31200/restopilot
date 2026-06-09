@@ -18,7 +18,7 @@ const schema = z.object({
   amount:        z.number().min(0, 'Montant HT requis'),
   vat_amount:    z.number().min(0),
   due_date:      z.string().optional(),
-  status:        z.enum(['pending', 'validated', 'paid']).default('pending'),
+  status:        z.enum(['pending', 'validated', 'paid']),
 })
 
 type FormData = z.infer<typeof schema>

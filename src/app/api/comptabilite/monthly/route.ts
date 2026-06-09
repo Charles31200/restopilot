@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
         return sum + hours * rate
       }, 0).toFixed(2)
 
-    const wMargin    = +(wRevenue - wPurchases - parseFloat(wLabor)).toFixed(2)
+    const wMargin    = +(wRevenue - wPurchases - wLabor).toFixed(2)
     const wMarginPct = wRevenue > 0 ? +(wMargin / wRevenue * 100).toFixed(1) : 0
 
     weeklyBreakdown.push({
@@ -122,7 +122,7 @@ export async function GET(request: NextRequest) {
       toDate:         wTo,
       revenue:        wRevenue,
       purchases:      wPurchases,
-      laborCost:      parseFloat(wLabor),
+      laborCost:      wLabor,
       grossMargin:    wMargin,
       grossMarginPct: wMarginPct,
     })

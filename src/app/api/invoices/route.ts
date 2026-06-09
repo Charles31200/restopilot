@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const to   = `${y}-${String(m).padStart(2, '0')}-${last}`
     query = query.gte('invoice_date', from).lte('invoice_date', to)
   }
-  if (status) query = query.eq('status', status)
+  if (status) query = query.eq('status', status as import('@/types').InvoiceStatus)
 
   const { data, error } = await query
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
