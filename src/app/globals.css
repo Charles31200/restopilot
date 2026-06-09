@@ -1,26 +1,286 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════
+   RESTOPILOT — Palette officielle & Design Tokens
+   ═══════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Couleur d'accent principale ───────────────────────────── */
+  --rp-amber:        #D4952A;
+  --rp-amber-light:  #F5E6C8;
+  --rp-amber-dark:   #A8731A;
+
+  /* ── Actions secondaires, liens, info ─────────────────────── */
+  --rp-blue:         #2E7EC4;
+  --rp-blue-light:   #D6EAF8;
+  --rp-blue-dark:    #1A5A96;
+
+  /* ── Sidebar, texte principal, header sombre ──────────────── */
+  --rp-navy:         #35404F;
+  --rp-navy-light:   #4A5568;
+  --rp-navy-muted:   #8896A8;
+
+  /* ── Bordures, séparateurs, fonds neutres ─────────────────── */
+  --rp-lavender:       #CCCAD4;
+  --rp-lavender-light: #F0EFF4;
+
+  /* ── Accent premium, étoiles, badges spéciaux ────────────── */
+  --rp-khaki:        #A8915A;
+  --rp-khaki-light:  #EDE5D0;
+
+  /* ── Neutres ────────────────────────────────────────────────  */
+  --rp-white:        #FFFFFF;
+  --rp-bg-page:      #F4F3F7;
+
+  /* ── Sémantiques ───────────────────────────────────────────── */
+  --rp-success:      #16A34A;
+  --rp-success-bg:   #DCFCE7;
+  --rp-warning:      #D97706;
+  --rp-warning-bg:   #FEF3C7;
+  --rp-danger:       #DC2626;
+  --rp-danger-bg:    #FEE2E2;
+
+  /* ── Ombres ─────────────────────────────────────────────────  */
+  --rp-shadow-card:       0 1px 3px rgba(53,64,79,.08), 0 1px 2px rgba(53,64,79,.04);
+  --rp-shadow-modal:      0 20px 60px rgba(53,64,79,.20);
+  --rp-shadow-bottom-nav: 0 -2px 16px rgba(53,64,79,.10);
+
+  /* ── Rayons ─────────────────────────────────────────────────  */
+  --rp-radius-sm:   8px;
+  --rp-radius-md:   12px;
+  --rp-radius-lg:   16px;
+  --rp-radius-xl:   24px;
+  --rp-radius-full: 9999px;
+
+  /* ── Rétrocompatibilité brand-* (anciens composants) ────────  */
+  --color-brand-50:  #EFF6FF;
+  --color-brand-100: #DBEAFE;
+  --color-brand-500: #3B82F6;
+  --color-brand-600: #2563EB;
+  --color-brand-700: #1D4ED8;
+  --color-brand-900: #1E3A5F;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TAILWIND v4 — Enregistrement des tokens de design
+   Génère automatiquement : bg-rp-amber, text-rp-navy,
+   border-rp-lavender, font-display, font-body, etc.
+   ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Palette RestoPilot ─────────────────────────────────────  */
+  --color-rp-amber:          #D4952A;
+  --color-rp-amber-light:    #F5E6C8;
+  --color-rp-amber-dark:     #A8731A;
+
+  --color-rp-blue:           #2E7EC4;
+  --color-rp-blue-light:     #D6EAF8;
+  --color-rp-blue-dark:      #1A5A96;
+
+  --color-rp-navy:           #35404F;
+  --color-rp-navy-light:     #4A5568;
+  --color-rp-navy-muted:     #8896A8;
+
+  --color-rp-lavender:       #CCCAD4;
+  --color-rp-lavender-light: #F0EFF4;
+
+  --color-rp-khaki:          #A8915A;
+  --color-rp-khaki-light:    #EDE5D0;
+
+  --color-rp-page:           #F4F3F7;
+
+  --color-rp-success:        #16A34A;
+  --color-rp-success-bg:     #DCFCE7;
+  --color-rp-warning:        #D97706;
+  --color-rp-warning-bg:     #FEF3C7;
+  --color-rp-danger:         #DC2626;
+  --color-rp-danger-bg:      #FEE2E2;
+
+  /* ── Rétrocompatibilité brand-* ─────────────────────────────  */
+  --color-brand-50:   #EFF6FF;
+  --color-brand-100:  #DBEAFE;
+  --color-brand-500:  #3B82F6;
+  --color-brand-600:  #2563EB;
+  --color-brand-700:  #1D4ED8;
+
+  --color-success-50:  #F0FDF4;
+  --color-success-500: #22C55E;
+  --color-success-700: #15803D;
+
+  --color-warning-50:  #FFFBEB;
+  --color-warning-500: #F59E0B;
+  --color-warning-700: #B45309;
+
+  --color-danger-50:   #FEF2F2;
+  --color-danger-500:  #EF4444;
+  --color-danger-700:  #B91C1C;
+
+  /* ── Polices ────────────────────────────────────────────────  */
+  --font-display: var(--font-jakarta);
+  --font-body:    var(--font-dm);
+  --font-mono:    var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ── Espacements personnalisés ──────────────────────────────  */
+  --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --spacing-safe-top:    env(safe-area-inset-top, 0px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ═══════════════════════════════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════════════════════════════ */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--rp-bg-page);
+  color: var(--rp-navy);
+  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Titres → police display */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, sans-serif);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   COMPOSANTS GLOBAUX
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Scrollbar fine sur webkit */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--rp-lavender); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--rp-navy-muted); }
+
+/* Sélection de texte */
+::selection { background: var(--rp-amber-light); color: var(--rp-navy); }
+
+/* ── Carte standard ─────────────────────────────────────────── */
+.rp-card {
+  background: var(--rp-white);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-card);
+  border: 1px solid var(--rp-lavender-light);
+}
+
+/* ── Bouton CTA primaire ────────────────────────────────────── */
+.rp-btn-primary {
+  min-height: 48px;
+  padding: 0 24px;
+  background: var(--rp-amber);
+  color: var(--rp-white);
+  border-radius: var(--rp-radius-md);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  transition: background 150ms ease, transform 100ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.rp-btn-primary:hover  { background: var(--rp-amber-dark); }
+.rp-btn-primary:active { transform: scale(0.98); }
+
+/* ── Bouton secondaire ──────────────────────────────────────── */
+.rp-btn-secondary {
+  min-height: 48px;
+  padding: 0 20px;
+  background: var(--rp-lavender-light);
+  color: var(--rp-navy);
+  border-radius: var(--rp-radius-md);
+  font-family: var(--font-body);
+  font-weight: 500;
+  font-size: 14px;
+  transition: background 150ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border: 1px solid var(--rp-lavender);
+  -webkit-tap-highlight-color: transparent;
+}
+.rp-btn-secondary:hover { background: var(--rp-lavender); }
+
+/* ── Bottom sheet handle ────────────────────────────────────── */
+.rp-sheet-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--rp-lavender);
+  border-radius: 9999px;
+  margin: 12px auto 0;
+  flex-shrink: 0;
+}
+
+/* ── Safe area helpers ──────────────────────────────────────── */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+.pt-safe { padding-top:    env(safe-area-inset-top, 0px); }
+.mb-safe { margin-bottom:  env(safe-area-inset-bottom, 0px); }
+
+/* ── Touch target minimum ───────────────────────────────────── */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Animation bottom sheet ─────────────────────────────────── */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0);    }
+}
+@keyframes slideDown {
+  from { transform: translateY(0);    }
+  to   { transform: translateY(100%); }
+}
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+
+.animate-slide-up   { animation: slideUp   300ms cubic-bezier(.32,.72,0,1) forwards; }
+.animate-slide-down { animation: slideDown 250ms cubic-bezier(.32,.72,0,1) forwards; }
+.animate-fade-in    { animation: fadeIn    200ms ease forwards; }
+.animate-fade-out   { animation: fadeOut   200ms ease forwards; }
+
+/* ── Respect de prefers-reduced-motion ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ── FAB (Floating Action Button) ───────────────────────────── */
+.rp-fab {
+  position: fixed;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 9999px;
+  background: var(--rp-amber);
+  color: var(--rp-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(212, 149, 42, .40);
+  cursor: pointer;
+  border: none;
+  z-index: 40;
+  transition: background 150ms, transform 100ms, box-shadow 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.rp-fab:hover  { background: var(--rp-amber-dark); box-shadow: 0 6px 20px rgba(212,149,42,.50); }
+.rp-fab:active { transform: scale(0.95); }
