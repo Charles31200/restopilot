@@ -14,10 +14,8 @@ import type { NextRequest } from 'next/server'
 // Routes du dashboard non bloquées même si abonnement expiré
 // (évite la boucle infinie si l'utilisateur est sur /subscription-expired)
 const ALWAYS_ALLOWED_DASHBOARD = [
-  '/parametres/abonnement',
-  '/subscription-expired',
-  '/upgrade',
-  '/pricing',
+  '/dashboard/parametres/abonnement',
+  '/dashboard/upgrade',
 ]
 
 // Délai de grâce après expiration / past_due avant blocage (7 jours en ms)

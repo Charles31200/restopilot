@@ -49,6 +49,7 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm,  setShowConfirm]  = useState(false)
   const [serverError,  setServerError]  = useState<string | null>(null)
+  const [serverInfo,   setServerInfo]   = useState<string | null>(null)
 
   const {
     register,
@@ -62,8 +63,10 @@ export default function RegisterPage() {
 
   async function onSubmit(data: FormData) {
     setServerError(null)
+    setServerInfo(null)
     const result = await signUpAction(data.email, data.password)
-    if (result?.error) setServerError(result.error)
+    if (result && 'error' in result)   setServerError(result.error)
+    if (result && 'message' in result) setServerInfo(result.message)
   }
 
   return (
@@ -80,6 +83,17 @@ export default function RegisterPage() {
           Essai gratuit 14 jours · Sans carte bancaire
         </p>
       </div>
+
+      {/* Message de confirmation email */}
+      {serverInfo && (
+        <div
+          className="mb-5 rounded-xl px-4 py-3 text-[13px] flex items-start gap-2"
+          style={{ background: 'var(--rp-amber-light)', color: 'var(--rp-amber-dark)', border: '1px solid var(--rp-amber)' }}
+        >
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+          {serverInfo}
+        </div>
+      )}
 
       {/* Erreur serveur */}
       {serverError && (

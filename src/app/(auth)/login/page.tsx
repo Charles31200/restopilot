@@ -35,7 +35,7 @@ export default function LoginPage() {
   const onSubmit = async (data: FormData) => {
     setServerError(null)
     const result = await signInAction(data.email, data.password)
-    if (result?.error) setServerError(result.error)
+    if (result && 'error' in result) setServerError(result.error)
   }
 
   const handleGoogle = async () => {

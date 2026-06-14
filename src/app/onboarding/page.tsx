@@ -105,7 +105,7 @@ export default function OnboardingPage() {
       { first_name: data.firstName, last_name: data.lastName },
     )
     // Si l'action renvoie une erreur → afficher ; sinon le redirect() côté serveur navigue
-    if (result?.error) {
+    if (result && 'error' in result) {
       setServerError(result.error)
       setLoading(false)
     }

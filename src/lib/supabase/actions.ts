@@ -15,7 +15,7 @@ import type { Database } from '@/types'
 
 // ── Types ─────────────────────────────────────────────────────
 
-export type AuthResult = { error: string } | undefined
+export type AuthResult = { error: string } | { message: string } | undefined
 
 // ── Admin client ──────────────────────────────────────────────
 
@@ -43,10 +43,16 @@ export async function signUpAction(
 
   // Le trigger Supabase `on_auth_user_created` crée automatiquement
   // le restaurant, le profil et l'abonnement trial dès l'inscription.
-  const { error: authError } = await supabase.auth.signUp({ email, password })
+  const { data, error: authError } = await supabase.auth.signUp({ email, password })
   if (authError) return { error: translateError(authError.message) }
 
-  // Le proxy redirigera vers /onboarding si first_name est null
+  // Si la confirmation par email est activée, session === null.
+  // Dans ce cas on informe l'utilisateur plutôt que de le rediriger vers un dashboard inaccessible.
+  if (!data.session) {
+    return { message: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail puis connectez-vous.' }
+  }
+
+  // Le middleware redirigera vers /onboarding si first_name est null
   redirect('/dashboard')
 }
 
