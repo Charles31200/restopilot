@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   const error = searchParams.get('error')
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? ''
-  const redirectBase = `${appUrl}/parametres/integrations`
+  const redirectBase = `${appUrl}/dashboard/parametres/integrations`
 
   // Lightspeed a refusé l'accès ou annulé
   if (error) {

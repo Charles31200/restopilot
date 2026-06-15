@@ -7,7 +7,7 @@ import {
   Clock, Settings,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { getLightspeedAuthUrl } from '@/lib/integrations/lightspeed-url'
+
 import { CSVImportModal } from '@/components/integrations/CSVImportModal'
 import type { PosType } from '@/types'
 
@@ -181,10 +181,17 @@ export default function IntegrationsPage() {
   }
 
   // ── Connexion OAuth2 (Lightspeed) ─────────────────────────────
+  // L'URL est générée côté serveur pour garder LIGHTSPEED_CLIENT_ID hors du bundle navigateur.
 
-  const handleConnectOAuth = (pos: POSConfig) => {
-    const authUrl = getLightspeedAuthUrl(window.crypto.randomUUID())
-    window.location.href = authUrl
+  const handleConnectOAuth = async (_pos: POSConfig) => {
+    try {
+      const res = await fetch('/api/auth/lightspeed/url')
+      if (!res.ok) throw new Error('Impossible de générer l\'URL de connexion.')
+      const { url } = await res.json()
+      window.location.href = url
+    } catch (err) {
+      setSyncMsg(err instanceof Error ? err.message : 'Erreur de connexion Lightspeed.')
+    }
   }
 
   // ── Connexion Token/API Key ────────────────────────────────────

@@ -135,7 +135,12 @@ export function MonthlyExport({ onClose }: MonthlyExportProps) {
     win.document.write(html)
     win.document.close()
     win.focus()
-    setTimeout(() => { win.print(); win.close() }, 400)
+    // onafterprint garantit que la fenêtre ne se ferme qu'après que l'utilisateur
+    // a validé ou annulé le dialogue d'impression (Firefox / Safari safe).
+    setTimeout(() => {
+      win.onafterprint = () => win.close()
+      win.print()
+    }, 400)
   }
 
   return (
