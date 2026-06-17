@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
         return sum + hours * rate
       }, 0).toFixed(2)
 
-    const wMargin    = +(wRevenue - wPurchases - wLabor).toFixed(2)
+    const wMargin    = +(Number(wRevenue) - Number(wPurchases) - Number(wLabor)).toFixed(2)
     const wMarginPct = wRevenue > 0 ? +(wMargin / wRevenue * 100).toFixed(1) : 0
 
     weeklyBreakdown.push({

@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils/cn'
 
 import { CSVImportModal } from '@/components/integrations/CSVImportModal'
+import { SalesCSVImportModal } from '@/components/integrations/SalesCSVImportModal'
 import type { PosType } from '@/types'
 
 // ── Config des caisses ────────────────────────────────────────
@@ -121,7 +122,8 @@ export default function IntegrationsPage() {
   const [syncing,   setSyncing]   = useState(false)
   const [syncMsg,   setSyncMsg]   = useState<string | null>(null)
   const [tokenModal, setTokenModal] = useState<TokenModalState | null>(null)
-  const [showCSV,   setShowCSV]   = useState(false)
+  const [showCSV,      setShowCSV]      = useState(false)
+  const [showSalesCSV, setShowSalesCSV] = useState(false)
   const [disconnecting, setDisconnecting] = useState(false)
 
   // ── Charger le statut ────────────────────────────────────────
@@ -382,6 +384,30 @@ export default function IntegrationsPage() {
         )}
       </div>
 
+      {/* Section import ventes CSV */}
+      <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50/40 p-5">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-amber-100 flex-shrink-0">
+              <FileSpreadsheet className="w-5 h-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-gray-900">Importer mes ventes (CSV)</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Importez un export CSV de votre caisse directement dans vos ventes journalières.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowSalesCSV(true)}
+            className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 text-xs font-medium rounded-xl text-amber-700 bg-amber-100 border border-amber-300 hover:bg-amber-200 transition-colors"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            Importer un fichier CSV
+          </button>
+        </div>
+      </div>
+
       {/* Info cron */}
       <div className="bg-gray-50 rounded-2xl border border-gray-200 p-4 text-xs text-gray-500 space-y-1">
         <p className="font-semibold text-gray-700">Synchronisation automatique</p>
@@ -445,7 +471,7 @@ export default function IntegrationsPage() {
         </div>
       )}
 
-      {/* Modal CSV */}
+      {/* Modal CSV plats */}
       {showCSV && (
         <CSVImportModal
           onClose={() => setShowCSV(false)}
@@ -453,6 +479,18 @@ export default function IntegrationsPage() {
             setShowCSV(false)
             setSyncMsg(`✅ ${result.imported} ligne${result.imported > 1 ? 's' : ''} importée${result.imported > 1 ? 's' : ''} — ${result.salesCreated} journée${result.salesCreated > 1 ? 's' : ''} créée${result.salesCreated > 1 ? 's' : ''}`)
             loadStatus()
+          }}
+        />
+      )}
+
+      {/* Modal import ventes CSV */}
+      {showSalesCSV && (
+        <SalesCSVImportModal
+          onClose={() => setShowSalesCSV(false)}
+          onSuccess={result => {
+            setShowSalesCSV(false)
+            const total = result.inserted + result.replaced
+            setSyncMsg(`✅ ${total} journée${total > 1 ? 's' : ''} importée${total > 1 ? 's' : ''}${result.skipped > 0 ? ` · ${result.skipped} ignorée${result.skipped > 1 ? 's' : ''}` : ''}`)
           }}
         />
       )}
