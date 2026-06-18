@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import {
-  Check, Zap, Star, Building2, ArrowRight, Loader2,
+  Check, Zap, Star, Building2, ArrowRight, Loader2, AlertTriangle,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 
@@ -217,9 +217,29 @@ function PlanCard({ plan, interval, onSelect, loading }: {
 
 // ── Page ──────────────────────────────────────────────────────
 
+// Isolé dans un sous-composant pour satisfaire la Suspense boundary requise par useSearchParams
+function SubscriptionBanner() {
+  const searchParams = useSearchParams()
+  if (searchParams.get('reason') !== 'subscription_required') return null
+
+  return (
+    <div className="flex items-start gap-3 p-4 rounded-2xl border-2 border-amber-300 bg-amber-50 max-w-2xl mx-auto">
+      <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+      <div>
+        <p className="text-sm font-semibold text-amber-900">
+          Votre période d&rsquo;essai est terminée.
+        </p>
+        <p className="text-sm text-amber-700 mt-0.5">
+          Choisissez un plan pour continuer à utiliser RestoPilot et accéder à toutes vos données.
+        </p>
+      </div>
+    </div>
+  )
+}
+
 export default function PricingPage() {
-  const router              = useRouter()
-  const [interval, setInt]  = useState<Interval>('monthly')
+  const router             = useRouter()
+  const [interval, setInt] = useState<Interval>('monthly')
   const [loading,  setLoad] = useState<string | null>(null)
 
   const handleSelect = async (priceId: string) => {
@@ -251,6 +271,11 @@ export default function PricingPage() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16 space-y-12">
+      {/* Bannière abonnement requis (Suspense requis par useSearchParams) */}
+      <Suspense fallback={null}>
+        <SubscriptionBanner />
+      </Suspense>
+
       {/* En-tête */}
       <div className="text-center space-y-4 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-sm text-blue-700 font-medium">
