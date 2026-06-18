@@ -1,10 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import {
-  Zap, Check, ArrowRight, Loader2, X, Star,
+  Zap, Check, ArrowRight, Loader2, X, Star, CheckCircle2, AlertTriangle,
 } from 'lucide-react'
 
 // ── Features débloquées en Pro ────────────────────────────────
@@ -19,16 +19,107 @@ const PRO_FEATURES = [
   { icon: '🎯', text: 'Support prioritaire réponse < 4 heures' },
 ]
 
-// ── Contenu principal ─────────────────────────────────────────
+// ── État "paiement en cours d'activation" ─────────────────────
+
+function PaymentActivating() {
+  const router  = useRouter()
+  const [dots,  setDots]  = useState('.')
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    const dotTimer = setInterval(() => setDots(d => d.length >= 3 ? '.' : d + '.'), 600)
+    return () => clearInterval(dotTimer)
+  }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    let attempts  = 0
+    const MAX     = 20
+
+    const poll = async () => {
+      if (cancelled) return
+      attempts++
+      try {
+        const res = await fetch('/api/stripe/status')
+        if (res.ok) {
+          const data = await res.json()
+          if (data?.status === 'active' || data?.status === 'trialing') {
+            if (!cancelled) router.push('/dashboard')
+            return
+          }
+        }
+      } catch { /* réseau temporairement indisponible */ }
+
+      if (!cancelled && attempts < MAX) {
+        setTimeout(poll, 2000)
+      } else if (!cancelled) {
+        setError('L\'activation est plus longue que prévu. Actualisez la page ou contactez le support.')
+      }
+    }
+
+    const t = setTimeout(poll, 2000)
+    return () => { cancelled = true; clearTimeout(t) }
+  }, [router])
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-6">
+        <div className="bg-white rounded-3xl shadow-xl border border-gray-200 max-w-md w-full p-8 space-y-6 text-center">
+          <div className="w-14 h-14 bg-amber-100 rounded-2xl flex items-center justify-center mx-auto">
+            <AlertTriangle className="w-7 h-7 text-amber-500" />
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Activation en cours</h1>
+            <p className="text-sm text-gray-500 mt-2">{error}</p>
+          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full py-3 bg-blue-600 text-white font-semibold text-sm rounded-xl hover:bg-blue-700 transition-colors"
+          >
+            Actualiser la page
+          </button>
+          <a href="/dashboard/compte" className="block text-sm text-gray-400 hover:text-gray-600 transition-colors">
+            Voir mon compte
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-6">
+      <div className="bg-white rounded-3xl shadow-xl border border-gray-200 max-w-md w-full p-8 space-y-6 text-center">
+        <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto">
+          <CheckCircle2 className="w-7 h-7 text-green-500" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900">Paiement confirmé !</h1>
+          <p className="text-sm text-gray-500 mt-2">
+            Votre abonnement est en cours d&rsquo;activation{dots}
+          </p>
+        </div>
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Vous serez redirigé automatiquement vers votre tableau de bord.
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ── Contenu principal (upgrade CTA) ──────────────────────────
 
 function UpgradeContent() {
-  const searchParams = useSearchParams()
-  const router       = useRouter()
-  const feature      = searchParams.get('feature') ?? 'cette fonctionnalité'
-  const priceIdPro   = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? 'price_pro_monthly'
+  const searchParams    = useSearchParams()
+  const router          = useRouter()
+  const isPaymentSuccess = searchParams.get('payment') === 'success'
+  const feature         = searchParams.get('feature') ?? 'cette fonctionnalité'
+  const priceIdPro      = process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? 'price_pro_monthly'
 
   const [loading, setLoading] = useState(false)
   const [error,   setError]   = useState<string | null>(null)
+
+  if (isPaymentSuccess) return <PaymentActivating />
 
   const handleUpgrade = async () => {
     setLoading(true)

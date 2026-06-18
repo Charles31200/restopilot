@@ -14,7 +14,7 @@ import { createCheckoutSession } from '@/lib/stripe'
 // La page pricing envoie le priceId choisi — on vérifie ici qu'il ressemble
 // à un vrai Price ID Stripe (commence par "price_" et fait > 12 caractères).
 function isRealPriceId(priceId: string): boolean {
-  return priceId.startsWith('price_') && priceId.length > 12
+  return priceId.startsWith('price_') && priceId.length > 25
 }
 
 export async function POST(request: NextRequest) {

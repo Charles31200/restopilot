@@ -93,7 +93,7 @@ export async function createCheckoutSession(params: {
       trial_period_days: 14,
       metadata: { restaurant_id: params.restaurantId },
     },
-    success_url: `${appUrl}/dashboard?upgraded=true`,
+    success_url: `${appUrl}/dashboard/upgrade?payment=success`,
     cancel_url:  `${appUrl}/pricing`,
     metadata: { restaurant_id: params.restaurantId },
     allow_promotion_codes: true,

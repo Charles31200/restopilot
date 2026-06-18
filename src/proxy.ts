@@ -116,6 +116,6 @@ export const config = {
      * - api/auth       (callback OAuth Supabase)
      * - api/webhooks   (webhooks Stripe — signature brute, pas de session)
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml|api/auth|api/webhooks).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|robots\\.txt|sitemap\\.xml|api/).*)',
   ],
 }
