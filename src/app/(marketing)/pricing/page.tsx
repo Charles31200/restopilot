@@ -238,12 +238,14 @@ function SubscriptionBanner() {
 }
 
 export default function PricingPage() {
-  const router             = useRouter()
-  const [interval, setInt] = useState<Interval>('monthly')
+  const router              = useRouter()
+  const [interval, setInt]  = useState<Interval>('monthly')
   const [loading,  setLoad] = useState<string | null>(null)
+  const [apiError, setApiError] = useState<string | null>(null)
 
   const handleSelect = async (priceId: string) => {
     setLoad(priceId)
+    setApiError(null)
     try {
       // Tenter la création de session si authentifié, sinon aller à l'inscription
       const res = await fetch('/api/stripe/create-checkout', {
@@ -261,9 +263,12 @@ export default function PricingPage() {
       const json = await res.json()
       if (json.url) {
         window.location.href = json.url
+        return
       }
+      // Erreur retournée par l'API (503 prix non configurés, 500 Stripe…)
+      setApiError(json.error ?? 'Une erreur est survenue. Veuillez réessayer.')
     } catch {
-      router.push(`/register?priceId=${encodeURIComponent(priceId)}`)
+      setApiError('Erreur réseau. Veuillez réessayer.')
     } finally {
       setLoad(null)
     }
@@ -275,6 +280,14 @@ export default function PricingPage() {
       <Suspense fallback={null}>
         <SubscriptionBanner />
       </Suspense>
+
+      {/* Erreur API checkout */}
+      {apiError && (
+        <div className="flex items-start gap-3 p-4 rounded-2xl border-2 border-red-200 bg-red-50 max-w-2xl mx-auto">
+          <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <p className="text-sm text-red-700">{apiError}</p>
+        </div>
+      )}
 
       {/* En-tête */}
       <div className="text-center space-y-4 max-w-2xl mx-auto">
