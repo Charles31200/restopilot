@@ -177,7 +177,8 @@ function PlanCard({ plan, interval, onSelect, loading }: {
 
       {/* CTA */}
       <button
-        onClick={() => onSelect(priceId)}
+        type="button"
+        onClick={() => { console.log('[PlanCard] click, priceId:', priceId); onSelect(priceId) }}
         disabled={!!loading}
         className={cn(
           'w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all mb-6',
@@ -244,6 +245,7 @@ export default function PricingPage() {
   const [apiError, setApiError] = useState<string | null>(null)
 
   const handleSelect = async (priceId: string) => {
+    console.log('[pricing] handleSelect appelé, priceId:', priceId)
     setLoad(priceId)
     setApiError(null)
     try {
