@@ -73,6 +73,17 @@ export async function POST(request: NextRequest) {
     )
   }
 
+  // ── Valider NEXT_PUBLIC_APP_URL ──────────────────────────────
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (!appUrl || appUrl.includes('localhost')) {
+    console.error('[checkout] NEXT_PUBLIC_APP_URL non défini ou localhost:', appUrl,
+      '— Stripe live mode rejette les URLs localhost pour success_url.')
+    return NextResponse.json(
+      { error: 'Configuration serveur incomplète (APP_URL manquant). Contactez le support.' },
+      { status: 503 }
+    )
+  }
+
   // ── Créer la session ─────────────────────────────────────────
   try {
     const url = await createCheckoutSession({
@@ -83,13 +94,17 @@ export async function POST(request: NextRequest) {
     })
     return NextResponse.json({ url })
   } catch (err) {
-    const message = err instanceof Error ? err.message : 'Erreur Stripe inconnue'
-    // Log explicite pour Vercel Functions
-    console.error('[checkout] Erreur Stripe:', message, {
-      priceId:      body.priceId,
+    const stripeErr = err as { message?: string; type?: string; code?: string }
+    const message   = stripeErr.message ?? 'Erreur Stripe inconnue'
+    console.error('[checkout] Erreur Stripe:', {
+      message,
+      type:       stripeErr.type,
+      code:       stripeErr.code,
+      stripeKey:  process.env.STRIPE_SECRET_KEY?.substring(0, 10),
+      priceId:    body.priceId,
       restaurantId,
-      hasCustomer:  !!subscription?.stripe_customer_id,
-      appUrl:       process.env.NEXT_PUBLIC_APP_URL ?? '(non défini)',
+      hasCustomer: !!subscription?.stripe_customer_id,
+      appUrl,
     })
     return NextResponse.json({ error: message }, { status: 500 })
   }
