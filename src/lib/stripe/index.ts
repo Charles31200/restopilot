@@ -68,6 +68,7 @@ export type SubscriptionInfo = {
   current_period_end: string | null
   stripe_customer_id: string | null
   cancel_at_period_end: boolean
+  created_at:         string | null
 }
 
 // ── Checkout Session ──────────────────────────────────────────
@@ -87,7 +88,8 @@ export async function createCheckoutSession(params: {
 
   const sessionParams: Stripe.Checkout.SessionCreateParams = {
     mode:    'subscription',
-    payment_method_types: ['card'],
+    payment_method_types:       ['card'],
+    payment_method_collection:  'always',
     line_items: [{ price: params.priceId, quantity: 1 }],
     subscription_data: {
       trial_period_days: 14,
@@ -145,7 +147,7 @@ export async function getSubscriptionStatus(
 
   const { data } = await supabase
     .from('subscriptions')
-    .select('plan, status, current_period_end, stripe_customer_id, stripe_subscription_id')
+    .select('plan, status, current_period_end, stripe_customer_id, stripe_subscription_id, created_at')
     .eq('restaurant_id', restaurantId)
     .single()
 
@@ -166,6 +168,7 @@ export async function getSubscriptionStatus(
     current_period_end: data.current_period_end,
     stripe_customer_id: data.stripe_customer_id,
     cancel_at_period_end: cancelAtPeriodEnd,
+    created_at:         data.created_at ?? null,
   }
 }
 

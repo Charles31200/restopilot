@@ -1,8 +1,9 @@
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 import { getCurrentUser, getCurrentProfile, getCurrentRestaurant } from '@/lib/supabase/auth'
-import { Sidebar }  from '@/components/dashboard/Sidebar'
-import { BottomNav } from '@/components/layout/BottomNav'
+import { Sidebar }     from '@/components/dashboard/Sidebar'
+import { BottomNav }   from '@/components/layout/BottomNav'
+import { TrialBanner } from '@/components/dashboard/TrialBanner'
 
 export const metadata: Metadata = {
   title: 'RestoPilot',
@@ -90,6 +91,9 @@ export default async function DashboardLayout({
             {userInitials}
           </div>
         </header>
+
+        {/* ── Bannière essai gratuit (client component) ─────────── */}
+        <TrialBanner />
 
         {/* ── Espace pour le MobileHeader fixe (mobile uniquement) ── */}
         {/*
