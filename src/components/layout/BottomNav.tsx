@@ -98,6 +98,7 @@ export function BottomNav({ restaurantName }: BottomNavProps) {
               <Link
                 key={tab.href}
                 href={tab.href}
+                prefetch={true}
                 className={cn(
                   'flex-1 flex flex-col items-center justify-center gap-0.5',
                   'min-h-[48px] relative transition-colors duration-150',
@@ -178,6 +179,7 @@ export function BottomNav({ restaurantName }: BottomNavProps) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch={true}
                 onClick={() => setMoreOpen(false)}
                 className={cn(
                   'flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors',

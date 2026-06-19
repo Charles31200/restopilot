@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
+import { ProgressBarProvider } from '@/components/ui/ProgressBarProvider'
 import './globals.css'
 
 // ── Polices ───────────────────────────────────────────────────
@@ -57,7 +58,7 @@ export default function RootLayout({
       className={`${jakarta.variable} ${dmSans.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-rp-page text-rp-navy font-body">
-        {children}
+        <ProgressBarProvider>{children}</ProgressBarProvider>
       </body>
     </html>
   )

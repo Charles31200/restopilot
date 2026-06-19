@@ -163,6 +163,7 @@ export function Sidebar({ restaurantName, userInitials, userFullName, userEmail 
             <Link
               key={item.href}
               href={item.href}
+              prefetch={true}
               title={collapsed ? item.label : undefined}
               className={cn(
                 'flex items-center gap-3 px-3 h-11 rounded-xl text-sm font-medium transition-all duration-150 group',
@@ -204,6 +205,7 @@ export function Sidebar({ restaurantName, userInitials, userFullName, userEmail 
             <Link
               key={item.href}
               href={item.href}
+              prefetch={true}
               title={collapsed ? item.label : undefined}
               className={cn(
                 'flex items-center gap-3 px-3 h-11 rounded-xl text-sm font-medium transition-all duration-150',
