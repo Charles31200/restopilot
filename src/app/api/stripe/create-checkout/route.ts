@@ -94,17 +94,17 @@ export async function POST(request: NextRequest) {
     })
     return NextResponse.json({ url })
   } catch (err) {
-    const stripeErr = err as { message?: string; type?: string; code?: string }
-    const message   = stripeErr.message ?? 'Erreur Stripe inconnue'
-    console.error('[checkout] Erreur Stripe:', {
-      message,
-      type:       stripeErr.type,
-      code:       stripeErr.code,
-      stripeKey:  process.env.STRIPE_SECRET_KEY?.substring(0, 10),
-      priceId:    body.priceId,
-      restaurantId,
-      hasCustomer: !!subscription?.stripe_customer_id,
-      appUrl,
+    const error   = err as { message?: string; type?: string; code?: string; decline_code?: string; param?: string }
+    const message = error?.message ?? 'Erreur Stripe inconnue'
+    console.error('[checkout] Stripe error details:', {
+      message:        error?.message,
+      type:           error?.type,
+      code:           error?.code,
+      decline_code:   error?.decline_code,
+      param:          error?.param,
+      stripeKeyPrefix: process.env.STRIPE_SECRET_KEY?.slice(0, 14),
+      priceId:        body.priceId,
+      appUrl:         process.env.NEXT_PUBLIC_APP_URL,
     })
     return NextResponse.json({ error: message }, { status: 500 })
   }
