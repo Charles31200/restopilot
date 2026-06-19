@@ -14,30 +14,32 @@ type Interval = 'monthly' | 'annual'
 type PlanFeature = { text: string; included: boolean }
 
 type Plan = {
-  id:           'starter' | 'pro' | 'multi'
-  name:         string
-  description:  string
-  monthlyPrice: number
-  annualPrice:  number
+  id:             'starter' | 'pro' | 'multi'
+  name:           string
+  description:    string
+  monthlyPrice:   number   // prix affiché en mensuel (€/mois)
+  annualTotal:    number   // total facturé en annuel (€/an)
+  annualMonthly:  number   // équivalent mensuel en annuel (pour "soit X€/mois")
   priceIdMonthly: string
   priceIdAnnual:  string
-  icon:         React.ReactNode
-  color:        string
-  bgColor:      string
-  borderColor:  string
-  badge?:       string
-  features:     PlanFeature[]
+  icon:           React.ReactNode
+  color:          string
+  bgColor:        string
+  borderColor:    string
+  badge?:         string
+  features:       PlanFeature[]
 }
 
 // ── Données des plans ─────────────────────────────────────────
 
 const PLANS: Plan[] = [
   {
-    id:           'starter',
-    name:         'Starter',
-    description:  'Idéal pour démarrer et structurer votre gestion.',
-    monthlyPrice:  49,
-    annualPrice:   39,
+    id:            'starter',
+    name:          'Starter',
+    description:   'Idéal pour démarrer et structurer votre gestion.',
+    monthlyPrice:   39,
+    annualTotal:    368,
+    annualMonthly:  31,
     priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY ?? 'price_starter_monthly',
     priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_ANNUAL  ?? 'price_starter_annual',
     icon:   <Zap className="w-5 h-5" />,
@@ -45,52 +47,54 @@ const PLANS: Plan[] = [
     bgColor:     'bg-blue-50',
     borderColor: 'border-blue-200',
     features: [
-      { text: '1 restaurant',                      included: true  },
-      { text: 'Tableau de bord financier',          included: true  },
-      { text: 'Gestion des stocks & inventaires',   included: true  },
-      { text: 'Planning (jusqu\'à 10 employés)',    included: true  },
-      { text: 'Import CSV des ventes',              included: true  },
-      { text: 'Rapport hebdomadaire par email',     included: true  },
-      { text: 'Support par email',                  included: true  },
-      { text: 'Intégrations caisses (Lightspeed…)', included: false },
-      { text: 'Synchronisation automatique',        included: false },
-      { text: 'Export FEC comptable',               included: false },
-      { text: 'Scan de factures par IA',            included: false },
+      { text: '1 restaurant',                       included: true  },
+      { text: 'Tableau de bord financier',           included: true  },
+      { text: 'Gestion des stocks & inventaires',    included: true  },
+      { text: "Planning (jusqu'à 10 employés)",      included: true  },
+      { text: 'Import CSV des ventes',               included: true  },
+      { text: 'Rapport hebdomadaire par email',      included: true  },
+      { text: 'Support par email',                   included: true  },
+      { text: 'Intégrations caisses (Lightspeed…)',  included: false },
+      { text: 'Synchronisation automatique',         included: false },
+      { text: 'Export FEC comptable',                included: false },
+      { text: 'Scan de factures par IA',             included: false },
     ],
   },
   {
-    id:           'pro',
-    name:         'Pro',
-    description:  'Tout automatisé pour les restaurateurs actifs.',
-    monthlyPrice:  79,
-    annualPrice:   63,
+    id:            'pro',
+    name:          'Pro',
+    description:   'Tout automatisé pour les restaurateurs actifs.',
+    monthlyPrice:   79,
+    annualTotal:    663,
+    annualMonthly:  55,
     priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? 'price_pro_monthly',
     priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_ANNUAL  ?? 'price_pro_annual',
-    badge:        'Le plus populaire',
+    badge:         'Le plus populaire',
     icon:   <Star className="w-5 h-5" />,
     color:  'text-white',
     bgColor:     'bg-blue-600',
     borderColor: 'border-blue-600',
     features: [
-      { text: '1 restaurant',                       included: true },
-      { text: 'Tout Starter',                       included: true },
-      { text: 'Intégrations caisses (Lightspeed, Tiller, Zelty)', included: true },
-      { text: 'Synchronisation automatique des ventes', included: true },
-      { text: 'Planning illimité (employés illimités)', included: true },
-      { text: 'Export FEC comptable',                included: true },
-      { text: 'Scan de factures par IA (OCR)',       included: true },
-      { text: 'Rapports financiers avancés',         included: true },
-      { text: 'Support prioritaire (< 4h)',          included: true },
-      { text: 'Dashboard multi-sites',               included: false },
-      { text: 'Accès multi-utilisateurs',            included: false },
+      { text: '1 restaurant',                                      included: true  },
+      { text: 'Tout Starter',                                      included: true  },
+      { text: 'Intégrations caisses (Lightspeed, Tiller, Zelty)', included: true  },
+      { text: 'Synchronisation automatique des ventes',            included: true  },
+      { text: 'Planning illimité (employés illimités)',             included: true  },
+      { text: 'Export FEC comptable',                              included: true  },
+      { text: 'Scan de factures par IA (OCR)',                     included: true  },
+      { text: 'Rapports financiers avancés',                       included: true  },
+      { text: 'Support prioritaire (< 4h)',                        included: true  },
+      { text: 'Dashboard multi-sites',                             included: false },
+      { text: 'Accès multi-utilisateurs',                          included: false },
     ],
   },
   {
-    id:           'multi',
-    name:         'Multi-sites',
-    description:  'Pour les groupes et franchises multi-restaurants.',
-    monthlyPrice:  149,
-    annualPrice:   119,
+    id:            'multi',
+    name:          'Multi-sites',
+    description:   'Pour les groupes et franchises multi-restaurants.',
+    monthlyPrice:   149,
+    annualTotal:    1430,
+    annualMonthly:  119,
     priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_MULTI_MONTHLY ?? 'price_multi_monthly',
     priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_MULTI_ANNUAL  ?? 'price_multi_annual',
     icon:   <Building2 className="w-5 h-5" />,
@@ -98,17 +102,17 @@ const PLANS: Plan[] = [
     bgColor:     'bg-purple-50',
     borderColor: 'border-purple-200',
     features: [
-      { text: 'Jusqu\'à 5 restaurants',             included: true },
-      { text: 'Tout Pro',                           included: true },
-      { text: 'Dashboard consolidé multi-sites',    included: true },
-      { text: '5 utilisateurs inclus',              included: true },
-      { text: 'Rapports croisés entre sites',       included: true },
-      { text: 'API dédiée avec rate-limit élevé',   included: true },
-      { text: 'Account manager dédié',              included: true },
-      { text: 'SLA 99,9 % (uptime garanti)',        included: true },
-      { text: 'Formation & onboarding personnalisé',included: true },
-      { text: 'Facturation centralisée',            included: true },
-      { text: 'Intégrations sur mesure',            included: true },
+      { text: "Jusqu'à 5 restaurants",               included: true },
+      { text: 'Tout Pro',                            included: true },
+      { text: 'Dashboard consolidé multi-sites',     included: true },
+      { text: '5 utilisateurs inclus',               included: true },
+      { text: 'Rapports croisés entre sites',        included: true },
+      { text: 'API dédiée avec rate-limit élevé',    included: true },
+      { text: 'Account manager dédié',               included: true },
+      { text: 'SLA 99,9 % (uptime garanti)',         included: true },
+      { text: 'Formation & onboarding personnalisé', included: true },
+      { text: 'Facturation centralisée',             included: true },
+      { text: 'Intégrations sur mesure',             included: true },
     ],
   },
 ]
@@ -121,9 +125,8 @@ function PlanCard({ plan, interval, onSelect, loading }: {
   onSelect: (priceId: string) => void
   loading:  string | null
 }) {
-  const isPro    = plan.id === 'pro'
-  const price    = interval === 'monthly' ? plan.monthlyPrice : plan.annualPrice
-  const priceId  = interval === 'monthly' ? plan.priceIdMonthly : plan.priceIdAnnual
+  const isPro     = plan.id === 'pro'
+  const priceId   = interval === 'monthly' ? plan.priceIdMonthly : plan.priceIdAnnual
   const isLoading = loading === priceId
 
   return (
@@ -133,7 +136,7 @@ function PlanCard({ plan, interval, onSelect, loading }: {
         ? 'bg-blue-600 border-blue-600 shadow-2xl shadow-blue-200 scale-[1.02]'
         : `bg-white ${plan.borderColor} hover:shadow-md`
     )}>
-      {/* Badge */}
+      {/* Badge "Le plus populaire" */}
       {plan.badge && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full whitespace-nowrap shadow-sm">
           {plan.badge}
@@ -162,15 +165,20 @@ function PlanCard({ plan, interval, onSelect, loading }: {
       <div className="mb-5">
         <div className="flex items-end gap-1">
           <span className={cn('text-4xl font-extrabold tabular-nums', isPro ? 'text-white' : 'text-gray-900')}>
-            {price}€
+            {interval === 'monthly' ? plan.monthlyPrice : plan.annualTotal}€
           </span>
           <span className={cn('text-sm pb-1', isPro ? 'text-blue-100' : 'text-gray-400')}>
-            /mois
+            {interval === 'monthly' ? '/mois' : '/an'}
           </span>
         </div>
         {interval === 'annual' && (
-          <p className={cn('text-xs mt-0.5', isPro ? 'text-blue-100' : 'text-green-600 font-medium')}>
-            Facturé {price * 12}€/an · économisez {(plan.monthlyPrice - price) * 12}€
+          <p className={cn('text-xs mt-0.5 font-medium', isPro ? 'text-blue-100' : 'text-green-600')}>
+            soit {plan.annualMonthly}€/mois
+          </p>
+        )}
+        {interval === 'monthly' && (
+          <p className={cn('text-xs mt-0.5', isPro ? 'text-blue-200' : 'text-gray-300')}>
+            &nbsp;
           </p>
         )}
       </div>
@@ -178,7 +186,7 @@ function PlanCard({ plan, interval, onSelect, loading }: {
       {/* CTA */}
       <button
         type="button"
-        onClick={() => { console.log('[PlanCard] click, priceId:', priceId); onSelect(priceId) }}
+        onClick={() => onSelect(priceId)}
         disabled={!!loading}
         className={cn(
           'w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all mb-6',
@@ -216,9 +224,73 @@ function PlanCard({ plan, interval, onSelect, loading }: {
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────
+// ── Toggle mensuel / annuel ───────────────────────────────────
 
-// Isolé dans un sous-composant pour satisfaire la Suspense boundary requise par useSearchParams
+function BillingToggle({ interval, onChange }: {
+  interval: Interval
+  onChange:  (v: Interval) => void
+}) {
+  const isMonthly = interval === 'monthly'
+
+  return (
+    <div className="flex items-center justify-center gap-3 flex-wrap">
+      {/* Label Mensuel */}
+      <button
+        type="button"
+        onClick={() => onChange('monthly')}
+        className={cn(
+          'text-sm transition-colors',
+          isMonthly
+            ? 'font-bold'
+            : 'font-medium text-gray-400 hover:text-gray-600'
+        )}
+        style={{ color: isMonthly ? 'var(--rp-navy)' : undefined }}
+      >
+        Mensuel
+      </button>
+
+      {/* Toggle pill */}
+      <button
+        type="button"
+        onClick={() => onChange(isMonthly ? 'annual' : 'monthly')}
+        className="relative w-12 h-6 rounded-full transition-colors duration-300 flex-shrink-0"
+        style={{ background: isMonthly ? '#D1D5DB' : 'var(--rp-amber)' }}
+        aria-label="Basculer mensuel / annuel"
+      >
+        <span
+          className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300"
+          style={{ transform: isMonthly ? 'translateX(4px)' : 'translateX(28px)' }}
+        />
+      </button>
+
+      {/* Label Annuel + badge */}
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => onChange('annual')}
+          className={cn(
+            'text-sm transition-colors',
+            !isMonthly
+              ? 'font-bold'
+              : 'font-medium text-gray-400 hover:text-gray-600'
+          )}
+          style={{ color: !isMonthly ? 'var(--rp-navy)' : undefined }}
+        >
+          Annuel
+        </button>
+        <span
+          className="px-2.5 py-0.5 text-xs font-bold rounded-full whitespace-nowrap"
+          style={{ background: 'var(--rp-amber-light)', color: 'var(--rp-amber-dark)' }}
+        >
+          Économisez 20 %
+        </span>
+      </div>
+    </div>
+  )
+}
+
+// ── Bannière abonnement requis ────────────────────────────────
+
 function SubscriptionBanner() {
   const searchParams = useSearchParams()
   if (searchParams.get('reason') !== 'subscription_required') return null
@@ -238,18 +310,19 @@ function SubscriptionBanner() {
   )
 }
 
+// ── Page ──────────────────────────────────────────────────────
+
 export default function PricingPage() {
-  const router              = useRouter()
-  const [interval, setInt]  = useState<Interval>('monthly')
-  const [loading,  setLoad] = useState<string | null>(null)
+  const router   = useRouter()
+  // Mensuel sélectionné par défaut
+  const [interval, setInterval] = useState<Interval>('monthly')
+  const [loading,  setLoading]  = useState<string | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
 
   const handleSelect = async (priceId: string) => {
-    console.log('[pricing] handleSelect appelé, priceId:', priceId)
-    setLoad(priceId)
+    setLoading(priceId)
     setApiError(null)
     try {
-      // Tenter la création de session si authentifié, sinon aller à l'inscription
       const res = await fetch('/api/stripe/create-checkout', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -257,7 +330,6 @@ export default function PricingPage() {
       })
 
       if (res.status === 401) {
-        // Pas connecté → inscription avec le priceId en paramètre
         router.push(`/register?priceId=${encodeURIComponent(priceId)}`)
         return
       }
@@ -267,18 +339,17 @@ export default function PricingPage() {
         window.location.href = json.url
         return
       }
-      // Erreur retournée par l'API (503 prix non configurés, 500 Stripe…)
       setApiError(json.error ?? 'Une erreur est survenue. Veuillez réessayer.')
     } catch {
       setApiError('Erreur réseau. Veuillez réessayer.')
     } finally {
-      setLoad(null)
+      setLoading(null)
     }
   }
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-16 space-y-12">
-      {/* Bannière abonnement requis (Suspense requis par useSearchParams) */}
+      {/* Bannière abonnement requis */}
       <Suspense fallback={null}>
         <SubscriptionBanner />
       </Suspense>
@@ -295,7 +366,7 @@ export default function PricingPage() {
       <div className="text-center space-y-4 max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-sm text-blue-700 font-medium">
           <Zap className="w-3.5 h-3.5" />
-          14 jours d&rsquo;essai gratuit — sans CB
+          14 jours d&rsquo;essai gratuit — sans engagement
         </div>
         <h1 className="text-4xl font-extrabold text-gray-900 leading-tight">
           Un prix simple.<br />Toute la gestion de votre restaurant.
@@ -307,32 +378,7 @@ export default function PricingPage() {
       </div>
 
       {/* Toggle mensuel / annuel */}
-      <div className="flex items-center justify-center gap-3">
-        <span className={cn('text-sm font-medium', interval === 'monthly' ? 'text-gray-900' : 'text-gray-400')}>
-          Mensuel
-        </span>
-        <button
-          onClick={() => setInt(i => i === 'monthly' ? 'annual' : 'monthly')}
-          className={cn(
-            'relative w-12 h-6 rounded-full transition-colors',
-            interval === 'annual' ? 'bg-blue-600' : 'bg-gray-300'
-          )}
-          aria-label="Basculer vers annuel"
-        >
-          <span className={cn(
-            'absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform',
-            interval === 'annual' ? 'translate-x-7' : 'translate-x-1'
-          )} />
-        </button>
-        <span className={cn('text-sm font-medium', interval === 'annual' ? 'text-gray-900' : 'text-gray-400')}>
-          Annuel
-        </span>
-        {interval === 'annual' && (
-          <span className="px-2.5 py-0.5 bg-green-100 text-green-700 text-xs font-bold rounded-full">
-            −20 %
-          </span>
-        )}
-      </div>
+      <BillingToggle interval={interval} onChange={setInterval} />
 
       {/* Cartes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
@@ -350,9 +396,9 @@ export default function PricingPage() {
       {/* Garanties */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
         {[
-          { icon: '🔒', title: 'Sans engagement',  desc: 'Annulez à tout moment depuis votre espace client.' },
-          { icon: '💳', title: 'Sans CB pour l\'essai', desc: 'Testez 14 jours sans entrer votre carte bancaire.' },
-          { icon: '🇫🇷', title: 'Hébergé en France', desc: 'Données stockées sur des serveurs européens (RGPD).' },
+          { icon: '🔒', title: 'Sans engagement',     desc: 'Annulez à tout moment depuis votre espace client.' },
+          { icon: '💳', title: 'Paiement sécurisé',   desc: 'CB collectée à la souscription, débit après les 14 jours d\'essai.' },
+          { icon: '🇫🇷', title: 'Hébergé en Europe',  desc: 'Données stockées sur des serveurs européens (RGPD).' },
         ].map(g => (
           <div key={g.title} className="bg-gray-50 rounded-2xl border border-gray-200 p-5 text-center">
             <div className="text-2xl mb-2">{g.icon}</div>
@@ -362,21 +408,21 @@ export default function PricingPage() {
         ))}
       </div>
 
-      {/* FAQ minimaliste */}
+      {/* FAQ */}
       <div className="max-w-2xl mx-auto space-y-4 pt-4">
         <h2 className="text-xl font-bold text-gray-900 text-center">Questions fréquentes</h2>
         {[
           {
-            q: 'Que se passe-t-il après les 14 jours d\'essai ?',
-            a: 'Vous recevez un email de rappel 3 jours avant la fin de l\'essai. Sans CB enregistrée, votre compte passe en lecture seule. Avec CB, votre abonnement démarre automatiquement.',
+            q: "Que se passe-t-il après les 14 jours d'essai ?",
+            a: "Vous recevez un email de rappel 3 jours avant la fin de l'essai. Votre carte bancaire est débitée automatiquement au démarrage de l'abonnement.",
           },
           {
-            q: 'Puis-je changer de plan en cours d\'abonnement ?',
-            a: 'Oui, à tout moment depuis votre espace client. Le changement est pris en compte immédiatement avec un prorata calculé automatiquement par Stripe.',
+            q: "Puis-je changer de plan en cours d'abonnement ?",
+            a: "Oui, à tout moment depuis votre espace client. Le changement est pris en compte immédiatement avec un prorata calculé automatiquement par Stripe.",
           },
           {
-            q: 'Mes données sont-elles supprimées si j\'annule ?',
-            a: 'Non. Vos données sont conservées 90 jours après l\'annulation, le temps de les exporter si nécessaire.',
+            q: "Mes données sont-elles supprimées si j'annule ?",
+            a: "Non. Vos données sont conservées 90 jours après l'annulation, le temps de les exporter si nécessaire.",
           },
         ].map((faq, i) => (
           <details key={i} className="bg-white border border-gray-200 rounded-xl p-4 group">
