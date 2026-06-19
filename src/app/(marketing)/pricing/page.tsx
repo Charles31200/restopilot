@@ -40,8 +40,8 @@ const PLANS: Plan[] = [
     monthlyPrice:   39,
     annualTotal:    368,
     annualMonthly:  31,
-    priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_MONTHLY ?? 'price_1TjRUOEw9od5qGxlnDbe4Nqv',
-    priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER_ANNUAL  ?? 'price_1TjRUOEw9od5qGxlmwXgMQQD',
+    priceIdMonthly: 'price_1TjRUOEw9od5qGxlnDbe4Nqv',  // Starter 39€/mois
+    priceIdAnnual:  'price_1TjRUOEw9od5qGxlmwXgMQQD',  // Starter 368€/an
     icon:   <Zap className="w-5 h-5" />,
     color:  'text-blue-700',
     bgColor:     'bg-blue-50',
@@ -67,8 +67,8 @@ const PLANS: Plan[] = [
     monthlyPrice:   79,
     annualTotal:    663,
     annualMonthly:  55,
-    priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY ?? 'price_1TjRUvEw9od5qGxl9yxWt6JO',
-    priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_ANNUAL  ?? 'price_1TjRVfEw9od5qGxlsOTeBSyV',
+    priceIdMonthly: 'price_1TjRUvEw9od5qGxl9yxWt6JO',  // Pro 79€/mois
+    priceIdAnnual:  'price_1TjRVfEw9od5qGxlsOTeBSyV',  // Pro 663€/an
     badge:         'Le plus populaire',
     icon:   <Star className="w-5 h-5" />,
     color:  'text-white',
@@ -95,8 +95,8 @@ const PLANS: Plan[] = [
     monthlyPrice:   149,
     annualTotal:    1430,
     annualMonthly:  119,
-    priceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_MULTI_MONTHLY ?? 'price_1TjRWjEw9od5qGxlAzYYrIqd',
-    priceIdAnnual:  process.env.NEXT_PUBLIC_STRIPE_PRICE_MULTI_ANNUAL  ?? 'price_1TjRXBEw9od5qGxlw0BvlHds',
+    priceIdMonthly: 'price_1TjRWjEw9od5qGxlAzYYrIqd',  // Multi 149€/mois
+    priceIdAnnual:  'price_1TjRXBEw9od5qGxlw0BvlHds',  // Multi 1430€/an
     icon:   <Building2 className="w-5 h-5" />,
     color:  'text-purple-700',
     bgColor:     'bg-purple-50',
