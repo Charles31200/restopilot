@@ -16,11 +16,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, CalendarDays, Receipt, MoreHorizontal,
+  Settings, SlidersHorizontal, CreditCard, LogOut,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { useState } from 'react'
 import { BottomSheet } from '@/components/ui/BottomSheet'
-import { Settings, CreditCard, LogOut } from 'lucide-react'
 import { signOutAction } from '@/lib/supabase/actions'
 
 // ── Onglets principaux ────────────────────────────────────────
@@ -55,6 +55,7 @@ const NAV_TABS = [
 // ── Menu "Plus" (overflow) ─────────────────────────────────────
 
 const MORE_ITEMS = [
+  { href: '/dashboard/parametres',              label: 'Paramètres',          icon: SlidersHorizontal },
   { href: '/dashboard/parametres/integrations', label: 'Intégrations caisse', icon: Settings },
   { href: '/dashboard/parametres/abonnement',   label: 'Abonnement',          icon: CreditCard },
 ] as const

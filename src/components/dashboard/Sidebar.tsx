@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, CalendarDays, Receipt,
-  Settings, CreditCard, LogOut, ChevronLeft, ChevronRight,
+  Settings, SlidersHorizontal, CreditCard, LogOut, ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { signOutAction } from '@/lib/supabase/actions'
 import { cn } from '@/lib/utils/cn'
@@ -28,10 +28,40 @@ const NAV_ITEMS = [
   { href: '/dashboard/comptabilite', label: 'Comptabilité',    icon: Receipt,         exact: false },
 ] as const
 
-const BOTTOM_ITEMS = [
-  { href: '/dashboard/parametres/integrations', label: 'Intégrations', icon: Settings,    exact: false },
-  { href: '/dashboard/parametres/abonnement',   label: 'Abonnement',   icon: CreditCard,  exact: false },
-] as const
+// Intégrations et Abonnement ont leur propre route directe.
+// Paramètres = hub /dashboard/parametres, actif sur toutes les sous-pages sauf
+// /integrations et /abonnement (qui ont leur propre item).
+type BottomItem = {
+  href:     string
+  label:    string
+  icon:     React.ElementType
+  isActive: (pathname: string) => boolean
+}
+
+const BOTTOM_ITEMS: BottomItem[] = [
+  {
+    href:     '/dashboard/parametres',
+    label:    'Paramètres',
+    icon:     SlidersHorizontal,
+    isActive: (p) =>
+      p === '/dashboard/parametres' ||
+      (p.startsWith('/dashboard/parametres/') &&
+        !p.startsWith('/dashboard/parametres/integrations') &&
+        !p.startsWith('/dashboard/parametres/abonnement')),
+  },
+  {
+    href:     '/dashboard/parametres/integrations',
+    label:    'Intégrations',
+    icon:     Settings,
+    isActive: (p) => p.startsWith('/dashboard/parametres/integrations'),
+  },
+  {
+    href:     '/dashboard/parametres/abonnement',
+    label:    'Abonnement',
+    icon:     CreditCard,
+    isActive: (p) => p.startsWith('/dashboard/parametres/abonnement'),
+  },
+]
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -168,7 +198,7 @@ export function Sidebar({ restaurantName, userInitials, userFullName, userEmail 
         style={{ borderTop: '1px solid rgba(255,255,255,.08)' }}
       >
         {BOTTOM_ITEMS.map(item => {
-          const active = isActive(item.href, item.exact)
+          const active = item.isActive(pathname)
           const Icon   = item.icon
           return (
             <Link

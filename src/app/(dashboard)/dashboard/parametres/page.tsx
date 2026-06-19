@@ -1,6 +1,6 @@
 import {
   User, Lock, Store, CreditCard, Package, Receipt,
-  Link2, Upload, Bell, Globe, LogOut, Trash2, ChevronRight,
+  Bell, Globe, LogOut, Trash2, ChevronRight,
 } from 'lucide-react'
 import { signOutAction } from '@/lib/supabase/actions'
 import Link from 'next/link'
@@ -74,21 +74,6 @@ const SECTIONS: SettingsSection[] = [
         kind: 'link', href: '/dashboard/parametres/factures',
         icon: Receipt,    iconBg: 'bg-teal-100',    iconColor: 'text-teal-600',
         label: 'Historique des factures',       subtitle: 'Télécharger vos reçus',
-      },
-    ],
-  },
-  {
-    title: 'Intégrations',
-    items: [
-      {
-        kind: 'link', href: '/dashboard/parametres/integrations',
-        icon: Link2,  iconBg: 'bg-indigo-100',  iconColor: 'text-indigo-600',
-        label: 'Caisses enregistreuses',    subtitle: 'Lightspeed, Tiller, Zelty',
-      },
-      {
-        kind: 'link', href: '/dashboard/parametres/import',
-        icon: Upload, iconBg: 'bg-pink-100',    iconColor: 'text-pink-600',
-        label: 'Importer mes ventes (CSV)', subtitle: 'Upload manuel de ventes',
       },
     ],
   },
