@@ -27,7 +27,10 @@ export const metadata: Metadata = {
   },
   description: 'Logiciel de gestion pour restaurateurs indépendants',
   icons: {
-    icon:  '/favicon.png',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32' },
+      { url: '/favicon.png', sizes: '192x192' },
+    ],
     apple: '/apple-touch-icon.png',
   },
 }
