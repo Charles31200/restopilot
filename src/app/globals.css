@@ -284,3 +284,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 .rp-fab:hover  { background: var(--rp-amber-dark); box-shadow: 0 6px 20px rgba(212,149,42,.50); }
 .rp-fab:active { transform: scale(0.95); }
+
+/* ── Feedback universel sur les boutons ──────────────────────── */
+/* cursor + compression au clic sur tous les boutons cliquables  */
+button, [role="button"] {
+  cursor: pointer;
+}
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Bouton primaire amber → navy au survol (inversion des couleurs) */
+.rp-btn-primary:hover {
+  background: var(--rp-navy);
+  color:      var(--rp-white);
+}
+.rp-btn-primary:active { transform: scale(0.97); }

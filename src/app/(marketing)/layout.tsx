@@ -42,9 +42,9 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             <span className="text-sm text-gray-500">© 2026 RestoPilot</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-400">
-            <a href="/legal/privacy" className="hover:text-gray-600">Confidentialité</a>
-            <a href="/legal/terms"   className="hover:text-gray-600">CGV</a>
-            <a href="mailto:hello@restopilot.fr" className="hover:text-gray-600">Contact</a>
+            <a href="/politique-de-confidentialite" className="hover:text-gray-600 transition-colors">Confidentialité</a>
+            <a href="/cgu-cgv"                      className="hover:text-gray-600 transition-colors">CGU / CGV</a>
+            <a href="mailto:charles.lecussan@gmail.com" className="hover:text-gray-600 transition-colors">Contact</a>
           </div>
         </div>
       </footer>

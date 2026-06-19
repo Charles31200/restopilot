@@ -41,18 +41,32 @@ export async function signUpAction(
 ): Promise<AuthResult> {
   const supabase = await createClient()
 
-  // Le trigger Supabase `on_auth_user_created` crée automatiquement
-  // le restaurant, le profil et l'abonnement trial dès l'inscription.
-  const { data, error: authError } = await supabase.auth.signUp({ email, password })
-  if (authError) return { error: translateError(authError.message) }
+  // emailRedirectTo : lien de confirmation dans l'email Supabase.
+  // Sans cette option, Supabase utilise l'URL par défaut du projet
+  // (souvent http://localhost:3000) → le lien ne fonctionne pas en production.
+  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
+  const redirectTo = `${appUrl}/api/auth/callback`
 
-  // Si la confirmation par email est activée, session === null.
-  // Dans ce cas on informe l'utilisateur plutôt que de le rediriger vers un dashboard inaccessible.
-  if (!data.session) {
-    return { message: 'Un email de confirmation vous a été envoyé. Vérifiez votre boîte mail puis connectez-vous.' }
+  const { data, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { emailRedirectTo: redirectTo },
+  })
+
+  if (authError) {
+    console.error('[signUp] erreur Supabase Auth:', authError.message, authError.code)
+    return { error: translateError(authError.message) }
   }
 
-  // Le middleware redirigera vers /onboarding si first_name est null
+  // session === null → email de confirmation requis avant connexion.
+  if (!data.session) {
+    console.log('[signUp] confirmation email envoyé à:', email, '| redirectTo:', redirectTo)
+    return {
+      message: `Un email de confirmation a été envoyé à ${email}. Cliquez sur le lien pour activer votre compte, puis connectez-vous ici.`,
+    }
+  }
+
+  // Session immédiate (auto-confirm activé) → proxy redirigera vers /onboarding
   redirect('/dashboard')
 }
 
@@ -88,6 +102,7 @@ export async function updateOnboardingAction(
     .rpc('get_user_restaurant_id')
 
   if (rpcError) {
+    console.error('[onboarding] get_user_restaurant_id RPC erreur:', rpcError.message, rpcError.code)
     return { error: `Impossible de lire le profil : ${rpcError.message}` }
   }
 
@@ -139,10 +154,11 @@ export async function updateOnboardingAction(
     })
     .eq('id', restaurantId)
 
-  if (restError) return { error: `Erreur restaurant : ${restError.message}` }
+  if (restError) {
+    console.error('[onboarding] update restaurant erreur:', restError.message, restError.code)
+    return { error: `Erreur restaurant : ${restError.message}` }
+  }
 
-  // Mettre à jour le profil via le client user :
-  // la policy RLS "UPDATE profiles WHERE id = auth.uid()" autorise ça.
   const { error: profErr } = await supabase
     .from('profiles')
     .update({
@@ -151,7 +167,10 @@ export async function updateOnboardingAction(
     })
     .eq('id', user.id)
 
-  if (profErr) return { error: `Erreur profil : ${profErr.message}` }
+  if (profErr) {
+    console.error('[onboarding] update profil erreur:', profErr.message, profErr.code)
+    return { error: `Erreur profil : ${profErr.message}` }
+  }
 
   redirect('/dashboard')
 }

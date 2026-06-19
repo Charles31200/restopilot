@@ -4,6 +4,7 @@ import { getCurrentUser, getCurrentProfile, getCurrentRestaurant } from '@/lib/s
 import { Sidebar }     from '@/components/dashboard/Sidebar'
 import { BottomNav }   from '@/components/layout/BottomNav'
 import { TrialBanner } from '@/components/dashboard/TrialBanner'
+import { UserMenu }    from '@/components/dashboard/UserMenu'
 
 export const metadata: Metadata = {
   title: 'RestoPilot',
@@ -77,19 +78,12 @@ export default async function DashboardLayout({
           {/* Badge plan */}
           <PlanBadge planId={planId} />
 
-          {/* Avatar */}
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-xs flex-shrink-0 cursor-default select-none"
-            style={{
-              background: 'var(--rp-amber-light)',
-              color:      'var(--rp-amber-dark)',
-              fontFamily: 'var(--font-display)',
-            }}
-            title={userFullName}
-            aria-label={`Connecté en tant que ${userFullName}`}
-          >
-            {userInitials}
-          </div>
+          {/* Avatar avec menu déroulant */}
+          <UserMenu
+            userFullName={userFullName}
+            userEmail={user.email ?? ''}
+            userInitials={userInitials}
+          />
         </header>
 
         {/* ── Bannière essai gratuit (client component) ─────────── */}
