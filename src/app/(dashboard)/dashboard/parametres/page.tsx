@@ -1,3 +1,5 @@
+'use client'
+
 import {
   User, Lock, Store, CreditCard, Package, Receipt,
   Bell, Globe, LogOut, Trash2, ChevronRight,
