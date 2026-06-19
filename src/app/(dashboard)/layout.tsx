@@ -119,6 +119,20 @@ export default async function DashboardLayout({
           </div>
           <div className="h-full">{children}</div>
         </main>
+
+        {/* ── Footer discret (desktop uniquement) ─────────── */}
+        <footer
+          className="hidden lg:flex items-center justify-center flex-wrap gap-x-4 gap-y-1 py-3 text-xs border-t"
+          style={{ borderColor: 'var(--rp-lavender-light)', color: 'var(--rp-navy-muted)' }}
+        >
+          <span>© 2026 RestoPilot</span>
+          <span style={{ color: 'var(--rp-lavender)' }}>·</span>
+          <a href="/cgu-cgv"                      className="hover:text-gray-700 transition-colors">CGU / CGV</a>
+          <span style={{ color: 'var(--rp-lavender)' }}>·</span>
+          <a href="/politique-de-confidentialite" className="hover:text-gray-700 transition-colors">Politique de confidentialité</a>
+          <span style={{ color: 'var(--rp-lavender)' }}>·</span>
+          <a href="mailto:charles.lecussan@gmail.com" className="hover:text-gray-700 transition-colors">Contact</a>
+        </footer>
       </div>
 
       {/* ── BottomNav mobile (< lg) ──────────────────────── */}
