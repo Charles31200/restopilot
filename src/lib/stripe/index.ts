@@ -106,7 +106,6 @@ export async function createCheckoutSession(params: {
     sessionParams.customer = params.stripeCustomerId
   } else {
     sessionParams.customer_email = params.customerEmail
-    sessionParams.customer_creation = 'always'
   }
 
   const session = await stripe.checkout.sessions.create(sessionParams)
