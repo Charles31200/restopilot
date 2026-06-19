@@ -25,8 +25,11 @@ export const metadata: Metadata = {
     default:  'RestoPilot',
     template: '%s — RestoPilot',
   },
-  description: 'Gestion simplifiée pour restaurateurs : stocks, planning, comptabilité et ventes en un seul outil.',
-  icons: { icon: '/favicon.ico' },
+  description: 'Logiciel de gestion pour restaurateurs indépendants',
+  icons: {
+    icon:  '/favicon.png',
+    apple: '/apple-touch-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
