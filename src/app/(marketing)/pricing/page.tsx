@@ -9,8 +9,6 @@ import { cn } from '@/lib/utils/cn'
 
 // ── Types ─────────────────────────────────────────────────────
 
-type Interval = 'monthly' | 'annual'
-
 type PlanFeature = { text: string; included: boolean }
 
 type Plan = {
@@ -119,18 +117,15 @@ const PLANS: Plan[] = [
 
 // ── Composant carte plan ──────────────────────────────────────
 
-function PlanCard({ plan, interval, onSelect, loading }: {
+function PlanCard({ plan, isAnnual, onSelect, loading }: {
   plan:     Plan
-  interval: Interval
+  isAnnual: boolean
   onSelect: (priceId: string) => void
   loading:  string | null
 }) {
   const isPro     = plan.id === 'pro'
-  const priceId   = interval === 'monthly' ? plan.priceIdMonthly : plan.priceIdAnnual
+  const priceId   = isAnnual ? plan.priceIdAnnual : plan.priceIdMonthly
   const isLoading = loading === priceId
-
-  // diagnostic — retirer après validation
-  console.log('[pricing]', plan.id, 'interval:', interval, '→ priceId:', priceId)
 
   return (
     <div className={cn(
@@ -168,18 +163,17 @@ function PlanCard({ plan, interval, onSelect, loading }: {
       <div className="mb-5">
         <div className="flex items-end gap-1">
           <span className={cn('text-4xl font-extrabold tabular-nums', isPro ? 'text-white' : 'text-gray-900')}>
-            {interval === 'monthly' ? plan.monthlyPrice : plan.annualTotal}€
+            {isAnnual ? plan.annualTotal : plan.monthlyPrice}€
           </span>
           <span className={cn('text-sm pb-1', isPro ? 'text-blue-100' : 'text-gray-400')}>
-            {interval === 'monthly' ? '/mois' : '/an'}
+            {isAnnual ? '/an' : '/mois'}
           </span>
         </div>
-        {interval === 'annual' && (
+        {isAnnual ? (
           <p className={cn('text-xs mt-0.5 font-medium', isPro ? 'text-blue-100' : 'text-green-600')}>
             soit {plan.annualMonthly}€/mois
           </p>
-        )}
-        {interval === 'monthly' && (
+        ) : (
           <p className={cn('text-xs mt-0.5', isPro ? 'text-blue-200' : 'text-gray-300')}>
             &nbsp;
           </p>
@@ -229,55 +223,53 @@ function PlanCard({ plan, interval, onSelect, loading }: {
 
 // ── Toggle mensuel / annuel ───────────────────────────────────
 
-function BillingToggle({ interval, onChange }: {
-  interval: Interval
-  onChange:  (v: Interval) => void
+function BillingToggle({ isAnnual, onChange }: {
+  isAnnual: boolean
+  onChange: (v: boolean) => void
 }) {
-  const isMonthly = interval === 'monthly'
-
   return (
     <div className="flex items-center justify-center gap-3 flex-wrap">
-      {/* Label Mensuel */}
+      {/* Label Mensuel — en gras navy quand isAnnual=false */}
       <button
         type="button"
-        onClick={() => onChange('monthly')}
+        onClick={() => onChange(false)}
         className={cn(
           'text-sm transition-colors',
-          isMonthly
+          !isAnnual
             ? 'font-bold'
             : 'font-medium text-gray-400 hover:text-gray-600'
         )}
-        style={{ color: isMonthly ? 'var(--rp-navy)' : undefined }}
+        style={{ color: !isAnnual ? 'var(--rp-navy)' : undefined }}
       >
         Mensuel
       </button>
 
-      {/* Toggle pill */}
+      {/* Toggle pill : LEFT quand mensuel (isAnnual=false), RIGHT quand annuel (isAnnual=true) */}
       <button
         type="button"
-        onClick={() => onChange(isMonthly ? 'annual' : 'monthly')}
+        onClick={() => onChange(!isAnnual)}
         className="relative w-12 h-6 rounded-full transition-colors duration-300 flex-shrink-0"
-        style={{ background: isMonthly ? '#D1D5DB' : 'var(--rp-amber)' }}
+        style={{ background: isAnnual ? 'var(--rp-amber)' : '#D1D5DB' }}
         aria-label="Basculer mensuel / annuel"
       >
         <span
           className="absolute top-1 w-4 h-4 bg-white rounded-full shadow transition-transform duration-300"
-          style={{ transform: isMonthly ? 'translateX(4px)' : 'translateX(28px)' }}
+          style={{ transform: isAnnual ? 'translateX(28px)' : 'translateX(4px)' }}
         />
       </button>
 
-      {/* Label Annuel + badge */}
+      {/* Label Annuel + badge — en gras navy quand isAnnual=true */}
       <div className="flex items-center gap-2">
         <button
           type="button"
-          onClick={() => onChange('annual')}
+          onClick={() => onChange(true)}
           className={cn(
             'text-sm transition-colors',
-            !isMonthly
+            isAnnual
               ? 'font-bold'
               : 'font-medium text-gray-400 hover:text-gray-600'
           )}
-          style={{ color: !isMonthly ? 'var(--rp-navy)' : undefined }}
+          style={{ color: isAnnual ? 'var(--rp-navy)' : undefined }}
         >
           Annuel
         </button>
@@ -317,8 +309,8 @@ function SubscriptionBanner() {
 
 export default function PricingPage() {
   const router   = useRouter()
-  // Mensuel sélectionné par défaut
-  const [interval, setInterval] = useState<Interval>('monthly')
+  // false = mensuel par défaut, true = annuel
+  const [isAnnual, setIsAnnual] = useState(false)
   const [loading,  setLoading]  = useState<string | null>(null)
   const [apiError, setApiError] = useState<string | null>(null)
 
@@ -381,7 +373,7 @@ export default function PricingPage() {
       </div>
 
       {/* Toggle mensuel / annuel */}
-      <BillingToggle interval={interval} onChange={setInterval} />
+      <BillingToggle isAnnual={isAnnual} onChange={setIsAnnual} />
 
       {/* Cartes */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
@@ -389,7 +381,7 @@ export default function PricingPage() {
           <PlanCard
             key={plan.id}
             plan={plan}
-            interval={interval}
+            isAnnual={isAnnual}
             onSelect={handleSelect}
             loading={loading}
           />
