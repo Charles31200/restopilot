@@ -1,17 +1,148 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import {
   PlusCircle, Trash2, ChefHat, Loader2, AlertCircle,
-  Euro, TrendingDown, Package, X,
+  Euro, X, Search, Check,
 } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/utils/cn'
 import type { Product } from '@/types'
 import type { RecipeWithFoodCost } from '@/app/api/recipes/route'
+
+// ── Liste des 115 ingrédients courants ────────────────────────
+
+type IngredientSuggestion = { name: string; unit: string; category: string }
+
+const COMMON_INGREDIENTS: IngredientSuggestion[] = [
+  // Viandes
+  { name: 'Bœuf haché',        unit: 'kg', category: 'Viandes' },
+  { name: 'Entrecôte de bœuf', unit: 'kg', category: 'Viandes' },
+  { name: 'Filet de bœuf',     unit: 'kg', category: 'Viandes' },
+  { name: 'Bavette de bœuf',   unit: 'kg', category: 'Viandes' },
+  { name: 'Blanc de poulet',   unit: 'kg', category: 'Viandes' },
+  { name: 'Cuisse de poulet',  unit: 'kg', category: 'Viandes' },
+  { name: 'Poulet entier',     unit: 'kg', category: 'Viandes' },
+  { name: 'Lardons',           unit: 'kg', category: 'Viandes' },
+  { name: 'Jambon blanc',      unit: 'kg', category: 'Viandes' },
+  { name: 'Jambon cru',        unit: 'kg', category: 'Viandes' },
+  { name: 'Côte de porc',      unit: 'kg', category: 'Viandes' },
+  { name: 'Filet mignon porc', unit: 'kg', category: 'Viandes' },
+  { name: 'Saucisse',          unit: 'kg', category: 'Viandes' },
+  { name: 'Chorizo',           unit: 'kg', category: 'Viandes' },
+  { name: 'Magret de canard',  unit: 'kg', category: 'Viandes' },
+  { name: 'Foie gras',         unit: 'kg', category: 'Viandes' },
+  { name: 'Escalope de veau',  unit: 'kg', category: 'Viandes' },
+  { name: 'Gigot d\'agneau',   unit: 'kg', category: 'Viandes' },
+  { name: 'Merguez',           unit: 'kg', category: 'Viandes' },
+  // Poissons & fruits de mer
+  { name: 'Saumon',            unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Cabillaud',         unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Thon',              unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Bar',               unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Daurade',           unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Dorade royale',     unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Sole',              unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Sardines',          unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Crevettes',         unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Moules',            unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Noix de Saint-Jacques', unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Calamars',          unit: 'kg', category: 'Poissons & fruits de mer' },
+  { name: 'Homard',            unit: 'kg', category: 'Poissons & fruits de mer' },
+  // Légumes
+  { name: 'Tomates',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Tomates cerises',   unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Oignons',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Ail',               unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Échalotes',         unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Pommes de terre',   unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Carottes',          unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Courgettes',        unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Aubergines',        unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Poivrons rouges',   unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Poivrons verts',    unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Champignons',       unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Épinards',          unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Salade verte',      unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Haricots verts',    unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Petits pois',       unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Brocoli',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Chou-fleur',        unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Poireaux',          unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Céleri',            unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Fenouil',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Asperges',          unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Betterave',         unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Avocat',            unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Citrons',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Citrons verts',     unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Oranges',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Pommes',            unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Poires',            unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Framboises',        unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Fraises',           unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Mangue',            unit: 'kg', category: 'Légumes & fruits' },
+  { name: 'Ananas',            unit: 'kg', category: 'Légumes & fruits' },
+  // Produits laitiers
+  { name: 'Beurre',            unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Crème liquide 35%', unit: 'L',  category: 'Produits laitiers' },
+  { name: 'Crème fraîche',     unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Lait entier',       unit: 'L',  category: 'Produits laitiers' },
+  { name: 'Gruyère râpé',      unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Parmesan',          unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Mozzarella',        unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Roquefort',         unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Camembert',         unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Chèvre frais',      unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Mascarpone',        unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Yaourt nature',     unit: 'kg', category: 'Produits laitiers' },
+  { name: 'Œufs',              unit: 'piece', category: 'Produits laitiers' },
+  // Épicerie sèche
+  { name: 'Farine T55',        unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Farine T45',        unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Sucre en poudre',   unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Sucre glace',       unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Sel fin',           unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Riz basmati',       unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Riz rond',          unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Pâtes tagliatelles',unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Pâtes spaghettis',  unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Pâtes penne',       unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Huile d\'olive',    unit: 'L',  category: 'Épicerie sèche' },
+  { name: 'Huile de tournesol',unit: 'L',  category: 'Épicerie sèche' },
+  { name: 'Vinaigre balsamique',unit: 'L', category: 'Épicerie sèche' },
+  { name: 'Vinaigre de vin',   unit: 'L',  category: 'Épicerie sèche' },
+  { name: 'Moutarde de Dijon', unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Concentré de tomates',unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Tomates pelées',    unit: 'boite', category: 'Épicerie sèche' },
+  { name: 'Cornichons',        unit: 'boite', category: 'Épicerie sèche' },
+  { name: 'Olives noires',     unit: 'kg', category: 'Épicerie sèche' },
+  { name: 'Levure boulangère', unit: 'kg', category: 'Épicerie sèche' },
+  // Épices & herbes
+  { name: 'Poivre noir',       unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Paprika',           unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Cumin',             unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Curry',             unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Curcuma',           unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Thym',              unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Romarin',           unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Basilic frais',     unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Persil frais',      unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Coriandre fraîche', unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Estragon',          unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Ciboulette',        unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Muscade',           unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Piment d\'Espelette',unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Sauce soja',        unit: 'L',  category: 'Condiments & sauces' },
+  { name: 'Fond de veau',      unit: 'L',  category: 'Condiments & sauces' },
+  { name: 'Bouillon de volaille',unit: 'L', category: 'Condiments & sauces' },
+  { name: 'Mayonnaise',        unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Ketchup',           unit: 'kg', category: 'Condiments & sauces' },
+  { name: 'Huile de sésame',   unit: 'cl', category: 'Condiments & sauces' },
+]
 
 // ── Schéma formulaire recette ─────────────────────────────────
 
@@ -49,10 +180,195 @@ function FoodCostBadge({ pct }: { pct: number }) {
   )
 }
 
+// ── Combobox ingrédient avec suggestions ──────────────────────
+
+function IngredientCombobox({
+  products,
+  value,
+  onSelect,
+  hasError,
+  onProductCreated,
+}: {
+  products:         Product[]
+  value:            string        // product_id sélectionné
+  onSelect:         (id: string) => void
+  hasError:         boolean
+  onProductCreated: (p: Product) => void
+}) {
+  const [search,  setSearch]  = useState('')
+  const [isOpen,  setIsOpen]  = useState(false)
+  const [creating, setCreating] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  const selectedProduct = products.find(p => p.id === value)
+
+  // Fermer en cliquant ailleurs
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setIsOpen(false)
+        if (!selectedProduct) setSearch('')
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [selectedProduct])
+
+  // Afficher le nom du produit sélectionné dans l'input
+  useEffect(() => {
+    if (selectedProduct) setSearch(selectedProduct.name)
+  }, [selectedProduct?.id]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const term = search.trim().toLowerCase()
+
+  // Produits existants correspondant à la recherche
+  const matchingProducts = useMemo(() =>
+    products.filter(p => p.name.toLowerCase().includes(term)).slice(0, 6),
+    [products, term]
+  )
+
+  // Suggestions courantes non encore dans les produits
+  const matchingSuggestions = useMemo(() =>
+    COMMON_INGREDIENTS.filter(ing =>
+      ing.name.toLowerCase().includes(term) &&
+      !products.some(p => p.name.toLowerCase() === ing.name.toLowerCase())
+    ).slice(0, 8),
+    [products, term]
+  )
+
+  const hasResults = matchingProducts.length > 0 || matchingSuggestions.length > 0
+
+  const handleSelectProduct = (product: Product) => {
+    onSelect(product.id)
+    setSearch(product.name)
+    setIsOpen(false)
+  }
+
+  const handleSelectSuggestion = async (sug: IngredientSuggestion) => {
+    setCreating(true)
+    try {
+      const res = await fetch('/api/products', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name:          sug.name,
+          unit:          sug.unit,
+          category:      sug.category,
+          buy_price:     0,
+          stock_qty:     0,
+          min_threshold: 0,
+        }),
+      })
+      const json = await res.json()
+      if (json.product) {
+        onProductCreated(json.product)
+        onSelect(json.product.id)
+        setSearch(json.product.name)
+      }
+    } catch { /* ignore */ } finally {
+      setCreating(false)
+      setIsOpen(false)
+    }
+  }
+
+  return (
+    <div ref={ref} className="relative">
+      {/* Input recherche */}
+      <div className="relative">
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+        <input
+          type="text"
+          value={search}
+          placeholder="Rechercher un ingrédient…"
+          onFocus={() => { setIsOpen(true); if (selectedProduct) setSearch('') }}
+          onChange={e => { setSearch(e.target.value); setIsOpen(true); if (!e.target.value) onSelect('') }}
+          className={cn(
+            'w-full pl-8 pr-3 py-2 border rounded-lg text-sm transition-all outline-none',
+            hasError
+              ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
+              : selectedProduct
+                ? 'border-green-400 bg-green-50 focus:ring-2 focus:ring-green-100'
+                : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+          )}
+          disabled={creating}
+        />
+        {creating && (
+          <Loader2 className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-blue-500 animate-spin" />
+        )}
+        {selectedProduct && !creating && (
+          <Check className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-green-500" />
+        )}
+      </div>
+
+      {/* Dropdown */}
+      {isOpen && !creating && (
+        <div className="absolute z-50 mt-1 left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+          {/* Produits existants */}
+          {matchingProducts.length > 0 && (
+            <>
+              <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 sticky top-0">
+                Vos produits
+              </div>
+              {matchingProducts.map(p => (
+                <button
+                  key={p.id}
+                  type="button"
+                  onMouseDown={e => { e.preventDefault(); handleSelectProduct(p) }}
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-blue-50 text-left gap-2"
+                >
+                  <span className="text-sm text-gray-900 font-medium truncate">{p.name}</span>
+                  <span className="text-xs text-gray-400 flex-shrink-0 tabular-nums">
+                    {p.buy_price > 0 ? `${p.buy_price.toFixed(2)} €/${p.unit}` : p.unit}
+                  </span>
+                </button>
+              ))}
+            </>
+          )}
+
+          {/* Suggestions communes */}
+          {matchingSuggestions.length > 0 && (
+            <>
+              <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 sticky top-0">
+                Suggestions
+              </div>
+              {matchingSuggestions.map(sug => (
+                <button
+                  key={sug.name}
+                  type="button"
+                  onMouseDown={e => { e.preventDefault(); handleSelectSuggestion(sug) }}
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-amber-50 text-left gap-2 group"
+                >
+                  <span className="text-sm text-gray-700 truncate">{sug.name}</span>
+                  <span className="text-xs text-amber-600 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                    + Ajouter au stock
+                  </span>
+                  <span className="text-xs text-gray-400 flex-shrink-0">{sug.unit}</span>
+                </button>
+              ))}
+            </>
+          )}
+
+          {!hasResults && term.length > 0 && (
+            <div className="px-3 py-4 text-sm text-gray-400 text-center">
+              Aucun ingrédient trouvé pour « {search} »
+            </div>
+          )}
+
+          {!hasResults && term.length === 0 && (
+            <div className="px-3 py-3 text-xs text-gray-400 text-center">
+              Tapez pour rechercher parmi {products.length + COMMON_INGREDIENTS.length} ingrédients
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Formulaire d'ajout de recette ─────────────────────────────
 
 function RecipeFormModal({
-  products,
+  products: initialProducts,
   recipe,
   onClose,
   onSaved,
@@ -63,12 +379,19 @@ function RecipeFormModal({
   onSaved: (r: RecipeWithFoodCost) => void
 }) {
   const [serverError, setServerError] = useState<string | null>(null)
+  // Liste locale de produits — s'étend quand on crée un nouvel ingrédient
+  const [localProducts, setLocalProducts] = useState<Product[]>(initialProducts)
+
+  const handleProductCreated = useCallback((p: Product) => {
+    setLocalProducts(prev => [...prev, p])
+  }, [])
 
   const {
     register,
     handleSubmit,
     watch,
     control,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -89,10 +412,10 @@ function RecipeFormModal({
   const watchedIngredients = watch('ingredients')
   const watchedSellPrice   = watch('sell_price') ?? 0
 
-  // ── Calcul live du food cost ──────────────────────────────
+  // Calcul live du food cost
   const { ingredientCost, foodCostPct, marginEur, marginPct } = useMemo(() => {
     const ingredientCost = watchedIngredients.reduce((sum, ing) => {
-      const product = products.find(p => p.id === ing.product_id)
+      const product = localProducts.find(p => p.id === ing.product_id)
       if (!product || !ing.quantity) return sum
       return sum + product.buy_price * (ing.quantity ?? 0)
     }, 0)
@@ -101,7 +424,7 @@ function RecipeFormModal({
     const marginEur   = sp - ingredientCost
     const marginPct   = sp > 0 ? (marginEur / sp) * 100 : 0
     return { ingredientCost, foodCostPct, marginEur, marginPct }
-  }, [watchedIngredients, watchedSellPrice, products])
+  }, [watchedIngredients, watchedSellPrice, localProducts])
 
   const onSubmit = async (data: FormData) => {
     setServerError(null)
@@ -201,7 +524,7 @@ function RecipeFormModal({
               Ingrédients
             </label>
             <button type="button"
-              onClick={() => append({ product_id: '', quantity: 0 as unknown as number })}
+              onClick={() => append({ product_id: '', quantity: 1 as unknown as number })}
               className="flex items-center gap-1.5 text-xs text-blue-600 hover:text-blue-700 font-medium"
             >
               <PlusCircle className="w-3.5 h-3.5" />
@@ -215,7 +538,7 @@ function RecipeFormModal({
 
           <div className="space-y-2">
             {fields.map((field, idx) => {
-              const selectedProduct = products.find(
+              const selectedProduct = localProducts.find(
                 p => p.id === watchedIngredients[idx]?.product_id
               )
               const lineCost = selectedProduct && watchedIngredients[idx]?.quantity
@@ -224,23 +547,21 @@ function RecipeFormModal({
 
               return (
                 <div key={field.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-2 items-start">
-                  {/* Sélecteur produit */}
-                  <div>
-                    <select {...register(`ingredients.${idx}.product_id`)}
-                      className={inputCls(!!errors.ingredients?.[idx]?.product_id)}>
-                      <option value="">— Produit —</option>
-                      {products.map(p => (
-                        <option key={p.id} value={p.id}>
-                          {p.name} ({p.unit}) — {p.buy_price.toFixed(2)} €/{p.unit}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* Combobox ingrédient */}
+                  <IngredientCombobox
+                    products={localProducts}
+                    value={watchedIngredients[idx]?.product_id ?? ''}
+                    onSelect={id => setValue(`ingredients.${idx}.product_id`, id, { shouldValidate: true })}
+                    hasError={!!errors.ingredients?.[idx]?.product_id}
+                    onProductCreated={handleProductCreated}
+                  />
 
-                  {/* Quantité */}
+                  {/* Quantité — step 1 */}
                   <div className="relative">
                     <input
-                      type="number" step="0.001" min="0"
+                      type="number"
+                      step="1"
+                      min="1"
                       placeholder="Qté"
                       {...register(`ingredients.${idx}.quantity`, { valueAsNumber: true })}
                       className={cn(inputCls(!!errors.ingredients?.[idx]?.quantity), 'w-24 pr-8')}
@@ -254,7 +575,7 @@ function RecipeFormModal({
 
                   {/* Coût de la ligne */}
                   <span className="text-xs text-gray-500 tabular-nums py-2 min-w-[52px] text-right">
-                    {lineCost !== null ? `${lineCost.toFixed(2)} €` : '—'}
+                    {lineCost !== null && lineCost > 0 ? `${lineCost.toFixed(2)} €` : '—'}
                   </span>
 
                   {/* Supprimer */}
@@ -268,6 +589,10 @@ function RecipeFormModal({
               )
             })}
           </div>
+
+          <p className="mt-2 text-[11px] text-gray-400">
+            Les ingrédients sélectionnés depuis les suggestions seront automatiquement ajoutés à votre stock (prix à 0 €, à mettre à jour).
+          </p>
         </div>
       </form>
     </Modal>
