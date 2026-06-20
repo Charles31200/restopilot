@@ -6,13 +6,14 @@ import {
   ChevronUp, ChevronDown, ChevronsUpDown,
   Pencil, Trash2, Truck, AlertTriangle,
   CheckCircle2, MinusCircle, ChevronLeft, ChevronRight,
-  Loader2, RefreshCw,
+  Loader2, History, Download,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { ProductModal }   from '@/components/stocks/ProductModal'
-import { DeliveryModal }  from '@/components/stocks/DeliveryModal'
-import { InventoryModal } from '@/components/stocks/InventoryModal'
-import { RecipesPage }    from '@/components/stocks/RecipesPage'
+import { ProductModal }      from '@/components/stocks/ProductModal'
+import { DeliveryModal }     from '@/components/stocks/DeliveryModal'
+import { InventoryModal }    from '@/components/stocks/InventoryModal'
+import { StockHistoryModal } from '@/components/stocks/StockHistoryModal'
+import { RecipesPage }       from '@/components/stocks/RecipesPage'
 import type { Product } from '@/types'
 import type { StockStatus } from '@/app/api/products/route'
 
@@ -22,7 +23,7 @@ type ProductWithStatus = Product & { status: StockStatus }
 
 type SortField = 'name' | 'stock_qty' | 'buy_price' | 'category' | 'supplier_name'
 type SortDir   = 'asc' | 'desc'
-type ModalType = 'product' | 'delivery' | 'inventory' | null
+type ModalType = 'product' | 'delivery' | 'inventory' | 'history' | null
 
 // ── Helpers visuels ───────────────────────────────────────────
 
@@ -198,6 +199,36 @@ export function StocksClient({
     setOpenModal(null)
   }, [])
 
+  // ── CSV export ──────────────────────────────────────────────
+  const handleExportCSV = async () => {
+    try {
+      const res  = await fetch('/api/products?limit=9999&sort=name&dir=asc')
+      const json = await res.json()
+      const all: ProductWithStatus[] = json.products ?? []
+      const header = ['Nom', 'Catégorie', 'Stock actuel', 'Unité', 'Seuil minimum', 'Prix achat (€)', 'Fournisseur', 'Statut']
+      const rows = all.map(p => [
+        p.name,
+        p.category ?? '',
+        formatQty(p.stock_qty),
+        p.unit,
+        p.min_threshold > 0 ? formatQty(p.min_threshold) : '',
+        p.buy_price > 0 ? p.buy_price.toFixed(2) : '',
+        p.supplier_name ?? '',
+        p.status,
+      ])
+      const csv = [header, ...rows].map(row =>
+        row.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')
+      ).join('\n')
+      const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+      const url  = URL.createObjectURL(blob)
+      const a    = document.createElement('a')
+      a.href     = url
+      a.download = `stocks_${new Date().toISOString().split('T')[0]}.csv`
+      a.click()
+      URL.revokeObjectURL(url)
+    } catch { /* silently fail */ }
+  }
+
   const handleDelete = async (product: Product) => {
     setIsDeleting(true)
     try {
@@ -285,6 +316,21 @@ export function StocksClient({
             <div className="flex-1" />
 
             {/* Boutons action */}
+            <button
+              onClick={handleExportCSV}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+              title="Exporter en CSV"
+            >
+              <Download className="w-4 h-4" />
+              Export CSV
+            </button>
+            <button
+              onClick={() => { setSelectedProduct(null); setOpenModal('history') }}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              <History className="w-4 h-4" />
+              Historique
+            </button>
             <button
               onClick={() => setOpenModal('inventory')}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
@@ -385,19 +431,38 @@ export function StocksClient({
                         {product.supplier_name ?? '—'}
                       </td>
                       <td className="px-4 py-3">
-                        <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          {/* Livraison rapide */}
+                        <div className="flex items-center gap-1">
+                          {/* Commander — toujours visible pour les produits critiques */}
+                          {product.status === 'critical' ? (
+                            <button
+                              onClick={() => { setDeliveryProduct(product); setOpenModal('delivery') }}
+                              className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-semibold text-white bg-red-500 hover:bg-red-600 transition-colors"
+                              title="Commander"
+                            >
+                              <PackagePlus className="w-3.5 h-3.5" />
+                              Commander
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => { setDeliveryProduct(product); setOpenModal('delivery') }}
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100"
+                              title="Recevoir une livraison"
+                            >
+                              <PackagePlus className="w-4 h-4" />
+                            </button>
+                          )}
+                          {/* Historique */}
                           <button
-                            onClick={() => { setDeliveryProduct(product); setOpenModal('delivery') }}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
-                            title="Recevoir une livraison"
+                            onClick={() => { setSelectedProduct(product); setOpenModal('history') }}
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+                            title="Historique des mouvements"
                           >
-                            <PackagePlus className="w-4 h-4" />
+                            <History className="w-4 h-4" />
                           </button>
                           {/* Modifier */}
                           <button
                             onClick={() => { setSelectedProduct(product); setOpenModal('product') }}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
                             title="Modifier"
                           >
                             <Pencil className="w-4 h-4" />
@@ -405,7 +470,7 @@ export function StocksClient({
                           {/* Supprimer */}
                           <button
                             onClick={() => setDeleteTarget(product)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors"
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
                             title="Supprimer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -475,6 +540,12 @@ export function StocksClient({
           products={products}
           onClose={() => setOpenModal(null)}
           onSaved={handleInventorySaved}
+        />
+      )}
+      {openModal === 'history' && (
+        <StockHistoryModal
+          product={selectedProduct}
+          onClose={() => { setOpenModal(null); setSelectedProduct(null) }}
         />
       )}
 

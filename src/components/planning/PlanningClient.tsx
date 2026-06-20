@@ -227,6 +227,7 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
           weekDays={weekDays}
           employees={employees}
           shifts={shifts}
+          weeklyStats={weekData?.weeklyStats}
           isLoading={isLoading}
           onCellClick={(employee, date) => setModal({ type: 'shift_create', employee, date })}
           onShiftClick={(shift) => setModal({ type: 'shift_edit', shift })}

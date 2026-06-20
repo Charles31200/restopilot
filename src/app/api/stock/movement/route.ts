@@ -2,6 +2,41 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
+// ── GET /api/stock/movement?product_id=xxx&limit=30 ───────────
+
+export async function GET(request: NextRequest) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
+
+  const { data: profile } = await supabase
+    .from('profiles').select('restaurant_id').eq('id', user.id).single()
+
+  if (!profile?.restaurant_id) {
+    return NextResponse.json({ error: 'Restaurant introuvable' }, { status: 404 })
+  }
+
+  const { searchParams } = new URL(request.url)
+  const productId = searchParams.get('product_id')
+  const limit     = Math.min(parseInt(searchParams.get('limit') ?? '30', 10), 100)
+
+  let query = supabase
+    .from('stock_movements')
+    .select('id, product_id, type, quantity, note, created_at, products(name, unit)')
+    .eq('restaurant_id', profile.restaurant_id)
+    .order('created_at', { ascending: false })
+    .limit(limit)
+
+  if (productId) {
+    query = query.eq('product_id', productId)
+  }
+
+  const { data: movements, error } = await query
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ movements: movements ?? [] })
+}
+
 // ── Schéma ────────────────────────────────────────────────────
 
 const movementSchema = z.object({
