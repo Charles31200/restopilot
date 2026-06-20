@@ -3,8 +3,8 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const updateSchema = z.object({
-  start_time: z.string().datetime().optional(),
-  end_time:   z.string().datetime().optional(),
+  start_time: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/).optional(),
+  end_time:   z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/).optional(),
   position:   z.string().nullable().optional(),
   status:     z.enum(['planned', 'confirmed', 'done', 'absent']).optional(),
   note:       z.string().nullable().optional(),

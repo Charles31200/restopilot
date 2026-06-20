@@ -20,8 +20,9 @@ import type { Employee } from '@/types'
 
 const shiftSchema = z.object({
   employee_id: z.string().uuid('Employé requis'),
-  start_time:  z.string().datetime('Timestamp requis'),
-  end_time:    z.string().datetime('Timestamp requis'),
+  // Accept both "2026-06-14T10:00:00" (local) and "2026-06-14T10:00:00Z" (UTC)
+  start_time:  z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, 'Format timestamp invalide'),
+  end_time:    z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/, 'Format timestamp invalide'),
   position:    z.string().nullable().optional(),
   status:      z.enum(['planned', 'confirmed', 'done', 'absent']).default('planned'),
   note:        z.string().nullable().optional(),
