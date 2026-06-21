@@ -7,7 +7,7 @@ const ingredientSchema = z.object({
   quantity:   z.number().min(0.001, 'Quantité > 0'),
 })
 
-async function getCtx(menuItemId: string) {
+async function getCtx(recipeId: string) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return { supabase, restaurantId: null }
@@ -15,9 +15,10 @@ async function getCtx(menuItemId: string) {
     .from('profiles').select('restaurant_id').eq('id', user.id).single()
   const restaurantId = profile?.restaurant_id ?? null
   if (!restaurantId) return { supabase, restaurantId: null }
-  const { data: item } = await supabase
-    .from('menu_items').select('id').eq('id', menuItemId).eq('restaurant_id', restaurantId).single()
-  if (!item) return { supabase, restaurantId: null }
+  // verify recipe belongs to restaurant
+  const { data: recipe } = await supabase
+    .from('recipes').select('id').eq('id', recipeId).eq('restaurant_id', restaurantId).single()
+  if (!recipe) return { supabase, restaurantId: null }
   return { supabase, restaurantId }
 }
 
@@ -30,13 +31,26 @@ export async function GET(
   if (!restaurantId) return NextResponse.json({ error: 'Non autorisé ou introuvable' }, { status: 401 })
 
   const { data: ingredients, error } = await supabase
-    .from('menu_item_ingredients')
-    .select('id, quantity, products ( id, name, unit )')
-    .eq('menu_item_id', id)
-    .order('created_at')
+    .from('recipe_ingredients')
+    .select('id, quantity, product_id, product:products(id, name, unit)')
+    .eq('recipe_id', id) as unknown as {
+      data: Array<{
+        id: string; quantity: number; product_id: string
+        product: { id: string; name: string; unit: string } | null
+      }> | null
+      error: { message: string } | null
+    }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ ingredients })
+
+  // Normalize to match MenuIngredient shape expected by RecipeSheetModal
+  const normalized = (ingredients ?? []).map(i => ({
+    id:       i.id,
+    quantity: i.quantity,
+    products: i.product,
+  }))
+
+  return NextResponse.json({ ingredients: normalized })
 }
 
 export async function POST(
@@ -55,15 +69,19 @@ export async function POST(
 
   // Verify product belongs to restaurant
   const { data: product } = await supabase
-    .from('products').select('id').eq('id', parsed.data.product_id).eq('restaurant_id', restaurantId).single()
+    .from('products').select('id, name, unit')
+    .eq('id', parsed.data.product_id).eq('restaurant_id', restaurantId).single()
   if (!product) return NextResponse.json({ error: 'Produit introuvable' }, { status: 404 })
 
-  const { data: ingredient, error } = await supabase
-    .from('menu_item_ingredients')
-    .insert({ menu_item_id: id, ...parsed.data })
-    .select('id, quantity, products ( id, name, unit )')
+  const { data: ing, error } = await supabase
+    .from('recipe_ingredients')
+    .insert({ recipe_id: id, product_id: parsed.data.product_id, quantity: parsed.data.quantity })
+    .select('id, quantity, product_id')
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ ingredient }, { status: 201 })
+
+  return NextResponse.json({
+    ingredient: { id: ing.id, quantity: ing.quantity, products: product },
+  }, { status: 201 })
 }

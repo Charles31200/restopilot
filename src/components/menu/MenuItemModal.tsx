@@ -1,22 +1,21 @@
 'use client'
 
-import { useState }      from 'react'
-import { useForm }       from 'react-hook-form'
-import { zodResolver }   from '@hookform/resolvers/zod'
-import { z }             from 'zod'
+import { useState }        from 'react'
+import { useForm }         from 'react-hook-form'
+import { zodResolver }     from '@hookform/resolvers/zod'
+import { z }               from 'zod'
 import { Loader2, AlertCircle, Trash2 } from 'lucide-react'
-import { Modal }         from '@/components/ui/Modal'
-import { cn }            from '@/lib/utils/cn'
-import type { MenuItem } from './MenuClient'
+import { Modal }           from '@/components/ui/Modal'
+import { cn }              from '@/lib/utils/cn'
+import type { MenuRecipe } from './MenuClient'
 
 const CATEGORIES = ['Entrée', 'Plat', 'Dessert', 'Boisson', 'Snack']
 
 const schema = z.object({
-  name:        z.string().min(1, 'Nom requis'),
-  category:    z.string().min(1, 'Catégorie requise'),
-  price:       z.number().min(0, 'Prix ≥ 0'),
-  description: z.string().optional(),
-  is_active:   z.boolean().optional(),
+  dish_name:  z.string().min(1, 'Nom requis'),
+  category:   z.string().nullable().optional(),
+  sell_price: z.number().min(0, 'Prix ≥ 0'),
+  is_active:  z.boolean().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -24,8 +23,7 @@ type FormData = z.infer<typeof schema>
 const labelCls = 'block text-[12px] font-semibold uppercase tracking-wide mb-1.5'
 const inputCls = (hasError?: boolean) =>
   cn(
-    'w-full h-[52px] rounded-[14px] border px-4 text-[15px] outline-none transition-all',
-    'focus:ring-2',
+    'w-full h-[52px] rounded-[14px] border px-4 text-[15px] outline-none transition-all focus:ring-2',
     hasError
       ? 'border-red-400 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-100'
       : 'border-[var(--rp-lavender)] bg-white text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
@@ -35,32 +33,30 @@ function FieldError({ msg }: { msg?: string }) {
   if (!msg) return null
   return (
     <p className="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-      <AlertCircle className="w-3 h-3 flex-shrink-0" />
-      {msg}
+      <AlertCircle className="w-3 h-3 flex-shrink-0" />{msg}
     </p>
   )
 }
 
 type Props = {
-  item?:      MenuItem | null
+  item?:      MenuRecipe | null
   onClose:    () => void
-  onSaved:    (item: MenuItem) => void
+  onSaved:    (item: MenuRecipe) => void
   onDeleted?: (id: string) => void
 }
 
 export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
   const [serverError, setServerError] = useState<string | null>(null)
-  const [isDeleting, setIsDeleting]   = useState(false)
+  const [isDeleting,  setIsDeleting]  = useState(false)
   const isEdit = !!item?.id
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name:        item?.name        ?? '',
-      category:    item?.category    ?? 'Plat',
-      price:       item?.price       ?? undefined,
-      description: item?.description ?? '',
-      is_active:   item?.is_active   ?? true,
+      dish_name:  item?.dish_name  ?? '',
+      category:   item?.category   ?? 'Plat',
+      sell_price: item?.sell_price ?? undefined,
+      is_active:  item?.is_active  ?? true,
     },
   })
 
@@ -77,7 +73,10 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
       )
       const json = await res.json()
       if (!res.ok) { setServerError(json.error ?? `Erreur ${res.status}`); return }
-      onSaved({ ...json.item, menu_item_ingredients: item?.menu_item_ingredients ?? [] })
+      onSaved({
+        ...json.item,
+        recipe_ingredients: item?.recipe_ingredients ?? [],
+      })
     } catch {
       setServerError('Erreur réseau. Veuillez réessayer.')
     }
@@ -141,8 +140,7 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
           className="mb-5 rounded-xl px-4 py-3 text-[13px] flex items-start gap-2"
           style={{ background: 'var(--rp-danger-bg)', color: 'var(--rp-danger)' }}
         >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          {serverError}
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />{serverError}
         </div>
       )}
 
@@ -155,24 +153,25 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
           <input
             type="text"
             placeholder="Ex : Entrecôte grillée"
-            className={inputCls(!!errors.name)}
-            {...register('name')}
+            className={inputCls(!!errors.dish_name)}
+            {...register('dish_name')}
           />
-          <FieldError msg={errors.name?.message} />
+          <FieldError msg={errors.dish_name?.message} />
         </div>
 
         {/* Catégorie */}
         <div>
           <label className={labelCls} style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-            Catégorie *
+            Catégorie
           </label>
           <select className={inputCls(!!errors.category)} {...register('category')}>
+            <option value="">— Aucune —</option>
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
           <FieldError msg={errors.category?.message} />
         </div>
 
-        {/* Prix */}
+        {/* Prix de vente */}
         <div>
           <label className={labelCls} style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
             Prix de vente (€) *
@@ -183,8 +182,8 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
               step="0.01"
               min="0"
               placeholder="0.00"
-              className={cn(inputCls(!!errors.price), 'pr-10')}
-              {...register('price', { valueAsNumber: true })}
+              className={cn(inputCls(!!errors.sell_price), 'pr-10')}
+              {...register('sell_price', { valueAsNumber: true })}
             />
             <span
               className="absolute right-4 top-1/2 -translate-y-1/2 text-[15px] font-medium select-none"
@@ -193,23 +192,7 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
               €
             </span>
           </div>
-          <FieldError msg={errors.price?.message} />
-        </div>
-
-        {/* Description */}
-        <div>
-          <label className={labelCls} style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-            Description (optionnel)
-          </label>
-          <textarea
-            rows={3}
-            placeholder="Décrivez le plat…"
-            className={cn(
-              inputCls(),
-              'h-auto py-3 resize-none',
-            )}
-            {...register('description')}
-          />
+          <FieldError msg={errors.sell_price?.message} />
         </div>
 
         {/* Actif */}

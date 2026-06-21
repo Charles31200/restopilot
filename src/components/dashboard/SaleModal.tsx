@@ -10,16 +10,16 @@ import { cn }                from '@/lib/utils/cn'
 
 // ── Types ─────────────────────────────────────────────────────
 
-type MenuItem = {
-  id:       string
-  name:     string
-  category: string
-  price:    number
+type MenuDish = {
+  id:         string
+  dish_name:  string
+  category:   string | null
+  sell_price: number
 }
 
 type TicketLine = {
-  menu_item: MenuItem
-  quantity:  number
+  dish:     MenuDish
+  quantity: number
 }
 
 // ── Schéma ────────────────────────────────────────────────────
@@ -72,7 +72,7 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
   const [stockWarnings, setStockWarnings] = useState<string[]>([])
 
   // Menu items fetched from API
-  const [menuItems,     setMenuItems]     = useState<MenuItem[]>([])
+  const [menuItems,     setMenuItems]     = useState<MenuDish[]>([])
   const [ticket,        setTicket]        = useState<TicketLine[]>([])
   const [selItemId,     setSelItemId]     = useState('')
   const [selQty,        setSelQty]        = useState(1)
@@ -80,7 +80,10 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
   useEffect(() => {
     fetch('/api/menu')
       .then(r => r.json())
-      .then(j => setMenuItems((j.items ?? []).filter((i: MenuItem & { is_active: boolean }) => i.is_active)))
+      .then(j => setMenuItems(
+        (j.items ?? [])
+          .filter((i: MenuDish & { is_active: boolean }) => i.is_active)
+      ))
       .catch(() => {})
   }, [])
 
@@ -100,28 +103,28 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
   })
 
   // Auto-compute revenue from ticket when items are added
-  const ticketTotal = ticket.reduce((s, l) => s + l.menu_item.price * l.quantity, 0)
+  const ticketTotal = ticket.reduce((s, l) => s + l.dish.sell_price * l.quantity, 0)
 
   function handleAddToTicket() {
     const found = menuItems.find(m => m.id === selItemId)
     if (!found || selQty < 1) return
     setTicket(prev => {
-      const existing = prev.find(l => l.menu_item.id === selItemId)
+      const existing = prev.find(l => l.dish.id === selItemId)
       if (existing) {
         return prev.map(l =>
-          l.menu_item.id === selItemId
+          l.dish.id === selItemId
             ? { ...l, quantity: l.quantity + selQty }
             : l
         )
       }
-      return [...prev, { menu_item: found, quantity: selQty }]
+      return [...prev, { dish: found, quantity: selQty }]
     })
     setSelItemId('')
     setSelQty(1)
   }
 
   function handleRemoveLine(id: string) {
-    setTicket(prev => prev.filter(l => l.menu_item.id !== id))
+    setTicket(prev => prev.filter(l => l.dish.id !== id))
   }
 
   // Sync ticket total → revenue field
@@ -154,7 +157,7 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({
             items: ticket.map(l => ({
-              menu_item_id: l.menu_item.id,
+              menu_item_id: l.dish.id,
               quantity:     l.quantity,
             })),
           }),
@@ -178,7 +181,7 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
     }
   }
 
-  const availableItems = menuItems.filter(m => !ticket.some(l => l.menu_item.id === m.id))
+  const availableItems = menuItems.filter(m => !ticket.some(l => l.dish.id === m.id))
 
   const footer = (
     <div className="flex gap-3">
@@ -276,21 +279,21 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
               <div className="mb-3 space-y-2">
                 {ticket.map(line => (
                   <div
-                    key={line.menu_item.id}
+                    key={line.dish.id}
                     className="flex items-center gap-3 px-3 py-2 rounded-xl border"
                     style={{ borderColor: 'var(--rp-lavender)', background: 'white' }}
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium truncate" style={{ color: 'var(--rp-navy)' }}>
-                        {line.menu_item.name}
+                        {line.dish.dish_name}
                       </p>
                       <p className="text-xs" style={{ color: 'var(--rp-navy-muted)' }}>
-                        × {line.quantity} · {(line.menu_item.price * line.quantity).toFixed(2)} €
+                        × {line.quantity} · {(line.dish.sell_price * line.quantity).toFixed(2)} €
                       </p>
                     </div>
                     <button
                       type="button"
-                      onClick={() => handleRemoveLine(line.menu_item.id)}
+                      onClick={() => handleRemoveLine(line.dish.id)}
                       className="w-7 h-7 rounded-lg flex items-center justify-center hover:bg-red-50 transition"
                       style={{ color: '#EF4444' }}
                     >
@@ -317,7 +320,7 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
                   <option value="">— Ajouter un plat —</option>
                   {availableItems.map(m => (
                     <option key={m.id} value={m.id}>
-                      {m.name} ({m.price.toFixed(2)} €)
+                      {m.dish_name} ({m.sell_price.toFixed(2)} €)
                     </option>
                   ))}
                 </select>

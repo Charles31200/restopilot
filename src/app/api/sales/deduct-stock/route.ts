@@ -29,20 +29,27 @@ export async function POST(request: NextRequest) {
   const warnings: string[] = []
 
   for (const { menu_item_id, quantity } of items) {
-    // Fetch ingredients for this menu item
+    // Fetch recipe_ingredients for this recipe (menu item)
     const { data: ingredients } = await supabase
-      .from('menu_item_ingredients')
-      .select('product_id, quantity, products ( name, stock_qty, unit )')
-      .eq('menu_item_id', menu_item_id)
+      .from('recipe_ingredients')
+      .select('product_id, quantity, product:products(name, stock_qty, unit)')
+      .eq('recipe_id', menu_item_id) as unknown as {
+        data: Array<{
+          product_id: string
+          quantity: number
+          product: { name: string; stock_qty: number; unit: string } | null
+        }> | null
+        error: unknown
+      }
 
     if (!ingredients?.length) continue
 
     for (const ing of ingredients) {
-      const product = ing.products as unknown as { name: string; stock_qty: number; unit: string } | null
+      const product = ing.product
       if (!product) continue
 
       const deductQty = ing.quantity * quantity
-      const newQty = Math.max(0, product.stock_qty - deductQty)
+      const newQty    = Math.max(0, product.stock_qty - deductQty)
 
       const { error } = await supabase
         .from('products')
@@ -51,7 +58,6 @@ export async function POST(request: NextRequest) {
         .eq('restaurant_id', restaurantId)
 
       if (!error) {
-        // Record movement
         await supabase.from('stock_movements').insert({
           product_id:    ing.product_id,
           restaurant_id: restaurantId,

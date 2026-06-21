@@ -3,11 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
 const updateSchema = z.object({
-  name:        z.string().min(1).optional(),
-  category:    z.string().min(1).optional(),
-  price:       z.number().min(0).optional(),
-  description: z.string().nullable().optional(),
-  is_active:   z.boolean().optional(),
+  dish_name:  z.string().min(1).optional(),
+  category:   z.string().nullable().optional(),
+  sell_price: z.number().min(0).optional(),
+  is_active:  z.boolean().optional(),
 })
 
 async function getCtx(id: string) {
@@ -19,7 +18,7 @@ async function getCtx(id: string) {
   const restaurantId = profile?.restaurant_id ?? null
   if (!restaurantId) return { supabase, restaurantId: null }
   const { data: item } = await supabase
-    .from('menu_items').select('id').eq('id', id).eq('restaurant_id', restaurantId).single()
+    .from('recipes').select('id').eq('id', id).eq('restaurant_id', restaurantId).single()
   if (!item) return { supabase, restaurantId: null }
   return { supabase, restaurantId }
 }
@@ -39,10 +38,11 @@ export async function PUT(
   }
 
   const { data: item, error } = await supabase
-    .from('menu_items')
+    .from('recipes')
     .update(parsed.data)
     .eq('id', id)
-    .select().single()
+    .select()
+    .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ item })
@@ -56,7 +56,8 @@ export async function DELETE(
   const { supabase, restaurantId } = await getCtx(id)
   if (!restaurantId) return NextResponse.json({ error: 'Non autorisé ou introuvable' }, { status: 401 })
 
-  const { error } = await supabase.from('menu_items').delete().eq('id', id)
+  // recipe_ingredients cascade-deleted by FK
+  const { error } = await supabase.from('recipes').delete().eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ success: true })
 }

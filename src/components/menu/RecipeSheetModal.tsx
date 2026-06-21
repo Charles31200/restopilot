@@ -2,15 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2, Trash2, Plus, AlertCircle, BookOpen, Package } from 'lucide-react'
-import { Modal } from '@/components/ui/Modal'
-import { cn }   from '@/lib/utils/cn'
-import type { MenuItem, MenuIngredient, Product } from './MenuClient'
+import { Modal }           from '@/components/ui/Modal'
+import { cn }              from '@/lib/utils/cn'
+import type { MenuRecipe, MenuIngredient, MenuProduct } from './MenuClient'
 
 type Props = {
-  item:       MenuItem
-  products:   Product[]
-  onClose:    () => void
-  onUpdated:  (menuItemId: string, ingredients: MenuIngredient[]) => void
+  item:      MenuRecipe
+  products:  MenuProduct[]
+  onClose:   () => void
+  onUpdated: (recipeId: string, ingredients: MenuIngredient[]) => void
 }
 
 const inputCls = (hasError?: boolean) =>
@@ -22,18 +22,17 @@ const inputCls = (hasError?: boolean) =>
   )
 
 export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) {
-  const [ingredients, setIngredients] = useState<MenuIngredient[]>(item.menu_item_ingredients ?? [])
+  const [ingredients, setIngredients] = useState<MenuIngredient[]>(item.recipe_ingredients ?? [])
   const [isLoading,   setIsLoading]   = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
   const [deletingId,  setDeletingId]  = useState<string | null>(null)
 
-  // Add form state
   const [addProductId, setAddProductId] = useState('')
   const [addQuantity,  setAddQuantity]  = useState('')
   const [addError,     setAddError]     = useState<string | null>(null)
   const [isAdding,     setIsAdding]     = useState(false)
 
-  // Fetch latest ingredients on open
+  // Fetch current ingredients (with product details) on open
   useEffect(() => {
     setIsLoading(true)
     fetch(`/api/menu/${item.id}/ingredients`)
@@ -88,7 +87,7 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
     }
   }
 
-  // Products not yet linked
+  // Products not yet linked to this recipe
   const availableProducts = products.filter(
     p => !ingredients.some(i => i.products?.id === p.id)
   )
@@ -108,7 +107,7 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
 
   return (
     <Modal
-      title={`Fiche technique — ${item.name}`}
+      title={`Fiche technique — ${item.dish_name}`}
       onClose={onClose}
       maxWidth="max-w-lg"
       footer={footer}
@@ -118,8 +117,7 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
           className="mb-4 rounded-xl px-4 py-3 text-[13px] flex items-start gap-2"
           style={{ background: 'var(--rp-danger-bg)', color: 'var(--rp-danger)' }}
         >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          {serverError}
+          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />{serverError}
         </div>
       )}
 
@@ -160,10 +158,7 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
                   style={{ borderColor: 'var(--rp-lavender)', background: 'white' }}
                 >
                   <div className="flex-1 min-w-0">
-                    <p
-                      className="text-sm font-medium truncate"
-                      style={{ color: 'var(--rp-navy)' }}
-                    >
+                    <p className="text-sm font-medium truncate" style={{ color: 'var(--rp-navy)' }}>
                       {prod?.name ?? '—'}
                     </p>
                     <p className="text-xs mt-0.5" style={{ color: 'var(--rp-navy-muted)' }}>
@@ -211,7 +206,6 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
         )}
 
         <div className="flex gap-2">
-          {/* Product dropdown */}
           <select
             value={addProductId}
             onChange={e => { setAddProductId(e.target.value); setAddError(null) }}
@@ -219,13 +213,10 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
           >
             <option value="">— Choisir un ingrédient —</option>
             {availableProducts.map(p => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.unit})
-              </option>
+              <option key={p.id} value={p.id}>{p.name} ({p.unit})</option>
             ))}
           </select>
 
-          {/* Quantity */}
           <div className="w-28 relative">
             <input
               type="number"
@@ -246,17 +237,13 @@ export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) 
             )}
           </div>
 
-          {/* Add button */}
           <button
             onClick={handleAdd}
             disabled={isAdding}
             className="h-[44px] px-4 rounded-[12px] font-semibold text-white text-sm flex items-center gap-1.5 transition active:scale-[0.97] disabled:opacity-60"
             style={{ background: 'var(--rp-amber)', fontFamily: 'var(--font-body)' }}
           >
-            {isAdding
-              ? <Loader2 className="w-4 h-4 animate-spin" />
-              : <Plus className="w-4 h-4" />
-            }
+            {isAdding ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
           </button>
         </div>
 

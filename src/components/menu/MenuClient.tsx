@@ -4,13 +4,13 @@ import { useState, useMemo } from 'react'
 import { useRouter }         from 'next/navigation'
 import {
   Plus, Search, UtensilsCrossed, ChevronRight,
-  Pencil, Trash2, BookOpen, Euro, Tag,
+  Pencil, BookOpen, Euro, Tag,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { MenuItemModal }       from './MenuItemModal'
-import { RecipeSheetModal }    from './RecipeSheetModal'
+import { MenuItemModal }    from './MenuItemModal'
+import { RecipeSheetModal } from './RecipeSheetModal'
 
-// ── Types ─────────────────────────────────────────────────────
+// ── Types (mapped to real DB columns) ────────────────────────
 
 export type MenuIngredient = {
   id:         string
@@ -18,17 +18,16 @@ export type MenuIngredient = {
   products:   { id: string; name: string; unit: string } | null
 }
 
-export type MenuItem = {
-  id:                    string
-  name:                  string
-  category:              string
-  price:                 number
-  description:           string | null
-  is_active:             boolean
-  menu_item_ingredients: MenuIngredient[]
+export type MenuRecipe = {
+  id:                  string
+  dish_name:           string
+  category:            string | null
+  sell_price:          number
+  is_active:           boolean
+  recipe_ingredients:  MenuIngredient[]
 }
 
-export type Product = {
+export type MenuProduct = {
   id:        string
   name:      string
   unit:      string
@@ -36,8 +35,8 @@ export type Product = {
 }
 
 type MenuClientProps = {
-  initialItems: MenuItem[]
-  products:     Product[]
+  initialItems: MenuRecipe[]
+  products:     MenuProduct[]
 }
 
 // ── Category badge colors ─────────────────────────────────────
@@ -50,43 +49,41 @@ const CATEGORY_COLORS: Record<string, string> = {
   'Snack':     '#EF4444',
 }
 
-function getCategoryColor(cat: string) {
-  return CATEGORY_COLORS[cat] ?? '#64748B'
+function getCategoryColor(cat: string | null) {
+  return cat ? (CATEGORY_COLORS[cat] ?? '#64748B') : '#64748B'
 }
 
 // ── Composant ─────────────────────────────────────────────────
 
 export function MenuClient({ initialItems, products }: MenuClientProps) {
   const router = useRouter()
-  const [items, setItems]         = useState<MenuItem[]>(initialItems)
-  const [search, setSearch]       = useState('')
-  const [filterCat, setFilterCat] = useState<string>('Tous')
-  const [editItem, setEditItem]   = useState<MenuItem | null>(null)
-  const [recipeItem, setRecipeItem] = useState<MenuItem | null>(null)
-  const [showNew, setShowNew]     = useState(false)
+  const [items, setItems]           = useState<MenuRecipe[]>(initialItems)
+  const [search, setSearch]         = useState('')
+  const [filterCat, setFilterCat]   = useState<string>('Tous')
+  const [editItem, setEditItem]     = useState<MenuRecipe | null>(null)
+  const [recipeItem, setRecipeItem] = useState<MenuRecipe | null>(null)
+  const [showNew, setShowNew]       = useState(false)
 
   const categories = useMemo(() => {
-    const cats = [...new Set(items.map(i => i.category))].sort()
+    const cats = [...new Set(items.map(i => i.category ?? 'Sans catégorie'))].sort()
     return ['Tous', ...cats]
   }, [items])
 
   const filtered = useMemo(() => {
     return items.filter(item => {
       const matchSearch = !search ||
-        item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.category.toLowerCase().includes(search.toLowerCase())
-      const matchCat = filterCat === 'Tous' || item.category === filterCat
+        item.dish_name.toLowerCase().includes(search.toLowerCase()) ||
+        (item.category ?? '').toLowerCase().includes(search.toLowerCase())
+      const matchCat = filterCat === 'Tous' || (item.category ?? 'Sans catégorie') === filterCat
       return matchSearch && matchCat
     })
   }, [items, search, filterCat])
 
-  function handleItemSaved(saved: MenuItem) {
+  function handleItemSaved(saved: MenuRecipe) {
     setItems(prev => {
       const idx = prev.findIndex(i => i.id === saved.id)
       if (idx >= 0) {
-        const next = [...prev]
-        next[idx] = saved
-        return next
+        const next = [...prev]; next[idx] = saved; return next
       }
       return [...prev, saved]
     })
@@ -101,10 +98,12 @@ export function MenuClient({ initialItems, products }: MenuClientProps) {
     router.refresh()
   }
 
-  function handleIngredientsUpdated(menuItemId: string, ingredients: MenuIngredient[]) {
+  function handleIngredientsUpdated(recipeId: string, ingredients: MenuIngredient[]) {
     setItems(prev => prev.map(i =>
-      i.id === menuItemId ? { ...i, menu_item_ingredients: ingredients } : i
+      i.id === recipeId ? { ...i, recipe_ingredients: ingredients } : i
     ))
+    // keep recipeItem in sync so RecipeSheetModal shows updated list
+    setRecipeItem(prev => prev?.id === recipeId ? { ...prev, recipe_ingredients: ingredients } : prev)
   }
 
   return (
@@ -148,11 +147,7 @@ export function MenuClient({ initialItems, products }: MenuClientProps) {
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="w-full h-10 pl-9 pr-4 rounded-xl border text-sm outline-none transition-all focus:ring-2"
-              style={{
-                borderColor: 'var(--rp-lavender)',
-                color: 'var(--rp-navy)',
-                background: 'white',
-              }}
+              style={{ borderColor: 'var(--rp-lavender)', color: 'var(--rp-navy)', background: 'white' }}
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -160,9 +155,7 @@ export function MenuClient({ initialItems, products }: MenuClientProps) {
               <button
                 key={cat}
                 onClick={() => setFilterCat(cat)}
-                className={cn(
-                  'px-3 h-10 rounded-xl text-xs font-semibold transition border',
-                )}
+                className={cn('px-3 h-10 rounded-xl text-xs font-semibold transition border')}
                 style={{
                   background:  filterCat === cat ? (cat === 'Tous' ? 'var(--rp-navy)' : getCategoryColor(cat)) : 'white',
                   color:       filterCat === cat ? 'white' : 'var(--rp-navy-muted)',
@@ -244,34 +237,26 @@ export function MenuClient({ initialItems, products }: MenuClientProps) {
 // ── Card ──────────────────────────────────────────────────────
 
 function MenuItemCard({
-  item,
-  onEdit,
-  onRecipe,
-}: {
-  item:     MenuItem
-  onEdit:   () => void
-  onRecipe: () => void
-}) {
-  const color = getCategoryColor(item.category)
-  const ingCount = item.menu_item_ingredients?.length ?? 0
+  item, onEdit, onRecipe,
+}: { item: MenuRecipe; onEdit: () => void; onRecipe: () => void }) {
+  const color      = getCategoryColor(item.category)
+  const ingCount   = item.recipe_ingredients?.length ?? 0
 
   return (
     <div
       className="group rounded-2xl border bg-white overflow-hidden transition hover:shadow-md"
       style={{ borderColor: 'var(--rp-lavender)' }}
     >
-      {/* Color stripe */}
       <div className="h-1.5" style={{ background: color }} />
 
       <div className="p-4">
-        {/* Category + active badge */}
         <div className="flex items-center justify-between mb-3">
           <span
             className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold"
             style={{ background: `${color}18`, color }}
           >
             <Tag className="w-2.5 h-2.5" />
-            {item.category}
+            {item.category ?? 'Sans catégorie'}
           </span>
           {!item.is_active && (
             <span className="text-[11px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-400 font-medium">
@@ -280,53 +265,31 @@ function MenuItemCard({
           )}
         </div>
 
-        {/* Name */}
         <h3
-          className="font-semibold text-base leading-snug mb-1 truncate"
+          className="font-semibold text-base leading-snug mb-3 truncate"
           style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}
         >
-          {item.name}
+          {item.dish_name}
         </h3>
 
-        {/* Description */}
-        {item.description && (
-          <p
-            className="text-xs leading-relaxed mb-3 line-clamp-2"
-            style={{ color: 'var(--rp-navy-muted)' }}
-          >
-            {item.description}
-          </p>
-        )}
-
-        {/* Price + ingredient count */}
-        <div className="flex items-center gap-3 mt-3">
+        <div className="flex items-center gap-3">
           <div className="flex items-center gap-1">
             <Euro className="w-3.5 h-3.5" style={{ color: 'var(--rp-amber)' }} />
-            <span
-              className="text-base font-bold"
-              style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}
-            >
-              {item.price.toFixed(2)}
+            <span className="text-base font-bold" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}>
+              {item.sell_price.toFixed(2)}
             </span>
           </div>
-          <span
-            className="flex items-center gap-1 text-xs"
-            style={{ color: 'var(--rp-navy-muted)' }}
-          >
+          <span className="flex items-center gap-1 text-xs" style={{ color: 'var(--rp-navy-muted)' }}>
             <BookOpen className="w-3 h-3" />
             {ingCount} ingrédient{ingCount !== 1 ? 's' : ''}
           </span>
         </div>
 
-        {/* Actions */}
         <div className="flex gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'var(--rp-lavender)' }}>
           <button
             onClick={onRecipe}
             className="flex-1 flex items-center justify-center gap-1.5 h-9 rounded-xl text-xs font-semibold transition"
-            style={{
-              background: 'var(--rp-lavender-light)',
-              color:      'var(--rp-navy)',
-            }}
+            style={{ background: 'var(--rp-lavender-light)', color: 'var(--rp-navy)' }}
           >
             <BookOpen className="w-3.5 h-3.5" />
             Fiche technique

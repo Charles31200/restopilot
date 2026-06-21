@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
+// uses existing `recipes` + `recipe_ingredients` tables
+
 const menuItemSchema = z.object({
-  name:        z.string().min(1, 'Nom requis'),
-  category:    z.string().min(1, 'Catégorie requise'),
-  price:       z.number().min(0, 'Prix ≥ 0'),
-  description: z.string().optional().nullable(),
-  is_active:   z.boolean().optional().default(true),
+  dish_name:  z.string().min(1, 'Nom requis'),
+  category:   z.string().nullable().optional(),
+  sell_price: z.number().min(0, 'Prix ≥ 0'),
+  is_active:  z.boolean().optional().default(true),
 })
 
 async function getRestaurantId() {
@@ -24,17 +25,24 @@ export async function GET() {
   if (!restaurantId) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
   const { data: items, error } = await supabase
-    .from('menu_items')
+    .from('recipes')
     .select(`
-      *,
-      menu_item_ingredients (
-        id, quantity,
-        products ( id, name, unit )
-      )
+      id, dish_name, category, sell_price, is_active, created_at,
+      recipe_ingredients ( id, quantity, product_id, product:products(id, name, unit) )
     `)
     .eq('restaurant_id', restaurantId)
     .order('category')
-    .order('name')
+    .order('dish_name') as unknown as {
+      data: Array<{
+        id: string; dish_name: string; category: string | null
+        sell_price: number; is_active: boolean; created_at: string
+        recipe_ingredients: Array<{
+          id: string; quantity: number; product_id: string
+          product: { id: string; name: string; unit: string } | null
+        }>
+      }> | null
+      error: { message: string } | null
+    }
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json({ items })
@@ -51,10 +59,11 @@ export async function POST(request: NextRequest) {
   }
 
   const { data: item, error } = await supabase
-    .from('menu_items')
+    .from('recipes')
     .insert({ ...parsed.data, restaurant_id: restaurantId })
-    .select().single()
+    .select()
+    .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-  return NextResponse.json({ item }, { status: 201 })
+  return NextResponse.json({ item: { ...item, recipe_ingredients: [] } }, { status: 201 })
 }
