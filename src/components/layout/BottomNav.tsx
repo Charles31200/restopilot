@@ -16,7 +16,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, CalendarDays, Receipt, MoreHorizontal,
-  Settings, SlidersHorizontal, CreditCard, LogOut,
+  Settings, SlidersHorizontal, CreditCard, LogOut, UtensilsCrossed,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import { useState } from 'react'
@@ -36,6 +36,12 @@ const NAV_TABS = [
     href:  '/dashboard/stocks',
     label: 'Stocks',
     icon:  Package,
+    exact: false,
+  },
+  {
+    href:  '/dashboard/menu',
+    label: 'Menu',
+    icon:  UtensilsCrossed,
     exact: false,
   },
   {

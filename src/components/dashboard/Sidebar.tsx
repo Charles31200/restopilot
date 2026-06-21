@@ -15,6 +15,7 @@ import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, CalendarDays, Receipt,
   Settings, SlidersHorizontal, CreditCard, LogOut, ChevronLeft, ChevronRight,
+  UtensilsCrossed,
 } from 'lucide-react'
 import { signOutAction } from '@/lib/supabase/actions'
 import { cn } from '@/lib/utils/cn'
@@ -23,8 +24,9 @@ import { cn } from '@/lib/utils/cn'
 
 const NAV_ITEMS = [
   { href: '/dashboard',              label: 'Tableau de bord', icon: LayoutDashboard, exact: true  },
-  { href: '/dashboard/stocks',       label: 'Stocks',          icon: Package,         exact: false },
-  { href: '/dashboard/planning',     label: 'Planning',        icon: CalendarDays,    exact: false },
+  { href: '/dashboard/stocks',       label: 'Stocks',          icon: Package,           exact: false },
+  { href: '/dashboard/menu',         label: 'Menu & Recettes', icon: UtensilsCrossed,   exact: false },
+  { href: '/dashboard/planning',     label: 'Planning',        icon: CalendarDays,      exact: false },
   { href: '/dashboard/comptabilite', label: 'Comptabilité',    icon: Receipt,         exact: false },
 ] as const
 

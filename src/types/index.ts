@@ -64,6 +64,26 @@ export type Recipe = {
   created_at: string
 }
 
+export type MenuItem = {
+  id:            string
+  restaurant_id: string
+  name:          string
+  category:      string
+  price:         number
+  description:   string | null
+  is_active:     boolean
+  created_at:    string
+  updated_at:    string
+}
+
+export type MenuItemIngredient = {
+  id:           string
+  menu_item_id: string
+  product_id:   string
+  quantity:     number
+  created_at:   string
+}
+
 export type RecipeIngredient = {
   id: string
   recipe_id: string
@@ -293,6 +313,13 @@ type PosIntegrationInsert = WithDefaults<
   'is_active' | 'updated_at'
 >
 
+type MenuItemInsert = WithDefaults<
+  ToInsert<Omit<MenuItem, 'id' | 'created_at' | 'updated_at'>>,
+  'is_active'
+>
+
+type MenuItemIngredientInsert = ToInsert<Omit<MenuItemIngredient, 'id' | 'created_at'>>
+
 export type Database = {
   public: {
     Tables: {
@@ -378,6 +405,18 @@ export type Database = {
         Row: PosIntegration
         Insert: PosIntegrationInsert
         Update: Partial<Omit<PosIntegration, 'id'>>
+        Relationships: R
+      }
+      menu_items: {
+        Row: MenuItem
+        Insert: MenuItemInsert
+        Update: Partial<Omit<MenuItem, 'id'>>
+        Relationships: R
+      }
+      menu_item_ingredients: {
+        Row: MenuItemIngredient
+        Insert: MenuItemIngredientInsert
+        Update: Partial<Omit<MenuItemIngredient, 'id'>>
         Relationships: R
       }
     }
