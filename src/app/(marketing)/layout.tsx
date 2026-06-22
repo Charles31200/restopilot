@@ -17,14 +17,19 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
             </div>
             <span className="font-semibold text-gray-900">RestoPilot</span>
           </a>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            <a href="/contact"
+              className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors hidden sm:block">
+              Contact
+            </a>
             <a href="/login"
               className="text-sm text-gray-600 hover:text-gray-900 font-medium transition-colors">
               Connexion
             </a>
-            <a href="/register"
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors">
-              Essai gratuit
+            <a href="/contact"
+              className="px-4 py-2 text-sm font-medium text-white rounded-xl transition-colors"
+              style={{ background: '#D4952A' }}>
+              Demander une démo
             </a>
           </div>
         </div>
