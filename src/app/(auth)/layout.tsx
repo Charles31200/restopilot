@@ -14,17 +14,7 @@ export default function AuthLayout({
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header minimal */}
       <header className="py-6 px-8">
-        <div className="flex items-center gap-2.5">
-          {/* Logo RP */}
-          <div className="w-9 h-9 bg-brand-600 rounded-xl flex items-center justify-center shadow-sm flex-shrink-0">
-            <span className="text-white font-bold text-sm tracking-tight select-none">
-              RP
-            </span>
-          </div>
-          <span className="text-gray-900 font-semibold text-lg">
-            RestoPilot
-          </span>
-        </div>
+        <img src="/favicon.png" alt="RestoPilot" style={{ height: '36px', width: 'auto' }} />
       </header>
 
       {/* Contenu centré */}

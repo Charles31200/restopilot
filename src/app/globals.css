@@ -301,3 +301,14 @@ button:active:not(:disabled),
   color:      var(--rp-white);
 }
 .rp-btn-primary:active { transform: scale(0.97); }
+
+/* ── Scroll animations ─────────────────────────────────────────── */
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.fade-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}

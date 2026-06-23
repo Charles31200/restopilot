@@ -29,6 +29,9 @@ export async function POST(request: NextRequest) {
 
   if (resendKey) {
     const html = `
+<div style="text-align:center;margin-bottom:24px">
+  <img src="https://restopilot.pro/favicon.png" alt="RestoPilot" height="48" style="height:48px;width:auto" />
+</div>
 <h2>Nouvelle demande de démo RestoPilot</h2>
 <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
   <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Prénom</td><td style="padding:8px">${d.firstName}</td></tr>

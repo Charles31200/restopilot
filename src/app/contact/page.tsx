@@ -92,14 +92,8 @@ export default function ContactPage() {
 
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-5xl mx-auto w-full">
-        <a href="/" className="flex items-center gap-2.5">
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: '#D4952A' }}
-          >
-            <span className="text-white font-bold text-sm select-none">RP</span>
-          </div>
-          <span className="text-white font-bold text-lg">RestoPilot</span>
+        <a href="/" className="flex items-center">
+          <img src="/favicon.png" alt="RestoPilot" style={{ height: '40px', width: 'auto' }} />
         </a>
         <a
           href="/"

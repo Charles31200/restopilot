@@ -75,18 +75,8 @@ export default function LoginPage() {
 
       {/* ── Logo ─────────────────────────────────────────────── */}
       <div className="flex flex-col items-center" style={{ paddingTop: '12vh', paddingBottom: '6vh' }}>
-        <div
-          className="w-16 h-16 rounded-[18px] flex items-center justify-center mb-4 shadow-lg"
-          style={{ background: 'var(--rp-navy)' }}
-        >
-          <span className="text-[22px] font-bold select-none" style={{ fontFamily: 'var(--font-display)', color: 'var(--rp-amber)' }}>
-            RP
-          </span>
-        </div>
-        <h1 className="text-[24px] font-bold" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}>
-          RestoPilot
-        </h1>
-        <p className="text-[14px] mt-1.5 text-center leading-relaxed" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
+        <img src="/favicon.png" alt="RestoPilot" style={{ height: '64px', width: 'auto', marginBottom: '12px' }} />
+        <p className="text-[14px] text-center leading-relaxed" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
           Gérez votre restaurant en 10 secondes
         </p>
       </div>
