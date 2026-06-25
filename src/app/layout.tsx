@@ -22,17 +22,46 @@ const dmSans = DM_Sans({
 // ── Métadonnées ───────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title: {
-    default:  'RestoPilot',
-    template: '%s — RestoPilot',
-  },
-  description: 'Logiciel de gestion pour restaurateurs indépendants',
+  title:       'RestoPilot — Logiciel de gestion pour restaurateurs',
+  description: 'RestoPilot centralise stocks, planning et comptabilité en une seule plateforme. Conçu pour les restaurateurs indépendants français. Essai gratuit 14 jours.',
+  metadataBase: new URL('https://restopilot.pro'),
   icons: {
     icon: [
-      { url: '/favicon.ico', sizes: '32x32' },
-      { url: '/favicon.png', sizes: '192x192' },
+      { url: '/favicon.ico',  sizes: '32x32',   type: 'image/x-icon' },
+      { url: '/favicon.png',  sizes: '192x192',  type: 'image/png' },
     ],
-    apple: '/apple-touch-icon.png',
+    apple:    '/apple-touch-icon.png',
+    shortcut: '/favicon.ico',
+  },
+  openGraph: {
+    title:       'RestoPilot — Logiciel de gestion pour restaurateurs',
+    description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours sans engagement.',
+    url:         'https://restopilot.pro',
+    siteName:    'RestoPilot',
+    images: [
+      {
+        url:    '/og-image.png',
+        width:  1200,
+        height: 630,
+        alt:    'RestoPilot — Logiciel de gestion restaurant',
+      },
+    ],
+    locale: 'fr_FR',
+    type:   'website',
+  },
+  twitter: {
+    card:        'summary_large_image',
+    title:       'RestoPilot — Logiciel de gestion restaurant',
+    description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours.',
+    images:      ['/og-image.png'],
+  },
+  robots: {
+    index:  true,
+    follow: true,
+    googleBot: {
+      index:  true,
+      follow: true,
+    },
   },
 }
 
