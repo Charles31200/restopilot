@@ -1,5 +1,5 @@
 // =============================================================
-// RestoPilot — Types du module Comptabilité
+// PilotResto — Types du module Comptabilité
 // =============================================================
 
 // ── Données financières mensuelles ───────────────────────────

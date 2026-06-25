@@ -1,7 +1,7 @@
 /**
  * csv-import.ts — Parseur CSV universel pour l'import des ventes.
  *
- * Template RestoPilot standard :
+ * Template PilotResto standard :
  *   date,heure,plat,quantite,prix_unitaire,total
  *
  * Mais les caisses exportent des colonnes avec des noms différents.

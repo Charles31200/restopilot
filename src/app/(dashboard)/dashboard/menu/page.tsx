@@ -5,7 +5,7 @@ import { MenuClient }     from '@/components/menu/MenuClient'
 import { MobileHeader }   from '@/components/layout/MobileHeader'
 import type { MenuRecipe, MenuProduct } from '@/components/menu/MenuClient'
 
-export const metadata: Metadata = { title: 'Menu & Recettes — RestoPilot' }
+export const metadata: Metadata = { title: 'Menu & Recettes — PilotResto' }
 
 export default async function MenuPage() {
   const user = await getCurrentUser()

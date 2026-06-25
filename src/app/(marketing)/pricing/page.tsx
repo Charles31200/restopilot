@@ -298,7 +298,7 @@ function SubscriptionBanner() {
           Votre période d&rsquo;essai est terminée.
         </p>
         <p className="text-sm text-amber-700 mt-0.5">
-          Choisissez un plan pour continuer à utiliser RestoPilot et accéder à toutes vos données.
+          Choisissez un plan pour continuer à utiliser PilotResto et accéder à toutes vos données.
         </p>
       </div>
     </div>
@@ -368,7 +368,7 @@ export default function PricingPage() {
         </h1>
         <p className="text-lg text-gray-500">
           Arrêtez les tableurs Excel et les logiciels éparpillés.
-          RestoPilot centralise stocks, planning et comptabilité.
+          PilotResto centralise stocks, planning et comptabilité.
         </p>
       </div>
 

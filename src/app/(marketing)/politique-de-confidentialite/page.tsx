@@ -154,13 +154,13 @@ export default function PolitiqueConfidentialitePage() {
 
               <div>
                 <p className="font-semibold mb-2" style={{ color: '#1B2A4A' }}>2.2 Données de gestion</p>
-                <p className="mb-2">Ventes, stocks, planning, comptabilité, fiches techniques, menus, employés — toutes les données saisies dans RestoPilot.</p>
-                <p><em>Finalité :</em> fourniture du service RestoPilot. Ces données sont la propriété exclusive du client.</p>
+                <p className="mb-2">Ventes, stocks, planning, comptabilité, fiches techniques, menus, employés — toutes les données saisies dans PilotResto.</p>
+                <p><em>Finalité :</em> fourniture du service PilotResto. Ces données sont la propriété exclusive du client.</p>
               </div>
 
               <div>
                 <p className="font-semibold mb-2" style={{ color: '#1B2A4A' }}>2.3 Données de paiement</p>
-                <p>Traitées exclusivement par Stripe. Aucune donnée bancaire n&rsquo;est stockée par RestoPilot.</p>
+                <p>Traitées exclusivement par Stripe. Aucune donnée bancaire n&rsquo;est stockée par PilotResto.</p>
               </div>
 
               <div>
@@ -281,7 +281,7 @@ export default function PolitiqueConfidentialitePage() {
           <section>
             <ArticleTitle id="art9" n={9} title="Cookies" />
             <p style={textStyle} className="mb-3">
-              RestoPilot utilise uniquement des cookies strictement nécessaires :
+              PilotResto utilise uniquement des cookies strictement nécessaires :
             </p>
             <ul className="list-none space-y-0 mb-4" style={textStyle}>
               <Li>Cookies d&rsquo;authentification (maintien de la session)</Li>

@@ -22,8 +22,8 @@ const dmSans = DM_Sans({
 // ── Métadonnées ───────────────────────────────────────────────
 
 export const metadata: Metadata = {
-  title:       'RestoPilot — Logiciel de gestion pour restaurateurs',
-  description: 'RestoPilot centralise stocks, planning et comptabilité en une seule plateforme. Conçu pour les restaurateurs indépendants français. Essai gratuit 14 jours.',
+  title:       'PilotResto — Logiciel de gestion pour restaurateurs',
+  description: 'PilotResto centralise stocks, planning et comptabilité en une seule plateforme. Conçu pour les restaurateurs indépendants français. Essai gratuit 14 jours.',
   metadataBase: new URL('https://restopilot.pro'),
   icons: {
     icon: [
@@ -34,16 +34,16 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
   },
   openGraph: {
-    title:       'RestoPilot — Logiciel de gestion pour restaurateurs',
+    title:       'PilotResto — Logiciel de gestion pour restaurateurs',
     description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours sans engagement.',
     url:         'https://restopilot.pro',
-    siteName:    'RestoPilot',
+    siteName:    'PilotResto',
     images: [
       {
         url:    '/og-image.png',
         width:  1200,
         height: 630,
-        alt:    'RestoPilot — Logiciel de gestion restaurant',
+        alt:    'PilotResto — Logiciel de gestion restaurant',
       },
     ],
     locale: 'fr_FR',
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card:        'summary_large_image',
-    title:       'RestoPilot — Logiciel de gestion restaurant',
+    title:       'PilotResto — Logiciel de gestion restaurant',
     description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours.',
     images:      ['/og-image.png'],
   },

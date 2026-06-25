@@ -41,7 +41,7 @@ async function sendErrorAlert(
     method:  'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:    'RestoPilot Alertes <alertes@restopilot.fr>',
+      from:    'PilotResto Alertes <alertes@restopilot.fr>',
       to:      [ownerEmail],
       subject: `⚠️ Sync automatique échouée — ${restaurantName}`,
       html: `
@@ -49,9 +49,9 @@ async function sendErrorAlert(
         <p>La synchronisation automatique des ventes de <strong>${restaurantName}</strong>
            a rencontré des erreurs cette nuit.</p>
         <ul>${errors.map(e => `<li>${e}</li>`).join('')}</ul>
-        <p>Connectez-vous à <a href="${process.env.NEXT_PUBLIC_APP_URL}">RestoPilot</a>
+        <p>Connectez-vous à <a href="${process.env.NEXT_PUBLIC_APP_URL}">PilotResto</a>
            pour synchroniser manuellement ou vérifier la connexion de votre caisse.</p>
-        <p style="font-size:11px;color:#9CA3AF;">RestoPilot — sync automatique</p>
+        <p style="font-size:11px;color:#9CA3AF;">PilotResto — sync automatique</p>
       `,
     }),
   }).catch(() => { /* silencieux si Resend indisponible */ })

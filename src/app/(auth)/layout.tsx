@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'RestoPilot — Connexion',
-  description: 'Gérez votre restaurant avec RestoPilot',
+  title: 'PilotResto — Connexion',
+  description: 'Gérez votre restaurant avec PilotResto',
 }
 
 export default function AuthLayout({
@@ -14,7 +14,7 @@ export default function AuthLayout({
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header minimal */}
       <header className="py-6 px-8">
-        <img src="/favicon.png" alt="RestoPilot" style={{ height: '36px', width: 'auto' }} />
+        <img src="/favicon.png" alt="PilotResto" style={{ height: '36px', width: 'auto' }} />
       </header>
 
       {/* Contenu centré */}
@@ -26,7 +26,7 @@ export default function AuthLayout({
 
       {/* Footer */}
       <footer className="py-6 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} RestoPilot · Tous droits réservés ·{' '}
+        © {new Date().getFullYear()} PilotResto · Tous droits réservés ·{' '}
         <a href="/mentions-legales" className="hover:text-gray-600 transition-colors">
           Mentions légales
         </a>

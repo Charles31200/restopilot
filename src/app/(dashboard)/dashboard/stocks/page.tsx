@@ -6,7 +6,7 @@ import { StocksClient }   from '@/components/stocks/StocksClient'
 import { MobileHeader }   from '@/components/layout/MobileHeader'
 import type { Product }   from '@/types'
 
-export const metadata: Metadata = { title: 'Stocks — RestoPilot' }
+export const metadata: Metadata = { title: 'Stocks — PilotResto' }
 
 export default async function StocksPage() {
   const user = await getCurrentUser()

@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   RESTOPILOT — Palette officielle & Design Tokens
+   PILOTRESTO — Palette officielle & Design Tokens
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
@@ -68,7 +68,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  /* ── Palette RestoPilot ─────────────────────────────────────  */
+  /* ── Palette PilotResto ─────────────────────────────────────  */
   --color-rp-amber:          #D4952A;
   --color-rp-amber-light:    #F5E6C8;
   --color-rp-amber-dark:     #A8731A;

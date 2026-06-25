@@ -92,7 +92,7 @@ const BADGES = [
 const FAQ = [
   {
     q: 'Est-ce que je dois installer quelque chose ?',
-    a: 'Non, RestoPilot fonctionne entièrement dans votre navigateur web. Aucune installation, aucune mise à jour manuelle.',
+    a: 'Non, PilotResto fonctionne entièrement dans votre navigateur web. Aucune installation, aucune mise à jour manuelle.',
   },
   {
     q: 'Puis-je annuler à tout moment ?',
@@ -104,7 +104,7 @@ const FAQ = [
   },
   {
     q: "L'application fonctionne-t-elle sur téléphone ?",
-    a: "Oui, RestoPilot est entièrement responsive et fonctionne sur tous les appareils : mobile, tablette, desktop.",
+    a: "Oui, PilotResto est entièrement responsive et fonctionne sur tous les appareils : mobile, tablette, desktop.",
   },
   {
     q: "Que se passe-t-il après les 14 jours d'essai ?",
@@ -182,7 +182,7 @@ export default function LandingPage() {
 
           {/* Logo */}
           <a href="/" className="flex-shrink-0">
-            <img src="/favicon.png" alt="RestoPilot" style={{ height: '40px', width: 'auto' }} />
+            <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto' }} />
           </a>
 
           {/* Nav links — desktop */}
@@ -304,7 +304,7 @@ export default function LandingPage() {
             className="text-white/75 max-w-2xl mx-auto mb-10 leading-relaxed"
             style={{ fontSize: 'clamp(15px, 2.5vw, 20px)' }}
           >
-            RestoPilot centralise stocks, planning et comptabilité en une seule plateforme.
+            PilotResto centralise stocks, planning et comptabilité en une seule plateforme.
             Conçu pour les restaurateurs indépendants français.
           </p>
 
@@ -425,7 +425,7 @@ export default function LandingPage() {
               className="text-2xl sm:text-4xl font-bold mb-4"
               style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
             >
-              RestoPilot centralise tout en un seul endroit
+              PilotResto centralise tout en un seul endroit
             </h2>
             <p className="text-gray-500 max-w-xl mx-auto text-base sm:text-lg">
               Un tableau de bord unique pour piloter votre restaurant au quotidien
@@ -439,7 +439,7 @@ export default function LandingPage() {
               <div className="w-3 h-3 rounded-full" style={{ background: '#FF5F57' }} />
               <div className="w-3 h-3 rounded-full" style={{ background: '#FFBD2E' }} />
               <div className="w-3 h-3 rounded-full" style={{ background: '#28C840' }} />
-              <span className="ml-4 text-white/40 text-xs">RestoPilot — Tableau de bord</span>
+              <span className="ml-4 text-white/40 text-xs">PilotResto — Tableau de bord</span>
             </div>
 
             <div className="p-5 sm:p-7">
@@ -657,7 +657,7 @@ export default function LandingPage() {
             className="text-xl sm:text-3xl font-medium text-white/90 leading-relaxed mb-8"
             style={{ fontFamily: 'var(--font-display, system-ui)' }}
           >
-            RestoPilot nous a fait gagner 2h par jour sur la gestion
+            PilotResto nous a fait gagner 2h par jour sur la gestion
             administrative. Le planning et les stocks en un seul endroit,
             c&rsquo;est ce dont on avait besoin.
           </blockquote>
@@ -737,7 +737,7 @@ export default function LandingPage() {
             className="inline-flex items-center justify-center gap-2 font-bold bg-white transition hover:bg-white/90 active:scale-95 shadow-lg"
             style={{ color: '#1B2A4A', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
           >
-            Contacter RestoPilot
+            Contacter PilotResto
             <ArrowRight className="w-4 h-4" />
           </a>
         </div>
@@ -747,8 +747,8 @@ export default function LandingPage() {
       <footer style={{ background: '#111827' }}>
         <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/favicon.png" alt="RestoPilot" style={{ height: '28px', width: 'auto' }} />
-            <span className="text-white/50 text-sm">© 2026 RestoPilot</span>
+            <img src="/favicon.png" alt="PilotResto" style={{ height: '28px', width: 'auto' }} />
+            <span className="text-white/50 text-sm">© 2026 PilotResto</span>
             <span className="text-white/20 text-sm hidden sm:block">·</span>
             <a
               href="mailto:charles.lecussan@gmail.com"

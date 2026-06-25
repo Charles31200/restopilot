@@ -150,7 +150,7 @@ export function CSVImportModal({ onClose, onSuccess }: CSVImportModalProps) {
     const url  = URL.createObjectURL(blob)
     const a    = document.createElement('a')
     a.href     = url
-    a.download = 'template-ventes-restopilot.csv'
+    a.download = 'template-ventes-pilotresto.csv'
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -226,7 +226,7 @@ export function CSVImportModal({ onClose, onSuccess }: CSVImportModalProps) {
               <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
                 <div>
                   <p className="text-xs font-semibold text-gray-700">Pas encore de fichier ?</p>
-                  <p className="text-xs text-gray-400 mt-0.5">Téléchargez le template RestoPilot</p>
+                  <p className="text-xs text-gray-400 mt-0.5">Téléchargez le template PilotResto</p>
                 </div>
                 <button onClick={downloadTemplate}
                   className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 border border-gray-300 rounded-lg hover:bg-white transition-colors">

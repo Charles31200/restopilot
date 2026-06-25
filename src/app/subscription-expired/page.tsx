@@ -28,7 +28,7 @@ export default function SubscriptionExpiredPage() {
         <div className="space-y-2">
           <h1 className="text-xl font-bold text-gray-900">Abonnement suspendu</h1>
           <p className="text-sm text-gray-500 leading-relaxed">
-            Votre abonnement RestoPilot a expiré. Réactivez-le pour retrouver
+            Votre abonnement PilotResto a expiré. Réactivez-le pour retrouver
             l&apos;accès à vos données et à toutes les fonctionnalités.
           </p>
         </div>

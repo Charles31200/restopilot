@@ -50,7 +50,7 @@ export const STRIPE_PRICES: Record<SubscriptionPlan, Record<BillingInterval, str
   },
 }
 
-/** Retourne le plan RestoPilot correspondant à un price_id Stripe. */
+/** Retourne le plan PilotResto correspondant à un price_id Stripe. */
 export function planFromPriceId(priceId: string): SubscriptionPlan {
   for (const [plan, intervals] of Object.entries(STRIPE_PRICES)) {
     if (Object.values(intervals).includes(priceId)) {

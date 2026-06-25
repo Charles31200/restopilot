@@ -1,5 +1,5 @@
 // =============================================================
-// RestoPilot — Types du tableau de bord
+// PilotResto — Types du tableau de bord
 // =============================================================
 
 export type WeeklyDataPoint = {

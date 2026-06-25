@@ -1,5 +1,5 @@
 // =============================================================
-// RestoPilot — Types du module Planning
+// PilotResto — Types du module Planning
 // =============================================================
 
 import type { Employee, Shift } from '@/types'

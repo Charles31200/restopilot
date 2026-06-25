@@ -55,7 +55,7 @@ function parseTillerTransaction(raw: any): POSSale {
 
 /**
  * Récupère toutes les ventes Tiller pour une date donnée.
- * @param restaurantId  UUID du restaurant dans RestoPilot
+ * @param restaurantId  UUID du restaurant dans PilotResto
  * @param date          Date ISO YYYY-MM-DD
  */
 export async function getTillerSales(

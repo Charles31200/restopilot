@@ -76,7 +76,7 @@ export default function LanguePage() {
             <div>
               <p className="font-medium" style={{ color: 'var(--rp-navy)' }}>D&apos;autres langues arrivent bientôt</p>
               <p className="mt-0.5 text-xs leading-relaxed">
-                RestoPilot est actuellement disponible uniquement en français.
+                PilotResto est actuellement disponible uniquement en français.
                 L&apos;anglais et l&apos;espagnol seront ajoutés prochainement.
               </p>
             </div>

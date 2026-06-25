@@ -1,5 +1,5 @@
 // =============================================================
-// RestoPilot — Types TypeScript (miroir exact du schéma SQL)
+// PilotResto — Types TypeScript (miroir exact du schéma SQL)
 // =============================================================
 
 // ── Enums ─────────────────────────────────────────────────────

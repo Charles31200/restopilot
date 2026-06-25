@@ -7,8 +7,8 @@ import { TrialBanner } from '@/components/dashboard/TrialBanner'
 import { UserMenu }    from '@/components/dashboard/UserMenu'
 
 export const metadata: Metadata = {
-  title: 'RestoPilot',
-  description: 'Tableau de bord RestoPilot',
+  title: 'PilotResto',
+  description: 'Tableau de bord PilotResto',
 }
 
 export default async function DashboardLayout({
@@ -125,7 +125,7 @@ export default async function DashboardLayout({
           className="hidden lg:flex items-center justify-center flex-wrap gap-x-4 gap-y-1 py-3 text-xs border-t"
           style={{ borderColor: 'var(--rp-lavender-light)', color: 'var(--rp-navy-muted)' }}
         >
-          <span>© 2026 RestoPilot</span>
+          <span>© 2026 PilotResto</span>
           <span style={{ color: 'var(--rp-lavender)' }}>·</span>
           <a href="/cgu-cgv"                      className="hover:text-gray-700 transition-colors">CGU / CGV</a>
           <span style={{ color: 'var(--rp-lavender)' }}>·</span>

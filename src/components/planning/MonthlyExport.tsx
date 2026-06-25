@@ -105,7 +105,7 @@ export function MonthlyExport({ onClose }: MonthlyExportProps) {
 </head>
 <body>
   <h1>Planning — ${data.monthLabel}</h1>
-  <p>Généré le ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} · RestoPilot</p>
+  <p>Généré le ${new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })} · PilotResto</p>
   <table>
     <thead>
       <tr>

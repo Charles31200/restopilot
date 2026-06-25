@@ -41,7 +41,7 @@ async function sendPaymentFailedAlert(email: string, restaurantName: string) {
     method:  'POST',
     headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:    'RestoPilot <facturation@restopilot.fr>',
+      from:    'PilotResto <facturation@restopilot.fr>',
       to:      [email],
       subject: `⚠️ Échec du paiement — ${restaurantName}`,
       html: `
@@ -58,7 +58,7 @@ async function sendPaymentFailedAlert(email: string, restaurantName: string) {
               Mettre à jour mon moyen de paiement
             </a>
             <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">
-            <p style="font-size:11px;color:#9CA3AF;">RestoPilot — gestion automatisée de restaurant</p>
+            <p style="font-size:11px;color:#9CA3AF;">PilotResto — gestion automatisée de restaurant</p>
           </div>
         </div>
       `,
@@ -115,7 +115,7 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription) {
   const plan      = planFromPriceId(priceId)
   const periodEnd = new Date((stripeSub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
 
-  // Mapper le statut Stripe vers le statut RestoPilot
+  // Mapper le statut Stripe vers le statut PilotResto
   const statusMap: Record<string, import('@/types').SubscriptionStatus> = {
     active:             'active',
     trialing:           'trialing',

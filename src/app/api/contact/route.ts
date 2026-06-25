@@ -30,9 +30,9 @@ export async function POST(request: NextRequest) {
   if (resendKey) {
     const html = `
 <div style="text-align:center;margin-bottom:24px">
-  <img src="https://restopilot.pro/favicon.png" alt="RestoPilot" height="48" style="height:48px;width:auto" />
+  <img src="https://restopilot.pro/favicon.png" alt="PilotResto" height="48" style="height:48px;width:auto" />
 </div>
-<h2>Nouvelle demande de démo RestoPilot</h2>
+<h2>Nouvelle demande de démo PilotResto</h2>
 <table style="border-collapse:collapse;width:100%;font-family:sans-serif;font-size:14px">
   <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Prénom</td><td style="padding:8px">${d.firstName}</td></tr>
   <tr><td style="padding:8px;font-weight:bold;background:#f5f5f5">Nom</td><td style="padding:8px">${d.lastName}</td></tr>
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'RestoPilot <onboarding@resend.dev>',
+        from:    'PilotResto <onboarding@resend.dev>',
         to:      ['charles.lecussan@gmail.com'],
         subject: `🍽️ Nouvelle demande — ${d.firstName} ${d.lastName} (${d.restaurantName}, ${d.city})`,
         html,

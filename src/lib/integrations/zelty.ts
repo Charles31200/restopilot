@@ -53,7 +53,7 @@ function parseZeltySale(raw: any): POSSale {
 
 /**
  * Récupère toutes les ventes Zelty pour une date donnée.
- * @param restaurantId  UUID du restaurant dans RestoPilot
+ * @param restaurantId  UUID du restaurant dans PilotResto
  * @param date          Date ISO YYYY-MM-DD
  */
 export async function getZeltySales(

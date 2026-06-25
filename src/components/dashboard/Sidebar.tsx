@@ -4,7 +4,7 @@
  * Sidebar — Navigation desktop uniquement (lg+).
  * Sur mobile, c'est BottomNav qui prend le relais.
  *
- * Couleurs : palette RestoPilot (navy, amber, lavender).
+ * Couleurs : palette PilotResto (navy, amber, lavender).
  * État actif  : fond amber-light, texte/icône amber.
  * État inactif: texte navy-muted, hover lavender-light.
  */

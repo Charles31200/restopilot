@@ -93,7 +93,7 @@ export default function ContactPage() {
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-5xl mx-auto w-full">
         <a href="/" className="flex items-center">
-          <img src="/favicon.png" alt="RestoPilot" style={{ height: '40px', width: 'auto' }} />
+          <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto' }} />
         </a>
         <a
           href="/"
@@ -288,7 +288,7 @@ export default function ContactPage() {
                     {...register('consent')}
                   />
                   <label htmlFor="consent" className="text-sm text-gray-500 cursor-pointer leading-snug">
-                    J&apos;accepte d&apos;être contacté par RestoPilot concernant ma demande.
+                    J&apos;accepte d&apos;être contacté par PilotResto concernant ma demande.
                   </label>
                 </div>
                 <FieldError msg={errors.consent?.message} />
@@ -314,7 +314,7 @@ export default function ContactPage() {
       {/* Footer */}
       <footer className="relative z-10 py-6 text-center">
         <p className="text-white/30 text-xs">
-          © 2026 RestoPilot — charles.lecussan@gmail.com
+          © 2026 PilotResto — charles.lecussan@gmail.com
           {' · '}
           <a href="/cgu-cgv" className="hover:text-white/60 transition-colors">CGU/CGV</a>
           {' · '}

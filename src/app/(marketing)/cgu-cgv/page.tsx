@@ -133,7 +133,7 @@ export default function CguCgvPage() {
           <section>
             <ArticleTitle id="art1" n={1} title="Identification de l'éditeur" />
             <p style={textStyle}>
-              RestoPilot est édité par :
+              PilotResto est édité par :
             </p>
             <div className="mt-4 pl-4 border-l-2 space-y-1" style={{ borderColor: '#D4952A', ...textStyle }}>
               <p><strong style={{ color: '#1B2A4A' }}>Charles LECUSSAN</strong></p>
@@ -148,9 +148,9 @@ export default function CguCgvPage() {
           <section>
             <ArticleTitle id="art2" n={2} title="Objet et champ d'application" />
             <p style={textStyle} className="mb-4">
-              Les présentes CGU/CGV définissent les droits et obligations des parties dans le cadre de l&rsquo;utilisation de RestoPilot. RestoPilot s&rsquo;adresse aussi bien aux professionnels de la restauration (B2B) qu&rsquo;aux particuliers souhaitant gérer un établissement alimentaire.
+              Les présentes CGU/CGV définissent les droits et obligations des parties dans le cadre de l&rsquo;utilisation de PilotResto. PilotResto s&rsquo;adresse aussi bien aux professionnels de la restauration (B2B) qu&rsquo;aux particuliers souhaitant gérer un établissement alimentaire.
             </p>
-            <p style={textStyle} className="mb-3">RestoPilot est un logiciel SaaS proposant selon le plan souscrit :</p>
+            <p style={textStyle} className="mb-3">PilotResto est un logiciel SaaS proposant selon le plan souscrit :</p>
             <ul className="list-none space-y-0" style={textStyle}>
               <Li>Tableau de bord financier et suivi du CA en temps réel</Li>
               <Li>Gestion des stocks, inventaires et alertes automatiques</Li>
@@ -218,7 +218,7 @@ export default function CguCgvPage() {
           <section>
             <ArticleTitle id="art6" n={6} title="Paiement" />
             <p style={textStyle}>
-              Les paiements sont traités par <strong style={{ color: '#1B2A4A' }}>Stripe</strong> (certifié PCI-DSS niveau 1). RestoPilot ne stocke aucune donnée bancaire. Le prélèvement est effectué mensuellement ou annuellement à date anniversaire selon la formule choisie. En cas d&rsquo;échec de paiement, le client dispose de 7 jours pour régulariser sa situation avant la suspension du compte.
+              Les paiements sont traités par <strong style={{ color: '#1B2A4A' }}>Stripe</strong> (certifié PCI-DSS niveau 1). PilotResto ne stocke aucune donnée bancaire. Le prélèvement est effectué mensuellement ou annuellement à date anniversaire selon la formule choisie. En cas d&rsquo;échec de paiement, le client dispose de 7 jours pour régulariser sa situation avant la suspension du compte.
             </p>
           </section>
 
@@ -261,7 +261,7 @@ export default function CguCgvPage() {
           <section>
             <ArticleTitle id="art10" n={10} title="Responsabilités" />
             <p style={textStyle} className="mb-3">
-              RestoPilot est un outil d&rsquo;aide à la gestion. L&rsquo;éditeur s&rsquo;engage à :
+              PilotResto est un outil d&rsquo;aide à la gestion. L&rsquo;éditeur s&rsquo;engage à :
             </p>
             <ul className="list-none space-y-0 mb-4" style={textStyle}>
               <Li>Fournir une réponse au support dans un délai de 24 à 48h ouvrables</Li>
@@ -292,10 +292,10 @@ export default function CguCgvPage() {
           <section>
             <ArticleTitle id="art12" n={12} title="Propriété intellectuelle" />
             <p style={textStyle}>
-              Tous les éléments constituant RestoPilot (code source, interfaces, textes, images, marques, logos) sont la propriété exclusive de Charles LECUSSAN. Toute reproduction, représentation ou utilisation non autorisée est strictement interdite.
+              Tous les éléments constituant PilotResto (code source, interfaces, textes, images, marques, logos) sont la propriété exclusive de Charles LECUSSAN. Toute reproduction, représentation ou utilisation non autorisée est strictement interdite.
             </p>
             <p style={textStyle} className="mt-3">
-              Les données saisies par le client dans RestoPilot (ventes, stocks, planning, recettes, etc.) restent la propriété exclusive du client. RestoPilot ne revendique aucun droit sur ces données.
+              Les données saisies par le client dans PilotResto (ventes, stocks, planning, recettes, etc.) restent la propriété exclusive du client. PilotResto ne revendique aucun droit sur ces données.
             </p>
           </section>
 

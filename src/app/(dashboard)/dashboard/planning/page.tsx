@@ -9,7 +9,7 @@ import type { WeekData, ShiftWithEmployee, EmployeeWeeklyStats } from '@/types/p
 import type { Employee } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Planning — RestoPilot',
+  title: 'Planning — PilotResto',
 }
 
 export default async function PlanningPage({
