@@ -11,11 +11,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       {/* Navbar minimaliste */}
       <header className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs select-none">RP</span>
-            </div>
-            <span className="font-semibold text-gray-900">RestoPilot</span>
+          <a href="/" className="flex items-center">
+            <img src="/favicon.png" alt="RestoPilot" style={{ height: '36px', width: 'auto' }} />
           </a>
           <div className="flex items-center gap-6">
             <a href="/contact"
@@ -40,10 +37,8 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       {/* Footer */}
       <footer className="border-t border-gray-100 mt-20">
         <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 bg-blue-600 rounded flex items-center justify-center">
-              <span className="text-white font-bold text-[10px]">RP</span>
-            </div>
+          <div className="flex items-center gap-2.5">
+            <img src="/favicon.png" alt="RestoPilot" style={{ height: '24px', width: 'auto' }} />
             <span className="text-sm text-gray-500">© 2026 RestoPilot</span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-400">
