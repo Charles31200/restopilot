@@ -34,8 +34,8 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
   },
   openGraph: {
-    title:       'PilotResto — Logiciel de gestion pour restaurateurs',
-    description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours sans engagement.',
+    title:       'PilotResto — Logiciel de gestion restaurant',
+    description: 'Centralisez stocks, planning et comptabilité. Essai gratuit 14 jours.',
     url:         'https://restopilot.pro',
     siteName:    'PilotResto',
     images: [
