@@ -85,6 +85,7 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Créer la session ─────────────────────────────────────────
+  console.log('[checkout] priceId reçu:', body.priceId)
   try {
     const url = await createCheckoutSession({
       priceId:          body.priceId,

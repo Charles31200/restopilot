@@ -315,6 +315,7 @@ export default function PricingPage() {
   const [apiError, setApiError] = useState<string | null>(null)
 
   const handleSelect = async (priceId: string) => {
+    console.log('[pricing] isAnnual:', isAnnual, '— priceId envoyé:', priceId)
     setLoading(priceId)
     setApiError(null)
     try {
