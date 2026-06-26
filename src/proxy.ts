@@ -4,6 +4,7 @@
 // Règles d'accès :
 //  1. Non connecté           → /login  (protège /dashboard + /onboarding)
 //  2. Connecté sur page auth → /dashboard
+//  2b. Connecté sur homepage → /dashboard
 //  3. Onboarding incomplet   → /onboarding
 //  4. Pas d'abonnement actif → /pricing?reason=subscription_required
 //  5. active | trialing      → accès autorisé
@@ -61,6 +62,11 @@ export async function proxy(request: NextRequest) {
 
   // ── 2. Connecté → éviter les pages auth ──────────────────────
   if (user && isAuthRoute) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  // ── 2b. Connecté sur la homepage → /dashboard ─────────────────
+  if (user && pathname === '/') {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 

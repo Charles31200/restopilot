@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import {
   ArrowRight, Menu, X, ChevronDown,
   BarChart3, Package, CalendarDays, FileText, Plug, ScanLine,
@@ -133,11 +135,20 @@ function animateCount(
 // ── Component ─────────────────────────────────────────────────────
 
 export default function LandingPage() {
+  const router = useRouter()
   const [menuOpen, setMenuOpen] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [counts, setCounts] = useState({ days: 0, min: 0, pct: 0 })
   const statsRef = useRef<HTMLDivElement>(null)
   const statsAnimated = useRef(false)
+
+  // Redirection si déjà connecté
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) router.replace('/dashboard')
+    })
+  }, [router])
 
   // Fade-up on scroll
   useEffect(() => {
