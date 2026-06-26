@@ -87,13 +87,21 @@ export async function proxy(request: NextRequest) {
       }
 
       // 3b. Vérifier l'abonnement (sauf routes exemptées)
-      if (!isExempt && profile.restaurant_id) {
+      if (!isExempt) {
+        // État incohérent : onboarding OK mais pas de restaurant
+        if (!profile.restaurant_id) {
+          const pricingUrl = new URL('/pricing', request.url)
+          pricingUrl.searchParams.set('reason', 'subscription_required')
+          return NextResponse.redirect(pricingUrl)
+        }
+
         const { data: sub } = await supabase
           .from('subscriptions')
           .select('status')
           .eq('restaurant_id', profile.restaurant_id)
           .single()
 
+        // active | trialing → accès OK ; tout le reste (canceled, past_due, null) → pricing
         const isActive = sub?.status === 'active' || sub?.status === 'trialing'
 
         if (!isActive) {
