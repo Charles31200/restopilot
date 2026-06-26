@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
 import { ProgressBarProvider } from '@/components/ui/ProgressBarProvider'
+import PWARegister from '@/components/PWARegister'
+import PWAInstallBanner from '@/components/PWAInstallBanner'
 import './globals.css'
 
 // ── Polices ───────────────────────────────────────────────────
@@ -25,6 +27,13 @@ export const metadata: Metadata = {
   title:       'PilotResto — Logiciel de gestion pour restaurateurs',
   description: 'PilotResto centralise stocks, planning et comptabilité en une seule plateforme. Conçu pour les restaurateurs indépendants français. Essai gratuit 14 jours.',
   metadataBase: new URL('https://restopilot.pro'),
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable:         true,
+    statusBarStyle:  'black-translucent',
+    title:           'PilotResto',
+    startupImage:    '/apple-touch-icon.png',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico',  sizes: '32x32',   type: 'image/x-icon' },
@@ -66,12 +75,12 @@ export const metadata: Metadata = {
 }
 
 export const viewport: Viewport = {
-  width:               'device-width',
-  initialScale:        1,
-  maximumScale:        1,   // Désactive le zoom sur iOS (app native feel)
-  userScalable:        false,
-  viewportFit:         'cover', // Permet d'utiliser env(safe-area-inset-*)
-  themeColor:          '#35404F', // Couleur de la status bar sur Android
+  width:        'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit:  'cover',
+  themeColor:   '#1B2A4A',
 }
 
 // ── Layout racine ─────────────────────────────────────────────
@@ -88,6 +97,8 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-rp-page text-rp-navy font-body">
         <ProgressBarProvider>{children}</ProgressBarProvider>
+        <PWARegister />
+        <PWAInstallBanner />
       </body>
     </html>
   )
