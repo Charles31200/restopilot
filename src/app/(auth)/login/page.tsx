@@ -188,10 +188,17 @@ export default function LoginPage() {
         </form>
 
         {/* Créer un compte */}
-        <p className="text-center text-[14px] mt-5 mb-8" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
+        <p className="text-center text-[14px] mt-5" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
           Pas encore de compte ?{' '}
           <Link href="/register" className="font-semibold" style={{ color: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}>
             Créer un compte gratuit
+          </Link>
+        </p>
+
+        {/* Lien landing */}
+        <p className="text-center text-[13px] mt-3 mb-8" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>
+          <Link href="/landing" className="hover:underline transition-opacity hover:opacity-100" style={{ color: 'var(--rp-navy-muted)' }}>
+            Découvrir PilotResto →
           </Link>
         </p>
       </div>

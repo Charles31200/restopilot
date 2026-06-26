@@ -11,7 +11,7 @@ export default function MarketingLayout({ children }: { children: React.ReactNod
       {/* Navbar minimaliste */}
       <header className="border-b border-gray-100 sticky top-0 z-50 bg-white/95 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <a href="/" className="flex items-center">
+          <a href="/landing" className="flex items-center">
             <img src="/favicon.png" alt="PilotResto" style={{ height: '36px', width: 'auto' }} />
           </a>
           <div className="flex items-center gap-6">

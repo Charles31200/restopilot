@@ -74,7 +74,7 @@ export default function CguCgvPage() {
 
         {/* ── Retour ───────────────────────────────────────────── */}
         <a
-          href="/"
+          href="/landing"
           className="inline-flex items-center gap-2 text-sm font-medium mb-10 transition-colors"
           style={{ color: '#8896A8' }}
           onMouseEnter={e => (e.currentTarget.style.color = '#1B2A4A')}

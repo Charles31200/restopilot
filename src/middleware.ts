@@ -4,7 +4,7 @@
 // Règles d'accès :
 //  1. Non connecté           → /login  (protège /dashboard + /onboarding)
 //  2. Connecté sur page auth → /dashboard
-//  2b. Connecté sur homepage → /dashboard
+//  2b. Homepage → /dashboard (connecté) ou /login (non connecté)
 //  3. Onboarding incomplet   → /onboarding
 //  4. Pas d'abonnement actif → /pricing?reason=subscription_required
 //  5. active | trialing      → accès autorisé
@@ -65,9 +65,10 @@ export default async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
-  // ── 2b. Connecté sur la homepage → /dashboard ─────────────────
-  if (user && pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+  // ── 2b. Homepage : connecté → /dashboard, non connecté → /login ─
+  if (pathname === '/') {
+    const dest = user ? '/dashboard' : '/login'
+    return NextResponse.redirect(new URL(dest, request.url))
   }
 
   // ── 3. Vérifications dashboard ────────────────────────────────

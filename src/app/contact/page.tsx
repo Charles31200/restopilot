@@ -92,11 +92,11 @@ export default function ContactPage() {
 
       {/* Header */}
       <header className="relative z-10 px-6 py-5 flex items-center justify-between max-w-5xl mx-auto w-full">
-        <a href="/" className="flex items-center">
+        <a href="/landing" className="flex items-center">
           <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto' }} />
         </a>
         <a
-          href="/"
+          href="/landing"
           className="flex items-center gap-1.5 text-white/60 hover:text-white text-sm transition-colors"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -127,7 +127,7 @@ export default function ContactPage() {
                 Nous vous contacterons dans les 24h pour organiser votre démo personnalisée.
               </p>
               <a
-                href="/"
+                href="/landing"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-full font-semibold text-white transition active:scale-95"
                 style={{ background: '#D4952A' }}
               >
