@@ -140,7 +140,7 @@ export async function updateOnboardingAction(
       .update({ first_name: profileData.first_name, last_name: profileData.last_name })
       .eq('id', user.id)
 
-    redirect('/dashboard')
+    redirect('/onboarding-payment')
   }
 
   // Mettre à jour le restaurant existant via le client user :
@@ -172,7 +172,7 @@ export async function updateOnboardingAction(
     return { error: `Erreur profil : ${profErr.message}` }
   }
 
-  redirect('/dashboard')
+  redirect('/onboarding-payment')
 }
 
 export async function signOutAction(): Promise<void> {

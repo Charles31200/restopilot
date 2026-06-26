@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -65,6 +65,16 @@ export default function LoginPage() {
   }
 
   const socialDisabled = googleLoading || isSubmitting
+
+  // Pose le cookie pwa_installed si la page est ouverte depuis la PWA
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('source') === 'pwa') {
+        document.cookie = 'pwa_installed=true; path=/; max-age=31536000; SameSite=Lax'
+      }
+    }
+  }, [])
 
   return (
     <div className="min-h-screen flex flex-col px-5" style={{ background: 'var(--rp-bg-page)' }}>

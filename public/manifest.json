@@ -2,7 +2,7 @@
   "name": "PilotResto",
   "short_name": "PilotResto",
   "description": "Logiciel de gestion pour restaurateurs indépendants",
-  "start_url": "/login",
+  "start_url": "/login?source=pwa",
   "display": "standalone",
   "background_color": "#1B2A4A",
   "theme_color": "#1B2A4A",
