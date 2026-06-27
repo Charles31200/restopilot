@@ -121,8 +121,19 @@ export default function LoginPage() {
     setLoading(true)
     const supabase = createClient()
     const { error: authErr } = await supabase.auth.signInWithPassword({ email, password })
+    if (authErr) {
+      console.error('[login] signInWithPassword error:', authErr)
+      setError(translateError(authErr.message))
+      setLoading(false)
+      return
+    }
+    // Vérifie qu'une session existe vraiment (email non confirmé → pas de session)
+    const { data: { session } } = await supabase.auth.getSession()
     setLoading(false)
-    if (authErr) { setError(translateError(authErr.message)); return }
+    if (!session) {
+      setError('Votre email n\'est pas encore confirmé. Vérifiez votre boîte mail.')
+      return
+    }
     if (rememberMe) {
       document.cookie = 'remember_session=true; path=/; max-age=2592000; SameSite=Lax'
     } else {
