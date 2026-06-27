@@ -102,7 +102,9 @@ export default async function middleware(request: NextRequest) {
   // ── 4. Check cookie PWA (dashboard + onboarding + onboarding-payment) ─
   const needsPWA = isDashboardRoute || isOnboarding || isOnboardingPayment
   if (needsPWA) {
-    const isPWA = request.cookies.get('pwa_installed')?.value === 'true'
+    const userAgent  = request.headers.get('user-agent') ?? ''
+    const isElectron = userAgent.includes('Electron')
+    const isPWA      = isElectron || request.cookies.get('pwa_installed')?.value === 'true'
     if (!isPWA) {
       return NextResponse.redirect(new URL('/install', request.url))
     }
