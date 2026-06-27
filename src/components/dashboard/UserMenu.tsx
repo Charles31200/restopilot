@@ -32,6 +32,9 @@ export function UserMenu({ userFullName, userEmail, userInitials }: Props) {
 
   const handleSignOut = async () => {
     setSigning(true)
+    // Nettoyage côté client avant la déconnexion serveur
+    document.cookie = 'remember_session=; path=/; max-age=0'
+    localStorage.removeItem('pilotresto-session')
     await signOutAction()
   }
 

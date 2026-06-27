@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react'
-import { signInAction } from '@/lib/supabase/actions'
 import { createClient } from '@/lib/supabase/client'
 import { cn } from '@/lib/utils/cn'
 
@@ -19,6 +19,15 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+// ── Traduction d'erreurs côté client ─────────────────────────
+
+function translateError(msg: string): string {
+  if (msg.includes('Invalid login credentials'))  return 'Email ou mot de passe incorrect.'
+  if (msg.includes('Email not confirmed'))         return 'Confirmez votre email avant de vous connecter.'
+  if (msg.includes('Too many requests'))           return 'Trop de tentatives. Réessayez dans quelques minutes.'
+  return 'Une erreur est survenue. Réessayez.'
+}
+
 // ── Helpers OAuth ─────────────────────────────────────────────
 
 const CALLBACK_URL = 'https://restopilot.pro/api/auth/callback'
@@ -26,9 +35,11 @@ const CALLBACK_URL = 'https://restopilot.pro/api/auth/callback'
 // ── Page ──────────────────────────────────────────────────────
 
 export default function LoginPage() {
+  const router = useRouter()
   const [showPwd,       setShowPwd]       = useState(false)
   const [serverError,   setServerError]   = useState<string | null>(null)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [rememberMe,    setRememberMe]    = useState(false)
 
   const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
     useForm<FormData>({ resolver: zodResolver(schema) })
@@ -36,10 +47,44 @@ export default function LoginPage() {
   const emailVal = watch('email')    ?? ''
   const pwdVal   = watch('password') ?? ''
 
+  // Pose le cookie pwa_installed si ouverte depuis la PWA / Electron
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('source') === 'pwa' || params.get('source') === 'electron') {
+        document.cookie = 'pwa_installed=true; path=/; max-age=31536000; SameSite=Lax'
+      }
+    }
+  }, [])
+
+  // Session existante → va directement au dashboard
+  useEffect(() => {
+    const checkSession = async () => {
+      const supabase = createClient()
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) router.replace('/dashboard')
+    }
+    checkSession()
+  }, [router])
+
+  // Connexion email / mot de passe (client-side pour gérer rememberMe)
   const onSubmit = async (data: FormData) => {
     setServerError(null)
-    const result = await signInAction(data.email, data.password)
-    if (result && 'error' in result) setServerError(result.error)
+    const supabase = createClient()
+    const { error } = await supabase.auth.signInWithPassword({
+      email:    data.email,
+      password: data.password,
+    })
+    if (error) {
+      setServerError(translateError(error.message))
+      return
+    }
+    if (rememberMe) {
+      document.cookie = 'remember_session=true; path=/; max-age=2592000; SameSite=Lax'
+    } else {
+      document.cookie = 'remember_session=; path=/; max-age=0'
+    }
+    router.replace('/dashboard')
   }
 
   const handleGoogleLogin = async () => {
@@ -66,21 +111,12 @@ export default function LoginPage() {
 
   const socialDisabled = googleLoading || isSubmitting
 
-  // Pose le cookie pwa_installed si la page est ouverte depuis la PWA
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search)
-      if (params.get('source') === 'pwa') {
-        document.cookie = 'pwa_installed=true; path=/; max-age=31536000; SameSite=Lax'
-      }
-    }
-  }, [])
-
   return (
     <div className="min-h-screen flex flex-col px-5" style={{ background: 'var(--rp-bg-page)' }}>
 
       {/* ── Logo ─────────────────────────────────────────────── */}
       <div className="flex flex-col items-center" style={{ paddingTop: '12vh', paddingBottom: '6vh' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/favicon.png" alt="PilotResto" style={{ height: '64px', width: 'auto', marginBottom: '12px' }} />
         <p className="text-[14px] text-center leading-relaxed" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
           Gérez votre restaurant en 10 secondes
@@ -101,7 +137,6 @@ export default function LoginPage() {
           {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
           Continuer avec Google
         </button>
-
 
         {/* Séparateur ou */}
         <div className="relative flex items-center mb-4">
@@ -179,6 +214,36 @@ export default function LoginPage() {
             {errors.password && <p className="mt-1.5 text-[12px] flex items-center gap-1" style={{ color: 'var(--rp-danger)' }}><AlertCircle size={12} />{errors.password.message}</p>}
           </div>
 
+          {/* ── Se souvenir de moi ──────────────────────────── */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0' }}>
+            <input
+              type="checkbox"
+              id="remember"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              style={{
+                width: '16px',
+                height: '16px',
+                accentColor: '#D4952A',
+                cursor: 'pointer',
+                borderRadius: '4px',
+                flexShrink: 0,
+              }}
+            />
+            <label
+              htmlFor="remember"
+              style={{
+                fontSize: '14px',
+                color: 'var(--rp-navy-muted)',
+                cursor: 'pointer',
+                userSelect: 'none',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
+              Se souvenir de moi
+            </label>
+          </div>
+
           {/* Mot de passe oublié */}
           <div className="flex justify-center">
             <Link href="/forgot-password" className="text-[14px] font-medium" style={{ color: 'var(--rp-blue)', fontFamily: 'var(--font-body)' }}>
@@ -207,7 +272,7 @@ export default function LoginPage() {
 
         {/* Lien landing */}
         <p className="text-center text-[13px] mt-3 mb-8" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>
-          <Link href="/landing" className="hover:underline transition-opacity hover:opacity-100" style={{ color: 'var(--rp-navy-muted)' }}>
+          <Link href="/" className="hover:underline transition-opacity hover:opacity-100" style={{ color: 'var(--rp-navy-muted)' }}>
             Découvrir PilotResto →
           </Link>
         </p>
@@ -228,4 +293,3 @@ function GoogleIcon() {
     </svg>
   )
 }
-
