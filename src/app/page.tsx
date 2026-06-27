@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Menu, X, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react'
 
@@ -72,10 +73,18 @@ function StarIcon() {
 // ═══════════════════════════════════════════════════════════════
 
 export default function HomePage() {
-  const [menuOpen, setMenuOpen]       = useState(false)
-  const [scrolled, setScrolled]       = useState(false)
+  const router = useRouter()
+  const [menuOpen, setMenuOpen]         = useState(false)
+  const [scrolled, setScrolled]         = useState(false)
   const [statsVisible, setStatsVisible] = useState(false)
   const statsRef = useRef<HTMLDivElement>(null)
+
+  // Redirige vers /login si l'utilisateur est dans l'app Electron
+  useEffect(() => {
+    if (navigator.userAgent.includes('Electron')) {
+      router.replace('/login')
+    }
+  }, [router])
 
   // Effet header scroll
   useEffect(() => {

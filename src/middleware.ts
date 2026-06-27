@@ -47,6 +47,14 @@ export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // ── 0. Routes publiques → court-circuit immédiat ─────────────
+  const userAgentEarly = request.headers.get('user-agent') ?? ''
+  const isElectronEarly = userAgentEarly.includes('Electron')
+
+  // Dans l'app Electron, / et /landing redirigent vers /login
+  if (isElectronEarly && (pathname === '/' || pathname === '/landing')) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
   if (FULLY_PUBLIC.some(r => pathname === r || pathname.startsWith(r + '/'))) {
     return response
   }
