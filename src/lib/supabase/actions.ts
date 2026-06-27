@@ -39,17 +39,17 @@ export async function signUpAction(
   email: string,
   firstName: string,
   lastName: string,
+  password: string,
 ): Promise<AuthResult> {
   const supabase = await createClient()
 
-  // Lien de confirmation → callback qui redirige vers /auth/set-password
+  // Lien de confirmation → callback qui redirige vers /login
   const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://restopilot.pro'
-  const redirectTo = `${appUrl}/api/auth/callback?next=/auth/set-password`
+  const redirectTo = `${appUrl}/api/auth/callback?next=/login`
 
   const { data, error: authError } = await supabase.auth.signUp({
     email,
-    // Mot de passe temporaire aléatoire — l'utilisateur définira le sien via /auth/set-password
-    password: crypto.randomUUID(),
+    password,
     options: {
       emailRedirectTo: redirectTo,
       data: { first_name: firstName, last_name: lastName },

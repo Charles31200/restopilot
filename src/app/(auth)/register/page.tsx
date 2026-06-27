@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Loader2, Mail, CheckCircle2 } from 'lucide-react'
+import { Loader2, Mail, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { signUpAction } from '@/lib/supabase/actions'
 
@@ -47,13 +47,17 @@ function SubmitBtn({
 // ── Page ──────────────────────────────────────────────────────
 
 export default function RegisterPage() {
-  const [step,          setStep]         = useState<'form' | 'sent'>('form')
-  const [firstName,     setFirstName]    = useState('')
-  const [lastName,      setLastName]     = useState('')
-  const [email,         setEmail]        = useState('')
-  const [error,         setError]        = useState<string | null>(null)
-  const [loading,       setLoading]      = useState(false)
-  const [googleLoading, setGoogleLoading] = useState(false)
+  const [step,            setStep]           = useState<'form' | 'sent'>('form')
+  const [firstName,       setFirstName]      = useState('')
+  const [lastName,        setLastName]       = useState('')
+  const [email,           setEmail]          = useState('')
+  const [password,        setPassword]       = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [showPwd,         setShowPwd]        = useState(false)
+  const [showConfirm,     setShowConfirm]    = useState(false)
+  const [error,           setError]          = useState<string | null>(null)
+  const [loading,         setLoading]        = useState(false)
+  const [googleLoading,   setGoogleLoading]  = useState(false)
 
   const disabled = loading || googleLoading
 
@@ -73,10 +77,18 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!firstName || !lastName || !email) return
+    if (!firstName || !lastName || !email || !password || !confirmPassword) return
+    if (password.length < 8) {
+      setError('Le mot de passe doit contenir au moins 8 caractères.')
+      return
+    }
+    if (password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas.')
+      return
+    }
     setError(null)
     setLoading(true)
-    const result = await signUpAction(email, firstName, lastName)
+    const result = await signUpAction(email, firstName, lastName, password)
     setLoading(false)
     if (result && 'error' in result) {
       setError(result.error)
@@ -98,7 +110,7 @@ export default function RegisterPage() {
         <p className="text-[14px] leading-relaxed mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
           Un email de confirmation a été envoyé à{' '}
           <strong style={{ color: '#0D1B1E' }}>{email}</strong>.
-          Cliquez sur le lien pour créer votre mot de passe.
+          Cliquez sur le lien pour confirmer votre compte, puis connectez-vous avec vos identifiants.
         </p>
         <div className="rounded-[12px] p-4 text-[13px] text-left space-y-2 mb-5" style={{ background: '#F9FAFB' }}>
           {[
@@ -188,8 +200,54 @@ export default function RegisterPage() {
           required
         />
 
-        <SubmitBtn loading={loading} disabled={disabled || !firstName || !lastName || !email}>
-          Recevoir le lien de confirmation
+        {/* Mot de passe */}
+        <div className="relative">
+          <RPInput
+            type={showPwd ? 'text' : 'password'}
+            placeholder="Mot de passe (min. 8 caractères)"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            autoComplete="new-password"
+            disabled={disabled}
+            style={{ paddingRight: '44px' }}
+            required
+          />
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={() => setShowPwd(v => !v)}
+            className="absolute right-3 top-1/2 -translate-y-1/2"
+            style={{ color: '#9CA3AF' }}
+          >
+            {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        {/* Confirmation mot de passe */}
+        <div className="relative">
+          <RPInput
+            type={showConfirm ? 'text' : 'password'}
+            placeholder="Confirmer le mot de passe"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            autoComplete="new-password"
+            disabled={disabled}
+            style={{ paddingRight: '44px' }}
+            required
+          />
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={() => setShowConfirm(v => !v)}
+            className="absolute right-3 top-1/2 -translate-y-1/2"
+            style={{ color: '#9CA3AF' }}
+          >
+            {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        <SubmitBtn loading={loading} disabled={disabled || !firstName || !lastName || !email || !password || !confirmPassword}>
+          Créer mon compte
         </SubmitBtn>
       </form>
 
