@@ -732,14 +732,26 @@ export default function LandingPage() {
           <p className="text-white/75 text-base sm:text-lg mb-10 max-w-lg mx-auto">
             14 jours gratuits. Aucune carte bancaire requise. Configuration en 3 minutes.
           </p>
-          <a
-            href="/contact"
-            className="inline-flex items-center justify-center gap-2 font-bold bg-white transition hover:bg-white/90 active:scale-95 shadow-lg"
-            style={{ color: '#1B2A4A', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
-          >
-            Contacter PilotResto
-            <ArrowRight className="w-4 h-4" />
-          </a>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a
+              href="/contact"
+              className="inline-flex items-center justify-center gap-2 font-bold bg-white transition hover:bg-white/90 active:scale-95 shadow-lg"
+              style={{ color: '#1B2A4A', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
+            >
+              Contacter PilotResto
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href="/downloads/PilotResto.dmg"
+              download
+              className="inline-flex items-center justify-center gap-2 font-semibold border-2 border-white/60 text-white transition hover:bg-white/10 active:scale-95"
+              style={{ borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
+            >
+              {/* Apple icon inline SVG */}
+              <svg width="18" height="18" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-167.2-140.9c-52.3-88.2-87.5-231.7-87.5-375.8 0-231.9 151.6-354.3 300.5-354.3 79.7 0 145.9 52.3 195.4 52.3 47.5 0 122.4-55.5 210.9-55.5zm-105.9-157.1c-37.5 0-94.4-26.1-131.9-60.7-33.6-31.1-65.8-81.5-65.8-131.9 0-6.4.6-12.9 1.9-19.4 0-6.4 0-12.9-1.9-19.4 35.6-.9 96.1 34.9 135.9 74.3 33.6 33.6 60 83.5 60 131.9z"/></svg>
+              Télécharger pour Mac
+            </a>
+          </div>
         </div>
       </section>
 
