@@ -37,6 +37,7 @@ const SUBSCRIPTION_EXEMPT = [
   '/dashboard/compte',
   '/dashboard/upgrade',
   '/onboarding-payment',
+  '/add-card',
 ]
 
 export default async function middleware(request: NextRequest) {
@@ -85,7 +86,8 @@ export default async function middleware(request: NextRequest) {
   const isDashboardRoute    = pathname.startsWith('/dashboard')
   const isOnboarding        = pathname === '/onboarding'
   const isOnboardingPayment = pathname === '/onboarding-payment'
-  const needsAuth           = isDashboardRoute || isOnboarding || isOnboardingPayment
+  const isAddCard           = pathname === '/add-card'
+  const needsAuth           = isDashboardRoute || isOnboarding || isOnboardingPayment || isAddCard
 
   // ── 1. Homepage ───────────────────────────────────────────────
   if (pathname === '/') {
@@ -142,7 +144,7 @@ export default async function middleware(request: NextRequest) {
 
         const { data: sub } = await supabase
           .from('subscriptions')
-          .select('status')
+          .select('status, has_payment_method')
           .eq('restaurant_id', profile.restaurant_id)
           .single()
 
@@ -153,6 +155,11 @@ export default async function middleware(request: NextRequest) {
           const url = new URL('/onboarding-payment', request.url)
           url.searchParams.set('reason', 'subscription_required')
           return NextResponse.redirect(url)
+        }
+
+        // Trialing sans carte bancaire → /add-card
+        if (sub?.status === 'trialing' && sub?.has_payment_method === false) {
+          return NextResponse.redirect(new URL('/add-card', request.url))
         }
 
         response.headers.set('x-subscription-status', sub.status)

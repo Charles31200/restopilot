@@ -87,6 +87,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   // current_period_end is a unix timestamp on the Stripe object
   const periodEnd  = new Date((stripeSub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
 
+  // Une carte est toujours collectée (payment_method_collection: 'always')
+  const hasPaymentMethod =
+    stripeSub.default_payment_method !== null &&
+    stripeSub.default_payment_method !== undefined
+
   await admin
     .from('subscriptions')
     .upsert({
@@ -96,6 +101,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       plan,
       status:             statusVal,
       current_period_end: periodEnd,
+      has_payment_method: hasPaymentMethod,
       updated_at:         new Date().toISOString(),
     }, { onConflict: 'restaurant_id' })
 

@@ -177,6 +177,7 @@ export type Subscription = {
   plan: SubscriptionPlan
   status: SubscriptionStatus
   current_period_end: string | null
+  has_payment_method: boolean | null
   created_at: string
   updated_at: string
 }
