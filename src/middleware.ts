@@ -18,8 +18,17 @@ import type { NextRequest } from 'next/server'
 
 // Routes 100 % publiques — pas de Supabase, pas de cookie PWA
 const FULLY_PUBLIC = [
-  '/landing', '/install', '/contact', '/pricing',
-  '/cgu-cgv', '/politique-de-confidentialite',
+  '/',
+  '/landing',
+  '/login',
+  '/register',
+  '/install',
+  '/contact',
+  '/pricing',
+  '/cgu-cgv',
+  '/politique-de-confidentialite',
+  '/auth',
+  '/downloads',
 ]
 
 // Routes dashboard accessibles sans abonnement actif (évite les boucles)
