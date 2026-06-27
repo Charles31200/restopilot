@@ -3,82 +3,126 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-react'
+import { Eye, EyeOff, Loader2, ArrowLeft, CheckCircle2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { cn } from '@/lib/utils/cn'
 
-// ── Schéma ────────────────────────────────────────────────────
+// ── Types ─────────────────────────────────────────────────────
 
-const schema = z.object({
-  email:    z.string().min(1, 'Email requis').email('Email invalide'),
-  password: z.string().min(1, 'Mot de passe requis'),
-})
+type Mode = 'login' | 'forgot' | 'forgot-sent'
 
-type FormData = z.infer<typeof schema>
-
-// ── Traduction d'erreurs côté client ─────────────────────────
+// ── Helpers ───────────────────────────────────────────────────
 
 function translateError(msg: string): string {
-  if (msg.includes('Invalid login credentials'))  return 'Email ou mot de passe incorrect.'
-  if (msg.includes('Email not confirmed'))         return 'Confirmez votre email avant de vous connecter.'
-  if (msg.includes('Too many requests'))           return 'Trop de tentatives. Réessayez dans quelques minutes.'
+  if (msg.includes('Invalid login credentials')) return 'Email ou mot de passe incorrect.'
+  if (msg.includes('Email not confirmed'))        return 'Confirmez votre email avant de vous connecter.'
+  if (msg.includes('Too many requests'))          return 'Trop de tentatives. Réessayez dans quelques minutes.'
   return 'Une erreur est survenue. Réessayez.'
 }
 
-// ── Helpers OAuth ─────────────────────────────────────────────
+const RESET_REDIRECT = 'https://restopilot.pro/api/auth/callback?next=/auth/set-password'
+const OAUTH_REDIRECT = 'https://restopilot.pro/api/auth/callback'
 
-const CALLBACK_URL = 'https://restopilot.pro/api/auth/callback'
+// ── Composants locaux ─────────────────────────────────────────
+
+function RPInput({
+  icon,
+  style,
+  ...props
+}: React.InputHTMLAttributes<HTMLInputElement> & { icon?: React.ReactNode }) {
+  return (
+    <div className="relative">
+      <input
+        className="w-full rounded-[12px] text-[15px] outline-none transition-colors duration-150"
+        style={{
+          background:  '#F2F2F7',
+          border:      '1.5px solid transparent',
+          padding:     icon ? '14px 44px 14px 16px' : '14px 16px',
+          color:       '#0D1B1E',
+          fontFamily:  'var(--font-body)',
+          ...style,
+        }}
+        onFocus={e  => (e.target.style.borderColor = '#D4952A')}
+        onBlur={e   => (e.target.style.borderColor = 'transparent')}
+        {...props}
+      />
+      {icon && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }}>
+          {icon}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function SubmitBtn({
+  loading,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean }) {
+  return (
+    <button
+      type="submit"
+      className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
+      style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+      {...props}
+    >
+      {loading && <Loader2 size={16} className="animate-spin" />}
+      {children}
+    </button>
+  )
+}
+
+function ErrBox({ msg }: { msg: string }) {
+  return (
+    <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+      {msg}
+    </div>
+  )
+}
 
 // ── Page ──────────────────────────────────────────────────────
 
 export default function LoginPage() {
   const router = useRouter()
-  const [showPwd,       setShowPwd]       = useState(false)
-  const [serverError,   setServerError]   = useState<string | null>(null)
+
+  const [mode,          setMode]         = useState<Mode>('login')
+  const [email,         setEmail]        = useState('')
+  const [password,      setPassword]     = useState('')
+  const [showPwd,       setShowPwd]      = useState(false)
+  const [rememberMe,    setRememberMe]   = useState(false)
+  const [forgotEmail,   setForgotEmail]  = useState('')
+  const [error,         setError]        = useState<string | null>(null)
+  const [loading,       setLoading]      = useState(false)
+  const [forgotLoading, setForgotLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
-  const [rememberMe,    setRememberMe]    = useState(false)
-
-  const { register, handleSubmit, watch, formState: { errors, isSubmitting } } =
-    useForm<FormData>({ resolver: zodResolver(schema) })
-
-  const emailVal = watch('email')    ?? ''
-  const pwdVal   = watch('password') ?? ''
 
   // Pose le cookie pwa_installed si ouverte depuis la PWA / Electron
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search)
-      if (params.get('source') === 'pwa' || params.get('source') === 'electron') {
-        document.cookie = 'pwa_installed=true; path=/; max-age=31536000; SameSite=Lax'
-      }
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('source') === 'pwa' || params.get('source') === 'electron') {
+      document.cookie = 'pwa_installed=true; path=/; max-age=31536000; SameSite=Lax'
     }
   }, [])
 
-  // Session existante → va directement au dashboard
+  // Session existante → dashboard
   useEffect(() => {
-    const checkSession = async () => {
-      const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+    createClient().auth.getSession().then(({ data: { session } }) => {
       if (session) router.replace('/dashboard')
-    }
-    checkSession()
+    })
   }, [router])
 
-  // Connexion email / mot de passe (client-side pour gérer rememberMe)
-  const onSubmit = async (data: FormData) => {
-    setServerError(null)
+  const disabled = loading || forgotLoading || googleLoading
+
+  // ── Connexion email ───────────────────────────────────────────
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email || !password) return
+    setError(null)
+    setLoading(true)
     const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({
-      email:    data.email,
-      password: data.password,
-    })
-    if (error) {
-      setServerError(translateError(error.message))
-      return
-    }
+    const { error: authErr } = await supabase.auth.signInWithPassword({ email, password })
+    setLoading(false)
+    if (authErr) { setError(translateError(authErr.message)); return }
     if (rememberMe) {
       document.cookie = 'remember_session=true; path=/; max-age=2592000; SameSite=Lax'
     } else {
@@ -87,201 +131,191 @@ export default function LoginPage() {
     router.replace('/dashboard')
   }
 
-  const handleGoogleLogin = async () => {
-    setGoogleLoading(true)
-    setServerError(null)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: CALLBACK_URL,
-          queryParams: { access_type: 'offline', prompt: 'consent' },
-        },
-      })
-      if (error) {
-        setServerError('Connexion Google impossible.')
-        setGoogleLoading(false)
-      }
-    } catch {
-      setServerError('Une erreur est survenue.')
-      setGoogleLoading(false)
-    }
+  // ── Mot de passe oublié ───────────────────────────────────────
+  const handleForgot = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!forgotEmail) return
+    setError(null)
+    setForgotLoading(true)
+    const supabase = createClient()
+    const { error: resetErr } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: RESET_REDIRECT,
+    })
+    setForgotLoading(false)
+    if (resetErr) { setError(translateError(resetErr.message)); return }
+    setMode('forgot-sent')
   }
 
-  const socialDisabled = googleLoading || isSubmitting
+  // ── Google OAuth ──────────────────────────────────────────────
+  const handleGoogle = async () => {
+    setGoogleLoading(true)
+    setError(null)
+    const supabase = createClient()
+    const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: OAUTH_REDIRECT, queryParams: { access_type: 'offline', prompt: 'consent' } },
+    })
+    if (oauthErr) { setError('Connexion Google impossible.'); setGoogleLoading(false) }
+  }
 
-  return (
-    <div className="min-h-screen flex flex-col px-5" style={{ background: 'var(--rp-bg-page)' }}>
-
-      {/* ── Logo ─────────────────────────────────────────────── */}
-      <div className="flex flex-col items-center" style={{ paddingTop: '12vh', paddingBottom: '6vh' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/favicon.png" alt="PilotResto" style={{ height: '64px', width: 'auto', marginBottom: '12px' }} />
-        <p className="text-[14px] text-center leading-relaxed" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-          Gérez votre restaurant en 10 secondes
+  // ── État : email de réinitialisation envoyé ───────────────────
+  if (mode === 'forgot-sent') {
+    return (
+      <div className="text-center py-2">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
+          <CheckCircle2 className="w-6 h-6" style={{ color: '#166534' }} />
+        </div>
+        <h2 className="text-[18px] font-bold mb-2" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+          Email envoyé
+        </h2>
+        <p className="text-[14px] leading-relaxed mb-6" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          Un lien de réinitialisation a été envoyé à <strong style={{ color: '#0D1B1E' }}>{forgotEmail}</strong>.
+          Vérifiez votre boîte mail.
         </p>
-      </div>
-
-      {/* ── Formulaire ───────────────────────────────────────── */}
-      <div className="flex-1 flex flex-col max-w-sm w-full mx-auto">
-
-        {/* Bouton Google */}
         <button
           type="button"
-          onClick={handleGoogleLogin}
-          disabled={socialDisabled}
-          className="w-full h-[52px] flex items-center justify-center gap-3 rounded-[14px] font-medium text-[15px] mb-5 transition-opacity disabled:opacity-60"
-          style={{ background: 'var(--rp-white)', border: '1px solid var(--rp-lavender)', color: 'var(--rp-navy)', boxShadow: 'var(--rp-shadow-card)', fontFamily: 'var(--font-body)' }}
+          onClick={() => { setMode('login'); setForgotEmail(''); setError(null) }}
+          className="text-[14px] font-medium transition-opacity hover:opacity-70"
+          style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}
         >
-          {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
-          Continuer avec Google
+          ← Retour à la connexion
+        </button>
+      </div>
+    )
+  }
+
+  // ── État : formulaire mot de passe oublié ─────────────────────
+  if (mode === 'forgot') {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => { setMode('login'); setError(null) }}
+          className="flex items-center gap-1.5 mb-5 text-[13px] transition-opacity hover:opacity-70"
+          style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}
+        >
+          <ArrowLeft size={14} /> Retour
         </button>
 
-        {/* Séparateur ou */}
-        <div className="relative flex items-center mb-4">
-          <div className="flex-1 h-px" style={{ background: 'var(--rp-lavender-light)' }} />
-          <span className="px-3 text-[12px] uppercase tracking-widest" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>ou</span>
-          <div className="flex-1 h-px" style={{ background: 'var(--rp-lavender-light)' }} />
-        </div>
+        <h2 className="text-[19px] font-bold mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+          Mot de passe oublié ?
+        </h2>
+        <p className="text-[13px] mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          Entrez votre email pour recevoir un lien de réinitialisation.
+        </p>
 
-        {/* Erreur serveur */}
-        {serverError && (
-          <div className="flex items-start gap-2.5 p-3 rounded-[12px] mb-4 text-[14px]" style={{ background: 'var(--rp-danger-bg)', color: 'var(--rp-danger)' }}>
-            <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />{serverError}
-          </div>
-        )}
+        {error && <ErrBox msg={error} />}
 
-        <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-3">
+        <form onSubmit={handleForgot} className="space-y-3">
+          <RPInput
+            type="email"
+            placeholder="Adresse email"
+            value={forgotEmail}
+            onChange={e => setForgotEmail(e.target.value)}
+            autoComplete="email"
+            disabled={disabled}
+            required
+          />
+          <SubmitBtn loading={forgotLoading} disabled={disabled || !forgotEmail}>
+            Recevoir le lien de réinitialisation
+          </SubmitBtn>
+        </form>
+      </>
+    )
+  }
 
-          {/* Email */}
-          <div className="relative">
-            <input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder=" "
-              {...register('email')}
-              className={cn(
-                'peer w-full h-[52px] px-4 pt-5 pb-2 text-[15px] rounded-[14px] outline-none transition-all bg-white',
-                errors.email ? 'border-2 border-rp-danger' : 'border border-rp-lavender focus:border-2 focus:border-rp-amber'
-              )}
-              style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-body)' }}
-            />
-            <label htmlFor="email" className={cn(
-              'absolute left-4 pointer-events-none select-none transition-all duration-200',
-              'peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-              'peer-focus:top-2.5 peer-focus:translate-y-0 peer-focus:text-[11px]',
-              emailVal.length > 0 && 'top-2.5 translate-y-0 text-[11px]',
-            )} style={{ color: errors.email ? 'var(--rp-danger)' : 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-              Adresse email
-            </label>
-            {errors.email && <p className="mt-1.5 text-[12px] flex items-center gap-1" style={{ color: 'var(--rp-danger)' }}><AlertCircle size={12} />{errors.email.message}</p>}
-          </div>
+  // ── État principal : connexion ─────────────────────────────────
+  return (
+    <>
+      <h2 className="text-[19px] font-bold text-center mb-5" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+        Connexion
+      </h2>
 
-          {/* Mot de passe */}
-          <div className="relative">
-            <input
-              id="password"
-              type={showPwd ? 'text' : 'password'}
-              autoComplete="current-password"
-              placeholder=" "
-              {...register('password')}
-              className={cn(
-                'peer w-full h-[52px] px-4 pt-5 pb-2 pr-12 text-[15px] rounded-[14px] outline-none transition-all bg-white',
-                errors.password ? 'border-2 border-rp-danger' : 'border border-rp-lavender focus:border-2 focus:border-rp-amber'
-              )}
-              style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-body)' }}
-            />
-            <label htmlFor="password" className={cn(
-              'absolute left-4 pointer-events-none select-none transition-all duration-200',
-              'peer-placeholder-shown:top-[50%] peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-              'peer-focus:top-2.5 peer-focus:translate-y-0 peer-focus:text-[11px]',
-              pwdVal.length > 0 && 'top-2.5 translate-y-0 text-[11px]',
-            )} style={{ color: errors.password ? 'var(--rp-danger)' : 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-              Mot de passe
-            </label>
-            <button
-              type="button"
-              onClick={() => setShowPwd(v => !v)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center"
-              style={{ color: 'var(--rp-navy-muted)' }}
-              tabIndex={-1}
-              aria-label={showPwd ? 'Masquer' : 'Afficher'}
-            >
+      {/* Google */}
+      <button
+        type="button"
+        onClick={handleGoogle}
+        disabled={disabled}
+        className="w-full h-[50px] flex items-center justify-center gap-2.5 rounded-[12px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
+        style={{ background: '#F2F2F7', color: '#0D1B1E', fontFamily: 'var(--font-body)' }}
+      >
+        {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
+        Continuer avec Google
+      </button>
+
+      {/* Séparateur */}
+      <div className="relative flex items-center mb-4">
+        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
+        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: '#9CA3AF' }}>ou</span>
+        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
+      </div>
+
+      {error && <ErrBox msg={error} />}
+
+      <form onSubmit={handleLogin} className="space-y-3">
+        <RPInput
+          type="email"
+          placeholder="Adresse email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          autoComplete="email"
+          disabled={disabled}
+          required
+        />
+
+        <RPInput
+          type={showPwd ? 'text' : 'password'}
+          placeholder="Mot de passe"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          autoComplete="current-password"
+          disabled={disabled}
+          style={{ paddingRight: '44px' }}
+          icon={
+            <button type="button" tabIndex={-1} onClick={() => setShowPwd(v => !v)}>
               {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
-            {errors.password && <p className="mt-1.5 text-[12px] flex items-center gap-1" style={{ color: 'var(--rp-danger)' }}><AlertCircle size={12} />{errors.password.message}</p>}
-          </div>
+          }
+          required
+        />
 
-          {/* ── Se souvenir de moi ──────────────────────────── */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: '4px 0' }}>
+        {/* Se souvenir de moi + Mot de passe oublié */}
+        <div className="flex items-center justify-between">
+          <label className="flex items-center gap-2 cursor-pointer select-none text-[13px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
             <input
               type="checkbox"
-              id="remember"
               checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              style={{
-                width: '16px',
-                height: '16px',
-                accentColor: '#D4952A',
-                cursor: 'pointer',
-                borderRadius: '4px',
-                flexShrink: 0,
-              }}
+              onChange={e => setRememberMe(e.target.checked)}
+              style={{ accentColor: '#D4952A', width: 15, height: 15, flexShrink: 0 }}
             />
-            <label
-              htmlFor="remember"
-              style={{
-                fontSize: '14px',
-                color: 'var(--rp-navy-muted)',
-                cursor: 'pointer',
-                userSelect: 'none',
-                fontFamily: 'var(--font-body)',
-              }}
-            >
-              Se souvenir de moi
-            </label>
-          </div>
-
-          {/* Mot de passe oublié */}
-          <div className="flex justify-center">
-            <Link href="/forgot-password" className="text-[14px] font-medium" style={{ color: 'var(--rp-blue)', fontFamily: 'var(--font-body)' }}>
-              Mot de passe oublié ?
-            </Link>
-          </div>
-
-          {/* Bouton Se connecter */}
+            Se souvenir de moi
+          </label>
           <button
-            type="submit"
-            disabled={isSubmitting || socialDisabled}
-            className="w-full h-[56px] rounded-full font-semibold text-[16px] flex items-center justify-center gap-2 mt-2 transition-opacity disabled:opacity-60"
-            style={{ background: 'var(--rp-amber)', color: '#fff', fontFamily: 'var(--font-display)', boxShadow: '0 3px 12px rgba(212,149,42,.35)' }}
+            type="button"
+            onClick={() => { setMode('forgot'); setForgotEmail(email); setError(null) }}
+            className="text-[13px] transition-opacity hover:opacity-70"
+            style={{ color: '#D4952A', fontFamily: 'var(--font-body)' }}
           >
-            {isSubmitting ? <><Loader2 size={18} className="animate-spin" />Connexion…</> : 'Se connecter'}
+            Mot de passe oublié ?
           </button>
-        </form>
+        </div>
 
-        {/* Créer un compte */}
-        <p className="text-center text-[14px] mt-5" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>
-          Pas encore de compte ?{' '}
-          <Link href="/register" className="font-semibold" style={{ color: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}>
-            Créer un compte gratuit
-          </Link>
-        </p>
+        <SubmitBtn loading={loading} disabled={disabled || !email || !password}>
+          Se connecter
+        </SubmitBtn>
+      </form>
 
-        {/* Lien landing */}
-        <p className="text-center text-[13px] mt-3 mb-8" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)', opacity: 0.6 }}>
-          <Link href="/" className="hover:underline transition-opacity hover:opacity-100" style={{ color: 'var(--rp-navy-muted)' }}>
-            Découvrir PilotResto →
-          </Link>
-        </p>
-      </div>
-    </div>
+      <p className="text-center text-[13px] mt-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+        Pas encore de compte ?{' '}
+        <Link href="/register" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
+          S&apos;inscrire gratuitement
+        </Link>
+      </p>
+    </>
   )
 }
 
-// ── Icônes ────────────────────────────────────────────────────
+// ── Icône Google ──────────────────────────────────────────────
 
 function GoogleIcon() {
   return (

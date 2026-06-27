@@ -15,7 +15,7 @@ import type { Database } from '@/types'
 
 // ── Types ─────────────────────────────────────────────────────
 
-export type AuthResult = { error: string } | { message: string } | undefined
+export type AuthResult = { error: string } | { message: string } | { success: boolean } | undefined
 
 // ── Admin client ──────────────────────────────────────────────
 
@@ -37,20 +37,23 @@ export async function signInAction(email: string, password: string): Promise<Aut
 
 export async function signUpAction(
   email: string,
-  password: string,
+  firstName: string,
+  lastName: string,
 ): Promise<AuthResult> {
   const supabase = await createClient()
 
-  // emailRedirectTo : lien de confirmation dans l'email Supabase.
-  // Sans cette option, Supabase utilise l'URL par défaut du projet
-  // (souvent http://localhost:3000) → le lien ne fonctionne pas en production.
-  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'
-  const redirectTo = `${appUrl}/api/auth/callback`
+  // Lien de confirmation → callback qui redirige vers /auth/set-password
+  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://restopilot.pro'
+  const redirectTo = `${appUrl}/api/auth/callback?next=/auth/set-password`
 
   const { data, error: authError } = await supabase.auth.signUp({
     email,
-    password,
-    options: { emailRedirectTo: redirectTo },
+    // Mot de passe temporaire aléatoire — l'utilisateur définira le sien via /auth/set-password
+    password: crypto.randomUUID(),
+    options: {
+      emailRedirectTo: redirectTo,
+      data: { first_name: firstName, last_name: lastName },
+    },
   })
 
   if (authError) {
@@ -58,16 +61,13 @@ export async function signUpAction(
     return { error: translateError(authError.message) }
   }
 
-  // session === null → email de confirmation requis avant connexion.
+  // Pas de session → email de confirmation envoyé (cas normal avec email confirm activé)
   if (!data.session) {
-    console.log('[signUp] confirmation email envoyé à:', email, '| redirectTo:', redirectTo)
-    return {
-      message: `Un email de confirmation a été envoyé à ${email}. Cliquez sur le lien pour activer votre compte, puis connectez-vous ici.`,
-    }
+    return { success: true }
   }
 
-  // Session immédiate (auto-confirm activé) → proxy redirigera vers /onboarding
-  redirect('/dashboard')
+  // Session immédiate (auto-confirm activé en dev) → définir le mot de passe
+  redirect('/auth/set-password')
 }
 
 // ── Types onboarding ──────────────────────────────────────

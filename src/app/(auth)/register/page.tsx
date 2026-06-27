@@ -1,329 +1,207 @@
 'use client'
 
-import { useState }              from 'react'
-import Link                      from 'next/link'
-import { useForm }               from 'react-hook-form'
-import { zodResolver }           from '@hookform/resolvers/zod'
-import { z }                     from 'zod'
-import { AlertCircle, Eye, EyeOff, Loader2 } from 'lucide-react'
-import { signUpAction }          from '@/lib/supabase/actions'
-import { createClient }          from '@/lib/supabase/client'
-import { cn }                    from '@/lib/utils/cn'
+import { useState } from 'react'
+import Link from 'next/link'
+import { Loader2, Mail, CheckCircle2 } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import { signUpAction } from '@/lib/supabase/actions'
 
-// ── Schéma ────────────────────────────────────────────────────
+// ── Composants locaux ─────────────────────────────────────────
 
-const schema = z
-  .object({
-    email:           z.string().min(1, 'Email requis').email('Adresse email invalide'),
-    password:        z
-      .string()
-      .min(8, 'Minimum 8 caractères')
-      .regex(/[A-Z]/, 'Au moins une majuscule')
-      .regex(/[0-9]/, 'Au moins un chiffre'),
-    confirmPassword: z.string().min(1, 'Veuillez confirmer le mot de passe'),
-  })
-  .refine((d) => d.password === d.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirmPassword'],
-  })
-
-type FormData = z.infer<typeof schema>
-
-// ── Helpers ───────────────────────────────────────────────────
-
-const CALLBACK_URL = 'https://restopilot.pro/api/auth/callback'
-
-function getPasswordStrength(pw: string) {
-  let score = 0
-  if (pw.length >= 8)          score++
-  if (pw.length >= 12)         score++
-  if (/[A-Z]/.test(pw))        score++
-  if (/[0-9]/.test(pw))        score++
-  if (/[^A-Za-z0-9]/.test(pw)) score++
-  const labels = ['Très faible', 'Faible', 'Moyen', 'Fort', 'Très fort']
-  const colors = ['bg-red-500', 'bg-orange-400', 'bg-yellow-400', 'bg-green-500', 'bg-green-600']
-  const idx = Math.max(0, score - 1)
-  return { score, label: labels[idx], color: colors[idx] }
+function RPInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
+  return (
+    <input
+      className="w-full rounded-[12px] text-[15px] outline-none transition-colors duration-150"
+      style={{
+        background: '#F2F2F7',
+        border:     '1.5px solid transparent',
+        padding:    '14px 16px',
+        color:      '#0D1B1E',
+        fontFamily: 'var(--font-body)',
+      }}
+      onFocus={e => (e.target.style.borderColor = '#D4952A')}
+      onBlur={e  => (e.target.style.borderColor = 'transparent')}
+      {...props}
+    />
+  )
 }
 
-// ── Composant ─────────────────────────────────────────────────
+function SubmitBtn({
+  loading,
+  children,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean }) {
+  return (
+    <button
+      type="submit"
+      className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
+      style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+      {...props}
+    >
+      {loading && <Loader2 size={16} className="animate-spin" />}
+      {children}
+    </button>
+  )
+}
+
+// ── Page ──────────────────────────────────────────────────────
 
 export default function RegisterPage() {
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirm,  setShowConfirm]  = useState(false)
-  const [serverError,  setServerError]  = useState<string | null>(null)
-  const [serverInfo,   setServerInfo]   = useState<string | null>(null)
+  const [step,          setStep]         = useState<'form' | 'sent'>('form')
+  const [firstName,     setFirstName]    = useState('')
+  const [lastName,      setLastName]     = useState('')
+  const [email,         setEmail]        = useState('')
+  const [error,         setError]        = useState<string | null>(null)
+  const [loading,       setLoading]      = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    formState: { errors, isSubmitting },
-  } = useForm<FormData>({ resolver: zodResolver(schema), mode: 'onBlur' })
+  const disabled = loading || googleLoading
 
-  const pwValue    = watch('password', '')
-  const pwStrength = getPasswordStrength(pwValue)
-
-  const handleGoogleLogin = async () => {
+  const handleGoogle = async () => {
     setGoogleLoading(true)
-    setServerError(null)
-    try {
-      const supabase = createClient()
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: CALLBACK_URL,
-          queryParams: { access_type: 'offline', prompt: 'consent' },
-        },
-      })
-      if (error) {
-        setServerError('Connexion Google impossible.')
-        setGoogleLoading(false)
-      }
-    } catch {
-      setServerError('Une erreur est survenue.')
-      setGoogleLoading(false)
+    setError(null)
+    const supabase = createClient()
+    const { error: oauthErr } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: 'https://restopilot.pro/api/auth/callback',
+        queryParams: { access_type: 'offline', prompt: 'consent' },
+      },
+    })
+    if (oauthErr) { setError('Connexion Google impossible.'); setGoogleLoading(false) }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!firstName || !lastName || !email) return
+    setError(null)
+    setLoading(true)
+    const result = await signUpAction(email, firstName, lastName)
+    setLoading(false)
+    if (result && 'error' in result) {
+      setError(result.error)
+    } else {
+      setStep('sent')
     }
   }
 
-  async function onSubmit(data: FormData) {
-    setServerError(null)
-    setServerInfo(null)
-    const result = await signUpAction(data.email, data.password)
-    if (result && 'error' in result)   setServerError(result.error)
-    if (result && 'message' in result) setServerInfo(result.message)
-  }
-
-  const socialDisabled = googleLoading || isSubmitting
-
-  return (
-    <>
-      {/* En-tête */}
-      <div className="text-center mb-6">
-        <h1
-          className="text-[22px] font-bold"
-          style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}
-        >
-          Créer votre compte
-        </h1>
-        <p className="text-[13px] mt-1.5" style={{ color: 'var(--rp-navy-muted)' }}>
-          Essai gratuit 14 jours · Sans carte bancaire
+  // ── Email envoyé ──────────────────────────────────────────────
+  if (step === 'sent') {
+    return (
+      <div className="text-center py-2">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
+          <Mail className="w-6 h-6" style={{ color: '#166534' }} />
+        </div>
+        <h2 className="text-[18px] font-bold mb-2" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+          Vérifiez votre boîte mail
+        </h2>
+        <p className="text-[14px] leading-relaxed mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          Un email de confirmation a été envoyé à{' '}
+          <strong style={{ color: '#0D1B1E' }}>{email}</strong>.
+          Cliquez sur le lien pour créer votre mot de passe.
+        </p>
+        <div className="rounded-[12px] p-4 text-[13px] text-left space-y-2 mb-5" style={{ background: '#F9FAFB' }}>
+          {[
+            'Vérifiez vos spams si l\'email n\'arrive pas',
+            'Le lien expire dans 24 heures',
+          ].map(tip => (
+            <p key={tip} className="flex items-start gap-2" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#22c55e' }} />
+              {tip}
+            </p>
+          ))}
+        </div>
+        <p className="text-[13px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          Déjà confirmé ?{' '}
+          <Link href="/login" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
+            Se connecter
+          </Link>
         </p>
       </div>
+    )
+  }
 
-      {/* Bouton Google */}
+  // ── Formulaire d'inscription ──────────────────────────────────
+  return (
+    <>
+      <h2 className="text-[19px] font-bold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+        Créer un compte
+      </h2>
+      <p className="text-[13px] text-center mb-5" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+        14 jours gratuits · Sans engagement
+      </p>
+
+      {/* Google */}
       <button
         type="button"
-        onClick={handleGoogleLogin}
-        disabled={socialDisabled}
-        className="w-full h-[52px] flex items-center justify-center gap-3 rounded-[14px] font-medium text-[15px] mb-5 transition-opacity disabled:opacity-60"
-        style={{ background: 'var(--rp-white)', border: '1px solid var(--rp-lavender)', color: 'var(--rp-navy)', boxShadow: 'var(--rp-shadow-card)', fontFamily: 'var(--font-body)' }}
+        onClick={handleGoogle}
+        disabled={disabled}
+        className="w-full h-[50px] flex items-center justify-center gap-2.5 rounded-[12px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
+        style={{ background: '#F2F2F7', color: '#0D1B1E', fontFamily: 'var(--font-body)' }}
       >
         {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
         Continuer avec Google
       </button>
 
-
-      {/* Séparateur ou */}
-      <div className="relative flex items-center mb-5">
-        <div className="flex-1 h-px" style={{ background: 'var(--rp-lavender-light)' }} />
-        <span className="px-3 text-[12px] uppercase tracking-widest" style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}>ou</span>
-        <div className="flex-1 h-px" style={{ background: 'var(--rp-lavender-light)' }} />
+      {/* Séparateur */}
+      <div className="relative flex items-center mb-4">
+        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
+        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: '#9CA3AF' }}>ou</span>
+        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
       </div>
 
-      {/* Message de confirmation email */}
-      {serverInfo && (
-        <div
-          className="mb-5 rounded-xl px-4 py-3 text-[13px] flex items-start gap-2"
-          style={{ background: 'var(--rp-amber-light)', color: 'var(--rp-amber-dark)', border: '1px solid var(--rp-amber)' }}
-        >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          {serverInfo}
+      {error && (
+        <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+          {error}
         </div>
       )}
 
-      {/* Erreur serveur */}
-      {serverError && (
-        <div
-          className="mb-5 rounded-xl px-4 py-3 text-[13px] flex items-start gap-2"
-          style={{ background: 'var(--rp-danger-bg)', color: 'var(--rp-danger)' }}
-        >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-          {serverError}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
-
-        {/* Email */}
-        <div className="relative">
-          <input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder=" "
-            className={cn(
-              'peer w-full h-[52px] rounded-[14px] border bg-white px-4 pt-5 pb-2 text-[15px] outline-none transition-all focus:ring-2',
-              errors.email
-                ? 'border-red-400 text-red-700 focus:border-red-400 focus:ring-red-100'
-                : 'border-[var(--rp-lavender)] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20'
-            )}
-            {...register('email')}
+      <form onSubmit={handleSubmit} className="space-y-3">
+        <div className="grid grid-cols-2 gap-2">
+          <RPInput
+            type="text"
+            placeholder="Prénom"
+            value={firstName}
+            onChange={e => setFirstName(e.target.value)}
+            autoComplete="given-name"
+            disabled={disabled}
+            required
           />
-          <label
-            htmlFor="email"
-            className={cn(
-              'pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-all text-[15px]',
-              'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-              'peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[var(--rp-amber)]',
-              errors.email ? 'text-red-500' : 'text-[var(--rp-navy-muted)]',
-            )}
-          >
-            Adresse email
-          </label>
-          {errors.email && (
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-              <AlertCircle className="w-3 h-3 flex-shrink-0" />{errors.email.message}
-            </p>
-          )}
-        </div>
-
-        {/* Mot de passe */}
-        <div>
-          <div className="relative">
-            <input
-              id="password"
-              type={showPassword ? 'text' : 'password'}
-              autoComplete="new-password"
-              placeholder=" "
-              className={cn(
-                'peer w-full h-[52px] rounded-[14px] border bg-white px-4 pt-5 pb-2 pr-12 text-[15px] outline-none transition-all focus:ring-2',
-                errors.password
-                  ? 'border-red-400 text-red-700 focus:border-red-400 focus:ring-red-100'
-                  : 'border-[var(--rp-lavender)] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20'
-              )}
-              {...register('password')}
-            />
-            <label
-              htmlFor="password"
-              className={cn(
-                'pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-all text-[15px]',
-                'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-                'peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[var(--rp-amber)]',
-                errors.password ? 'text-red-500' : 'text-[var(--rp-navy-muted)]',
-              )}
-            >
-              Mot de passe
-            </label>
-            <button
-              type="button"
-              tabIndex={-1}
-              onClick={() => setShowPassword(v => !v)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
-              style={{ color: 'var(--rp-navy-muted)' }}
-            >
-              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-            </button>
-          </div>
-          {pwValue.length > 0 && (
-            <div className="mt-2">
-              <div className="flex gap-1 mb-1">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className={cn('h-1 flex-1 rounded-full transition-colors duration-300',
-                      i < pwStrength.score ? pwStrength.color : 'bg-gray-200')}
-                  />
-                ))}
-              </div>
-              <p className="text-[11px]" style={{ color: 'var(--rp-navy-muted)' }}>
-                Force : <span className="font-medium">{pwStrength.label}</span>
-              </p>
-            </div>
-          )}
-          {errors.password && (
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-              <AlertCircle className="w-3 h-3 flex-shrink-0" />{errors.password.message}
-            </p>
-          )}
-        </div>
-
-        {/* Confirmation */}
-        <div className="relative">
-          <input
-            id="confirmPassword"
-            type={showConfirm ? 'text' : 'password'}
-            autoComplete="new-password"
-            placeholder=" "
-            className={cn(
-              'peer w-full h-[52px] rounded-[14px] border bg-white px-4 pt-5 pb-2 pr-12 text-[15px] outline-none transition-all focus:ring-2',
-              errors.confirmPassword
-                ? 'border-red-400 text-red-700 focus:border-red-400 focus:ring-red-100'
-                : 'border-[var(--rp-lavender)] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20'
-            )}
-            {...register('confirmPassword')}
+          <RPInput
+            type="text"
+            placeholder="Nom"
+            value={lastName}
+            onChange={e => setLastName(e.target.value)}
+            autoComplete="family-name"
+            disabled={disabled}
+            required
           />
-          <label
-            htmlFor="confirmPassword"
-            className={cn(
-              'pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-all text-[15px]',
-              'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-              'peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[var(--rp-amber)]',
-              errors.confirmPassword ? 'text-red-500' : 'text-[var(--rp-navy-muted)]',
-            )}
-          >
-            Confirmer le mot de passe
-          </label>
-          <button
-            type="button"
-            tabIndex={-1}
-            onClick={() => setShowConfirm(v => !v)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 transition-opacity hover:opacity-70"
-            style={{ color: 'var(--rp-navy-muted)' }}
-          >
-            {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-          </button>
-          {errors.confirmPassword && (
-            <p className="mt-1.5 flex items-center gap-1 text-xs text-red-600">
-              <AlertCircle className="w-3 h-3 flex-shrink-0" />{errors.confirmPassword.message}
-            </p>
-          )}
         </div>
 
-        {/* CGU */}
-        <p className="text-[11px] leading-relaxed" style={{ color: 'var(--rp-navy-muted)' }}>
-          En créant un compte, vous acceptez nos{' '}
-          <a href="/cgu" className="underline hover:opacity-70">Conditions d&apos;utilisation</a>{' '}
-          et notre{' '}
-          <a href="/confidentialite" className="underline hover:opacity-70">Politique de confidentialité</a>.
-        </p>
+        <RPInput
+          type="email"
+          placeholder="Adresse email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          autoComplete="email"
+          disabled={disabled}
+          required
+        />
 
-        {/* Bouton submit */}
-        <button
-          type="submit"
-          disabled={isSubmitting || socialDisabled}
-          className={cn(
-            'w-full h-[56px] rounded-full font-semibold text-[15px] text-white',
-            'flex items-center justify-center gap-2 transition active:scale-[0.98]',
-            'disabled:opacity-60 disabled:cursor-not-allowed',
-          )}
-          style={{ background: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}
-        >
-          {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
-          {isSubmitting ? 'Création en cours…' : 'Créer mon compte'}
-        </button>
-
+        <SubmitBtn loading={loading} disabled={disabled || !firstName || !lastName || !email}>
+          Recevoir le lien de confirmation
+        </SubmitBtn>
       </form>
 
-      {/* Lien connexion */}
-      <p className="text-center text-[13px] mt-6" style={{ color: 'var(--rp-navy-muted)' }}>
+      <p className="text-[11px] text-center mt-4 leading-relaxed" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+        En créant un compte vous acceptez nos{' '}
+        <a href="/cgu-cgv" className="underline">CGU</a>{' '}et notre{' '}
+        <a href="/politique-de-confidentialite" className="underline">politique de confidentialité</a>.
+      </p>
+
+      <p className="text-center text-[13px] mt-3" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
         Déjà un compte ?{' '}
-        <Link
-          href="/login"
-          className="font-semibold hover:underline transition-colors"
-          style={{ color: 'var(--rp-amber)' }}
-        >
+        <Link href="/login" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
           Se connecter
         </Link>
       </p>
@@ -331,7 +209,7 @@ export default function RegisterPage() {
   )
 }
 
-// ── Icônes ────────────────────────────────────────────────────
+// ── Icône Google ──────────────────────────────────────────────
 
 function GoogleIcon() {
   return (
@@ -343,4 +221,3 @@ function GoogleIcon() {
     </svg>
   )
 }
-
