@@ -303,34 +303,42 @@ export default function HomePage() {
       </section>
 
       {/* ══ 3. TÉLÉCHARGEMENT APP ═════════════════════════════════ */}
-      <section className="py-16 sm:py-20" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-xl mx-auto px-5 sm:px-6 text-center fade-up">
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold mb-6"
-            style={{ background: '#EFF6FF', color: '#1B2A4A' }}
-          >
-            🖥️ Application desktop Mac
-          </div>
-          <h2
-            className="text-2xl sm:text-3xl font-extrabold mb-3"
-            style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-          >
-            Disponible sur Mac
-          </h2>
-          <p className="text-gray-500 text-base mb-8 leading-relaxed">
-            Téléchargez l&rsquo;application PilotResto et gérez votre restaurant
-            depuis votre ordinateur.
+      <section className="py-14 sm:py-18" style={{ background: '#0D1B1E' }}>
+        <div className="max-w-xl mx-auto px-5 sm:px-6 fade-up">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Disponible sur Mac et Windows
           </p>
-          <a
-            href="/downloads/PilotResto.dmg"
-            download
-            className="inline-flex items-center justify-center gap-3 font-bold rounded-2xl px-8 py-4 text-base transition-all active:scale-95 mb-4"
-            style={{ background: '#111827', color: 'white', boxShadow: '0 4px 20px rgba(0,0,0,0.18)' }}
-          >
-            <AppleIcon size={20} />
-            ⬇ Télécharger pour Mac (.dmg)
-          </a>
-          <p className="text-xs text-gray-400 mt-3">Gratuit · macOS 10.13+ · 90 Mo</p>
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Mac */}
+            <div className="flex flex-col flex-1 gap-2">
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0-arm64.dmg"
+                className="flex flex-col items-center gap-1.5 rounded-2xl py-5 px-4 transition active:scale-95 hover:opacity-90"
+                style={{ background: '#0D1B1E', border: '1px solid rgba(255,255,255,0.15)', textDecoration: 'none' }}
+              >
+                <span style={{ fontSize: '28px', lineHeight: 1 }}>🍎</span>
+                <span className="font-semibold text-white text-sm text-center">Télécharger pour Mac</span>
+                <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>M1 / M2 / M3 · Intel</span>
+              </a>
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0.dmg"
+                className="text-center text-xs transition hover:opacity-80"
+                style={{ color: 'rgba(255,255,255,0.4)' }}
+              >
+                Mac Intel ? <span style={{ textDecoration: 'underline' }}>Téléchargez cette version</span>
+              </a>
+            </div>
+            {/* Windows */}
+            <a
+              href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
+              className="flex flex-col flex-1 items-center gap-1.5 rounded-2xl py-5 px-4 transition active:scale-95 hover:opacity-90"
+              style={{ background: '#0D1B1E', border: '1px solid rgba(255,255,255,0.15)', textDecoration: 'none' }}
+            >
+              <span style={{ fontSize: '28px', lineHeight: 1 }}>🪟</span>
+              <span className="font-semibold text-white text-sm text-center">Télécharger pour Windows</span>
+              <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>Windows 10 / 11</span>
+            </a>
+          </div>
         </div>
       </section>
 
