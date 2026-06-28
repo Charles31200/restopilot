@@ -38,8 +38,8 @@ const PLANS: Plan[] = [
     monthlyPrice:   39,
     annualTotal:    368,
     annualMonthly:  31,
-    priceIdMonthly: 'price_1TjRUOEw9od5qGxlnDbe4Nqv',  // Starter 39€/mois
-    priceIdAnnual:  'price_1TjRUOEw9od5qGxlmwXgMQQD',  // Starter 368€/an
+    priceIdMonthly: 'price_1TjRUOEw9od5qGxlmwXgMQQD',  // Starter 39€/mois
+    priceIdAnnual:  'price_1TjRUOEw9od5qGxlnDbe4Nqv',  // Starter 368€/an
     icon:   <Zap className="w-5 h-5" />,
     color:  'text-blue-700',
     bgColor:     'bg-blue-50',
