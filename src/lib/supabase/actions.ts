@@ -43,15 +43,11 @@ export async function signUpAction(
 ): Promise<AuthResult> {
   const supabase = await createClient()
 
-  // Lien de confirmation → callback qui redirige vers /login
-  const appUrl     = process.env.NEXT_PUBLIC_APP_URL ?? 'https://restopilot.pro'
-  const redirectTo = `${appUrl}/api/auth/callback?next=/login`
-
+  // OTP natif Supabase — pas de emailRedirectTo, Supabase envoie le code via son template OTP
   const { data, error: authError } = await supabase.auth.signUp({
     email,
     password,
     options: {
-      emailRedirectTo: redirectTo,
       data: { first_name: firstName, last_name: lastName },
     },
   })
@@ -61,13 +57,29 @@ export async function signUpAction(
     return { error: translateError(authError.message) }
   }
 
-  // Pas de session → email de confirmation envoyé (cas normal avec email confirm activé)
+  // Pas de session → code OTP envoyé par email (cas normal avec email confirm activé)
   if (!data.session) {
     return { success: true }
   }
 
-  // Session immédiate (auto-confirm activé en dev) → définir le mot de passe
-  redirect('/auth/set-password')
+  // Session immédiate (auto-confirm activé en dev)
+  redirect('/onboarding')
+}
+
+export async function verifyOtpAction(
+  email: string,
+  token: string,
+): Promise<AuthResult> {
+  const supabase = await createClient()
+
+  const { error } = await supabase.auth.verifyOtp({ email, token, type: 'signup' })
+
+  if (error) {
+    console.error('[verifyOtp] erreur:', error.message, error.code)
+    return { error: 'Code incorrect ou expiré. Vérifiez votre boîte mail.' }
+  }
+
+  redirect('/onboarding')
 }
 
 // ── Types onboarding ──────────────────────────────────────

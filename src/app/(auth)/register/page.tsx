@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Loader2, Mail, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
-import { signUpAction } from '@/lib/supabase/actions'
+import { signUpAction, verifyOtpAction } from '@/lib/supabase/actions'
 
 // ── Composants locaux ─────────────────────────────────────────
 
@@ -47,7 +47,7 @@ function SubmitBtn({
 // ── Page ──────────────────────────────────────────────────────
 
 export default function RegisterPage() {
-  const [step,            setStep]           = useState<'form' | 'sent'>('form')
+  const [step,            setStep]           = useState<'form' | 'otp'>('form')
   const [firstName,       setFirstName]      = useState('')
   const [lastName,        setLastName]       = useState('')
   const [email,           setEmail]          = useState('')
@@ -55,6 +55,11 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPwd,         setShowPwd]        = useState(false)
   const [showConfirm,     setShowConfirm]    = useState(false)
+  const [otpDigits,       setOtpDigits]      = useState(['', '', '', '', '', ''])
+  const [otpError,        setOtpError]       = useState<string | null>(null)
+  const [otpLoading,      setOtpLoading]     = useState(false)
+  const [resendLoading,   setResendLoading]  = useState(false)
+  const [resendSent,      setResendSent]     = useState(false)
   const [error,           setError]          = useState<string | null>(null)
   const [loading,         setLoading]        = useState(false)
   const [googleLoading,   setGoogleLoading]  = useState(false)
@@ -93,41 +98,166 @@ export default function RegisterPage() {
     if (result && 'error' in result) {
       setError(result.error)
     } else {
-      setStep('sent')
+      setStep('otp')
     }
   }
 
-  // ── Email envoyé ──────────────────────────────────────────────
-  if (step === 'sent') {
+  // ── Vérification OTP ──────────────────────────────────────────
+
+  const handleOtpChange = (index: number, value: string) => {
+    // Accepte chiffre ou colle plusieurs chiffres d'un coup (ex: depuis gestionnaire de mots de passe)
+    const digits = value.replace(/\D/g, '').slice(0, 6 - index)
+    if (!digits) return
+    const next = [...otpDigits]
+    for (let i = 0; i < digits.length && index + i < 6; i++) {
+      next[index + i] = digits[i]
+    }
+    setOtpDigits(next)
+    setOtpError(null)
+    // Focalise la prochaine case vide
+    const nextEmpty = Math.min(index + digits.length, 5)
+    const el = document.getElementById(`otp-${nextEmpty}`)
+    if (el) (el as HTMLInputElement).focus()
+    // Soumet automatiquement si le code est complet
+    if (next.every(d => d !== '')) handleOtpSubmit(next.join(''))
+  }
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace') {
+      if (otpDigits[index]) {
+        const next = [...otpDigits]; next[index] = ''; setOtpDigits(next)
+      } else if (index > 0) {
+        const prev = document.getElementById(`otp-${index - 1}`)
+        if (prev) (prev as HTMLInputElement).focus()
+      }
+    }
+  }
+
+  const handleOtpSubmit = async (code: string) => {
+    setOtpError(null)
+    setOtpLoading(true)
+    const result = await verifyOtpAction(email, code)
+    setOtpLoading(false)
+    if (result && 'error' in result) {
+      setOtpError(result.error)
+      setOtpDigits(['', '', '', '', '', ''])
+      setTimeout(() => document.getElementById('otp-0')?.focus(), 50)
+    }
+    // En cas de succès, verifyOtpAction appelle redirect('/onboarding')
+  }
+
+  const handleResend = async () => {
+    setResendLoading(true)
+    setResendSent(false)
+    setOtpError(null)
+    const result = await signUpAction(email, firstName, lastName, password)
+    setResendLoading(false)
+    if (result && 'error' in result) {
+      setOtpError(result.error)
+    } else {
+      setResendSent(true)
+      setOtpDigits(['', '', '', '', '', ''])
+      setTimeout(() => document.getElementById('otp-0')?.focus(), 50)
+    }
+  }
+
+  // ── Écran OTP ─────────────────────────────────────────────────
+  if (step === 'otp') {
+    const otpCode = otpDigits.join('')
+    const otpComplete = otpCode.length === 6
+
     return (
-      <div className="text-center py-2">
+      <div className="py-2">
+        {/* Icône */}
         <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
           <Mail className="w-6 h-6" style={{ color: '#166534' }} />
         </div>
-        <h2 className="text-[18px] font-bold mb-2" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
-          Vérifiez votre boîte mail
+
+        <h2 className="text-[18px] font-bold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+          Code de confirmation
         </h2>
-        <p className="text-[14px] leading-relaxed mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-          Un email de confirmation a été envoyé à{' '}
-          <strong style={{ color: '#0D1B1E' }}>{email}</strong>.
-          Cliquez sur le lien pour confirmer votre compte, puis connectez-vous avec vos identifiants.
+        <p className="text-[13px] text-center mb-6" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          Entrez le code à 6 chiffres envoyé à{' '}
+          <strong style={{ color: '#0D1B1E' }}>{email}</strong>
         </p>
-        <div className="rounded-[12px] p-4 text-[13px] text-left space-y-2 mb-5" style={{ background: '#F9FAFB' }}>
-          {[
-            'Vérifiez vos spams si l\'email n\'arrive pas',
-            'Le lien expire dans 24 heures',
-          ].map(tip => (
-            <p key={tip} className="flex items-start gap-2" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-              <CheckCircle2 className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: '#22c55e' }} />
-              {tip}
-            </p>
+
+        {/* 6 cases OTP */}
+        <div className="flex justify-center gap-2 mb-4">
+          {otpDigits.map((digit, i) => (
+            <input
+              key={i}
+              id={`otp-${i}`}
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={digit}
+              onChange={e => handleOtpChange(i, e.target.value)}
+              onKeyDown={e => handleOtpKeyDown(i, e)}
+              onFocus={e => e.target.select()}
+              disabled={otpLoading}
+              className="text-center text-[22px] font-bold rounded-[12px] outline-none transition-all"
+              style={{
+                width:       '44px',
+                height:      '56px',
+                background:  '#F2F2F7',
+                border:      digit ? '2px solid #D4952A' : '1.5px solid transparent',
+                color:       '#0D1B1E',
+                fontFamily:  'var(--font-display)',
+                caretColor:  '#D4952A',
+              }}
+              onFocusCapture={e => (e.target.style.borderColor = '#D4952A')}
+              onBlurCapture={e => { if (!digit) e.target.style.borderColor = 'transparent' }}
+              autoFocus={i === 0}
+              autoComplete={i === 0 ? 'one-time-code' : 'off'}
+            />
           ))}
         </div>
-        <p className="text-[13px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-          Déjà confirmé ?{' '}
-          <Link href="/login" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
-            Se connecter
-          </Link>
+
+        {/* Erreur OTP */}
+        {otpError && (
+          <div className="mb-3 p-3 rounded-[10px] text-[13px] text-center" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+            {otpError}
+          </div>
+        )}
+
+        {/* Bouton valider (visible si code partiel ou erreur) */}
+        {(!otpComplete || otpLoading) && (
+          <button
+            type="button"
+            onClick={() => handleOtpSubmit(otpCode)}
+            disabled={!otpComplete || otpLoading}
+            className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-40 mb-3"
+            style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+          >
+            {otpLoading ? <><Loader2 size={16} className="animate-spin" />Vérification…</> : 'Confirmer'}
+          </button>
+        )}
+
+        {/* Renvoyer le code */}
+        <div className="text-center mt-2">
+          {resendSent ? (
+            <p className="text-[13px] flex items-center justify-center gap-1.5" style={{ color: '#166534', fontFamily: 'var(--font-body)' }}>
+              <CheckCircle2 size={14} /> Nouveau code envoyé
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={resendLoading}
+              className="text-[13px] transition-opacity hover:opacity-70 disabled:opacity-40"
+              style={{ color: '#D4952A', fontFamily: 'var(--font-body)' }}
+            >
+              {resendLoading ? 'Envoi en cours…' : 'Renvoyer le code'}
+            </button>
+          )}
+        </div>
+
+        {/* Retour */}
+        <p className="text-center text-[12px] mt-4" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+          <button type="button" onClick={() => { setStep('form'); setOtpDigits(['', '', '', '', '', '']); setOtpError(null) }}
+            className="underline transition-opacity hover:opacity-70">
+            Modifier mes informations
+          </button>
         </p>
       </div>
     )
