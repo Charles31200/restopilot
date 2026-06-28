@@ -41,7 +41,7 @@ function RPInput({
           fontFamily:  'var(--font-body)',
           ...style,
         }}
-        onFocus={e  => (e.target.style.borderColor = '#D4952A')}
+        onFocus={e  => (e.target.style.borderColor = '#7798AB')}
         onBlur={e   => (e.target.style.borderColor = 'transparent')}
         {...props}
       />
@@ -238,9 +238,12 @@ export default function LoginPage() {
   // ── État principal : connexion ─────────────────────────────────
   return (
     <>
-      <h2 className="text-[19px] font-bold text-center mb-5" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+      <h2 className="text-[22px] font-semibold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
         Connexion
       </h2>
+      <p className="text-[13px] text-center mb-5" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+        Accédez à votre espace PilotResto
+      </p>
 
       {/* Google */}
       <button
@@ -305,7 +308,7 @@ export default function LoginPage() {
             type="button"
             onClick={() => { setMode('forgot'); setForgotEmail(email); setError(null) }}
             className="text-[13px] transition-opacity hover:opacity-70"
-            style={{ color: '#D4952A', fontFamily: 'var(--font-body)' }}
+            style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}
           >
             Mot de passe oublié ?
           </button>
@@ -318,7 +321,7 @@ export default function LoginPage() {
 
       <p className="text-center text-[13px] mt-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
         Pas encore de compte ?{' '}
-        <Link href="/register" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
+        <Link href="/register" className="font-semibold" style={{ color: '#7798AB', fontFamily: 'var(--font-display)' }}>
           S&apos;inscrire gratuitement
         </Link>
       </p>

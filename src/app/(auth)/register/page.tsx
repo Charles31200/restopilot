@@ -19,7 +19,7 @@ function RPInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
         color:      '#0D1B1E',
         fontFamily: 'var(--font-body)',
       }}
-      onFocus={e => (e.target.style.borderColor = '#D4952A')}
+      onFocus={e => (e.target.style.borderColor = '#7798AB')}
       onBlur={e  => (e.target.style.borderColor = 'transparent')}
       {...props}
     />
@@ -203,9 +203,9 @@ export default function RegisterPage() {
                 border:      digit ? '2px solid #D4952A' : '1.5px solid transparent',
                 color:       '#0D1B1E',
                 fontFamily:  'var(--font-display)',
-                caretColor:  '#D4952A',
+                caretColor:  '#7798AB',
               }}
-              onFocusCapture={e => (e.target.style.borderColor = '#D4952A')}
+              onFocusCapture={e => (e.target.style.borderColor = '#7798AB')}
               onBlurCapture={e => { if (!digit) e.target.style.borderColor = 'transparent' }}
               autoFocus={i === 0}
               autoComplete={i === 0 ? 'one-time-code' : 'off'}
@@ -245,7 +245,7 @@ export default function RegisterPage() {
               onClick={handleResend}
               disabled={resendLoading}
               className="text-[13px] transition-opacity hover:opacity-70 disabled:opacity-40"
-              style={{ color: '#D4952A', fontFamily: 'var(--font-body)' }}
+              style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}
             >
               {resendLoading ? 'Envoi en cours…' : 'Renvoyer le code'}
             </button>
@@ -266,10 +266,10 @@ export default function RegisterPage() {
   // ── Formulaire d'inscription ──────────────────────────────────
   return (
     <>
-      <h2 className="text-[19px] font-bold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+      <h2 className="text-[22px] font-semibold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
         Créer un compte
       </h2>
-      <p className="text-[13px] text-center mb-5" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+      <p className="text-[13px] text-center mb-5" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
         14 jours gratuits · Sans engagement
       </p>
 
@@ -389,7 +389,7 @@ export default function RegisterPage() {
 
       <p className="text-center text-[13px] mt-3" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
         Déjà un compte ?{' '}
-        <Link href="/login" className="font-semibold" style={{ color: '#D4952A', fontFamily: 'var(--font-display)' }}>
+        <Link href="/login" className="font-semibold" style={{ color: '#7798AB', fontFamily: 'var(--font-display)' }}>
           Se connecter
         </Link>
       </p>

@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { TrendingUp, FileText, BarChart3, Camera } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
-import { MobileHeader } from '@/components/layout/MobileHeader'
 import { FAB }          from '@/components/ui/FAB'
 import { Badge }        from '@/components/ui/Badge'
 import { BottomSheet }  from '@/components/ui/BottomSheet'
@@ -33,15 +32,12 @@ export default function ComptabilitePage() {
 
   return (
     <>
-      {/* Header mobile */}
-      <MobileHeader title="Comptabilité" variant="light" />
-
-      {/* Titre desktop */}
-      <div className="hidden lg:block mb-4">
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}>
+      {/* ── Header de page ──────────────────────────── */}
+      <div className="mb-4">
+        <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
           Comptabilité
         </h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--rp-navy-muted)' }}>
+        <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
           Finances, factures et exports pour votre comptable
         </p>
       </div>

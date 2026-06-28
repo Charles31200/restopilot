@@ -1,38 +1,78 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   PILOTRESTO — Palette officielle & Design Tokens
+   PILOTRESTO — Nouvelle palette Apple-inspired 2026
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Couleur d'accent principale ───────────────────────────── */
-  --rp-amber:        #D4952A;
-  --rp-amber-light:  #F5E6C8;
-  --rp-amber-dark:   #A8731A;
+  /* ── Palette principale ──────────────────────────────────────  */
+  --color-dark:        #0D1B1E;
+  --color-blue:        #7798AB;
+  --color-green:       #C3DBC5;
+  --color-cream:       #E8DCB9;
+  --color-pink:        #F2CEE6;
 
-  /* ── Actions secondaires, liens, info ─────────────────────── */
-  --rp-blue:         #2E7EC4;
-  --rp-blue-light:   #D6EAF8;
-  --rp-blue-dark:    #1A5A96;
+  /* ── Dérivés ─────────────────────────────────────────────────  */
+  --color-dark-80:     rgba(13,27,30,0.8);
+  --color-dark-10:     rgba(13,27,30,0.05);
+  --color-blue-20:     rgba(119,152,171,0.2);
+  --color-text-primary:   #0D1B1E;
+  --color-text-secondary: #7798AB;
+  --color-text-muted:     rgba(13,27,30,0.4);
+  --color-bg:          #F8F9FA;
+  --color-card:        #FFFFFF;
+  --color-border:      rgba(119,152,171,0.15);
 
-  /* ── Sidebar, texte principal, header sombre ──────────────── */
-  --rp-navy:         #35404F;
-  --rp-navy-light:   #4A5568;
-  --rp-navy-muted:   #8896A8;
+  /* ── Typographie Apple-like ──────────────────────────────────  */
+  --font-sans:   -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  --font-size-xs:   11px;
+  --font-size-sm:   13px;
+  --font-size-md:   15px;
+  --font-size-lg:   17px;
+  --font-size-xl:   22px;
+  --font-size-2xl:  28px;
+  --font-size-3xl:  34px;
 
-  /* ── Bordures, séparateurs, fonds neutres ─────────────────── */
-  --rp-lavender:       #CCCAD4;
-  --rp-lavender-light: #F0EFF4;
+  /* ── Espacements ─────────────────────────────────────────────  */
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  16px;
+  --radius-xl:  20px;
+  --radius-2xl: 24px;
 
-  /* ── Accent premium, étoiles, badges spéciaux ────────────── */
-  --rp-khaki:        #A8915A;
-  --rp-khaki-light:  #EDE5D0;
+  /* ── Ombres Apple ────────────────────────────────────────────  */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
 
-  /* ── Neutres ────────────────────────────────────────────────  */
+  /* ────────────────────────────────────────────────────────────  */
+  /* Rétrocompatibilité — tous les composants référencent --rp-*  */
+  /* On repointe vers la nouvelle palette sans les casser.        */
+  /* ────────────────────────────────────────────────────────────  */
+
+  /* Amber → blue-gray accent */
+  --rp-amber:        #7798AB;
+  --rp-amber-light:  rgba(119,152,171,0.12);
+  --rp-amber-dark:   #5B7A8D;
+
+  /* Navy → dark principal */
+  --rp-navy:         #0D1B1E;
+  --rp-navy-light:   #1E3135;
+  --rp-navy-muted:   #7798AB;
+
+  /* Lavender → border/subtle */
+  --rp-lavender:       rgba(119,152,171,0.25);
+  --rp-lavender-light: rgba(119,152,171,0.08);
+
+  /* Khaki → green accent */
+  --rp-khaki:        #C3DBC5;
+  --rp-khaki-light:  rgba(195,219,197,0.2);
+
+  /* Fond & blanc */
   --rp-white:        #FFFFFF;
-  --rp-bg-page:      #F4F3F7;
+  --rp-bg-page:      #F8F9FA;
 
-  /* ── Sémantiques ───────────────────────────────────────────── */
+  /* Sémantiques (conservés) */
   --rp-success:      #16A34A;
   --rp-success-bg:   #DCFCE7;
   --rp-warning:      #D97706;
@@ -40,19 +80,19 @@
   --rp-danger:       #DC2626;
   --rp-danger-bg:    #FEE2E2;
 
-  /* ── Ombres ─────────────────────────────────────────────────  */
-  --rp-shadow-card:       0 1px 3px rgba(53,64,79,.08), 0 1px 2px rgba(53,64,79,.04);
-  --rp-shadow-modal:      0 20px 60px rgba(53,64,79,.20);
-  --rp-shadow-bottom-nav: 0 -2px 16px rgba(53,64,79,.10);
+  /* Ombres */
+  --rp-shadow-card:       0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --rp-shadow-modal:      0 20px 60px rgba(0,0,0,0.15);
+  --rp-shadow-bottom-nav: 0 -2px 16px rgba(0,0,0,0.06);
 
-  /* ── Rayons ─────────────────────────────────────────────────  */
+  /* Rayons (alias) */
   --rp-radius-sm:   8px;
   --rp-radius-md:   12px;
   --rp-radius-lg:   16px;
   --rp-radius-xl:   24px;
   --rp-radius-full: 9999px;
 
-  /* ── Rétrocompatibilité brand-* (anciens composants) ────────  */
+  /* Rétrocompat brand-* */
   --color-brand-50:  #EFF6FF;
   --color-brand-100: #DBEAFE;
   --color-brand-500: #3B82F6;
@@ -62,32 +102,33 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   TAILWIND v4 — Enregistrement des tokens de design
-   Génère automatiquement : bg-rp-amber, text-rp-navy,
-   border-rp-lavender, font-display, font-body, etc.
+   TAILWIND v4 — tokens
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  /* ── Palette PilotResto ─────────────────────────────────────  */
-  --color-rp-amber:          #D4952A;
-  --color-rp-amber-light:    #F5E6C8;
-  --color-rp-amber-dark:     #A8731A;
+  /* Palette nouvelle */
+  --color-dark:        #0D1B1E;
+  --color-blue:        #7798AB;
+  --color-green:       #C3DBC5;
+  --color-cream:       #E8DCB9;
+  --color-pink:        #F2CEE6;
 
-  --color-rp-blue:           #2E7EC4;
-  --color-rp-blue-light:     #D6EAF8;
-  --color-rp-blue-dark:      #1A5A96;
+  /* Rétrocompat rp-* */
+  --color-rp-amber:          #7798AB;
+  --color-rp-amber-light:    rgba(119,152,171,0.12);
+  --color-rp-amber-dark:     #5B7A8D;
 
-  --color-rp-navy:           #35404F;
-  --color-rp-navy-light:     #4A5568;
-  --color-rp-navy-muted:     #8896A8;
+  --color-rp-navy:           #0D1B1E;
+  --color-rp-navy-light:     #1E3135;
+  --color-rp-navy-muted:     #7798AB;
 
-  --color-rp-lavender:       #CCCAD4;
-  --color-rp-lavender-light: #F0EFF4;
+  --color-rp-lavender:       rgba(119,152,171,0.25);
+  --color-rp-lavender-light: rgba(119,152,171,0.08);
 
-  --color-rp-khaki:          #A8915A;
-  --color-rp-khaki-light:    #EDE5D0;
+  --color-rp-khaki:          #C3DBC5;
+  --color-rp-khaki-light:    rgba(195,219,197,0.2);
 
-  --color-rp-page:           #F4F3F7;
+  --color-rp-page:           #F8F9FA;
 
   --color-rp-success:        #16A34A;
   --color-rp-success-bg:     #DCFCE7;
@@ -96,7 +137,7 @@
   --color-rp-danger:         #DC2626;
   --color-rp-danger-bg:      #FEE2E2;
 
-  /* ── Rétrocompatibilité brand-* ─────────────────────────────  */
+  /* Rétrocompat brand-* */
   --color-brand-50:   #EFF6FF;
   --color-brand-100:  #DBEAFE;
   --color-brand-500:  #3B82F6;
@@ -115,12 +156,12 @@
   --color-danger-500:  #EF4444;
   --color-danger-700:  #B91C1C;
 
-  /* ── Polices ────────────────────────────────────────────────  */
+  /* Polices */
   --font-display: var(--font-jakarta);
   --font-body:    var(--font-dm);
   --font-mono:    var(--font-jetbrains), 'JetBrains Mono', ui-monospace, monospace;
 
-  /* ── Espacements personnalisés ──────────────────────────────  */
+  /* Espacements safe-area */
   --spacing-safe-bottom: env(safe-area-inset-bottom, 0px);
   --spacing-safe-top:    env(safe-area-inset-top, 0px);
 }
@@ -129,123 +170,188 @@
    BASE
    ═══════════════════════════════════════════════════════════════ */
 
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
 
 body {
-  background-color: var(--rp-bg-page);
-  color: var(--rp-navy);
-  font-family: var(--font-body, 'DM Sans', system-ui, sans-serif);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-body, var(--font-sans));
+  font-size: var(--font-size-md);
 }
 
-/* Titres → police display */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display, 'Plus Jakarta Sans', system-ui, sans-serif);
+  font-family: var(--font-display, var(--font-sans));
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   COMPOSANTS GLOBAUX
+   COMPOSANTS UTILITAIRES
    ═══════════════════════════════════════════════════════════════ */
 
-/* Scrollbar fine sur webkit */
-::-webkit-scrollbar { width: 4px; height: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--rp-lavender); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--rp-navy-muted); }
-
-/* Sélection de texte */
-::selection { background: var(--rp-amber-light); color: var(--rp-navy); }
-
-/* ── Carte standard ─────────────────────────────────────────── */
-.rp-card {
-  background: var(--rp-white);
-  border-radius: var(--rp-radius-lg);
-  box-shadow: var(--rp-shadow-card);
-  border: 1px solid var(--rp-lavender-light);
+/* Card Apple-style */
+.card {
+  background:    var(--color-card);
+  border-radius: var(--radius-xl);
+  box-shadow:    var(--shadow-md);
+  border:        1px solid var(--color-border);
+  padding:       24px;
 }
 
-/* ── Bouton CTA primaire ────────────────────────────────────── */
+/* Bouton primaire */
+.btn-primary {
+  background:    var(--color-dark);
+  color:         white;
+  border:        none;
+  border-radius: var(--radius-md);
+  padding:       12px 24px;
+  font-size:     var(--font-size-md);
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    opacity 0.2s;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           8px;
+}
+.btn-primary:hover { opacity: 0.85; }
+
+/* Bouton secondaire */
+.btn-secondary {
+  background:    var(--color-blue-20);
+  color:         var(--color-blue);
+  border:        none;
+  border-radius: var(--radius-md);
+  padding:       12px 24px;
+  font-size:     var(--font-size-md);
+  font-weight:   500;
+  cursor:        pointer;
+  transition:    opacity 0.2s;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           8px;
+}
+.btn-secondary:hover { opacity: 0.85; }
+
+/* Rétrocompat — rp-card */
+.rp-card {
+  background:    var(--color-card);
+  border-radius: var(--radius-lg);
+  box-shadow:    var(--shadow-sm);
+  border:        1px solid var(--color-border);
+}
+
+/* Bouton primaire rp (rétrocompat) */
 .rp-btn-primary {
-  min-height: 48px;
-  padding: 0 24px;
-  background: var(--rp-amber);
-  color: var(--rp-white);
-  border-radius: var(--rp-radius-md);
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 15px;
-  letter-spacing: -0.01em;
-  transition: background 150ms ease, transform 100ms ease;
-  display: inline-flex;
-  align-items: center;
+  min-height:     48px;
+  padding:        0 24px;
+  background:     var(--color-dark);
+  color:          white;
+  border-radius:  var(--radius-md);
+  font-weight:    600;
+  font-size:      var(--font-size-md);
+  transition:     opacity 0.2s, transform 0.1s;
+  display:        inline-flex;
+  align-items:    center;
   justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  border: none;
-  outline: none;
+  gap:            8px;
+  cursor:         pointer;
+  border:         none;
+  outline:        none;
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-primary:hover  { background: var(--rp-amber-dark); }
+.rp-btn-primary:hover  { opacity: 0.85; }
 .rp-btn-primary:active { transform: scale(0.98); }
 
-/* ── Bouton secondaire ──────────────────────────────────────── */
+/* Bouton secondaire rp (rétrocompat) */
 .rp-btn-secondary {
-  min-height: 48px;
-  padding: 0 20px;
-  background: var(--rp-lavender-light);
-  color: var(--rp-navy);
-  border-radius: var(--rp-radius-md);
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: 14px;
-  transition: background 150ms ease;
-  display: inline-flex;
-  align-items: center;
+  min-height:     48px;
+  padding:        0 20px;
+  background:     var(--color-blue-20);
+  color:          var(--color-blue);
+  border-radius:  var(--radius-md);
+  font-weight:    500;
+  font-size:      14px;
+  transition:     background 0.15s;
+  display:        inline-flex;
+  align-items:    center;
   justify-content: center;
-  gap: 8px;
-  cursor: pointer;
-  border: 1px solid var(--rp-lavender);
+  gap:            8px;
+  cursor:         pointer;
+  border:         1px solid var(--color-border);
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-secondary:hover { background: var(--rp-lavender); }
+.rp-btn-secondary:hover { background: rgba(119,152,171,0.3); }
 
-/* ── Bottom sheet handle ────────────────────────────────────── */
+/* Bottom sheet handle */
 .rp-sheet-handle {
   width: 40px;
   height: 4px;
-  background: var(--rp-lavender);
+  background: var(--color-border);
   border-radius: 9999px;
   margin: 12px auto 0;
   flex-shrink: 0;
 }
 
-/* ── Safe area helpers ──────────────────────────────────────── */
+/* Safe area */
 .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
 .pt-safe { padding-top:    env(safe-area-inset-top, 0px); }
 .mb-safe { margin-bottom:  env(safe-area-inset-bottom, 0px); }
 
-/* ── Touch target minimum ───────────────────────────────────── */
+/* Touch target */
 .touch-target {
   min-height: 48px;
-  min-width: 48px;
-  display: flex;
+  min-width:  48px;
+  display:    flex;
   align-items: center;
   justify-content: center;
 }
 
-/* ── Animation bottom sheet ─────────────────────────────────── */
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0);    }
+/* FAB */
+.rp-fab {
+  position: fixed;
+  bottom:   calc(24px + env(safe-area-inset-bottom, 0px));
+  right:    20px;
+  width:    56px;
+  height:   56px;
+  border-radius: 9999px;
+  background: var(--color-dark);
+  color:    white;
+  display:  flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(13,27,30,0.25);
+  cursor:   pointer;
+  border:   none;
+  z-index:  40;
+  transition: opacity 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
 }
-@keyframes slideDown {
-  from { transform: translateY(0);    }
-  to   { transform: translateY(100%); }
-}
+.rp-fab:hover  { opacity: 0.85; }
+.rp-fab:active { transform: scale(0.95); }
+
+/* Scrollbar fine */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-blue); }
+
+/* Sélection de texte */
+::selection { background: rgba(119,152,171,0.2); color: var(--color-dark); }
+
+/* Feedback universel */
+button, [role="button"] { cursor: pointer; }
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled) { transform: scale(0.97); }
+
+/* Animations */
+@keyframes slideUp   { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes slideDown { from { transform: translateY(0); } to { transform: translateY(100%); } }
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
@@ -254,61 +360,14 @@ h1, h2, h3, h4, h5, h6 {
 .animate-fade-in    { animation: fadeIn    200ms ease forwards; }
 .animate-fade-out   { animation: fadeOut   200ms ease forwards; }
 
-/* ── Respect de prefers-reduced-motion ──────────────────────── */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* ── FAB (Floating Action Button) ───────────────────────────── */
-.rp-fab {
-  position: fixed;
-  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-  right: 20px;
-  width: 56px;
-  height: 56px;
-  border-radius: 9999px;
-  background: var(--rp-amber);
-  color: var(--rp-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 16px rgba(212, 149, 42, .40);
-  cursor: pointer;
-  border: none;
-  z-index: 40;
-  transition: background 150ms, transform 100ms, box-shadow 150ms;
-  -webkit-tap-highlight-color: transparent;
-}
-.rp-fab:hover  { background: var(--rp-amber-dark); box-shadow: 0 6px 20px rgba(212,149,42,.50); }
-.rp-fab:active { transform: scale(0.95); }
-
-/* ── Feedback universel sur les boutons ──────────────────────── */
-/* cursor + compression au clic sur tous les boutons cliquables  */
-button, [role="button"] {
-  cursor: pointer;
-}
-button:active:not(:disabled),
-[role="button"]:active:not(:disabled) {
-  transform: scale(0.97);
-}
-
-/* Bouton primaire amber → navy au survol (inversion des couleurs) */
-.rp-btn-primary:hover {
-  background: var(--rp-navy);
-  color:      var(--rp-white);
-}
-.rp-btn-primary:active { transform: scale(0.97); }
-
-/* ── Scroll animations ─────────────────────────────────────────── */
+/* Scroll animations */
 .fade-up {
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.6s ease, transform 0.6s ease;
 }
-.fade-up.visible {
-  opacity: 1;
-  transform: translateY(0);
+.fade-up.visible { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }

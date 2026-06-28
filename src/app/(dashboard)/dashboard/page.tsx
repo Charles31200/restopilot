@@ -1,10 +1,9 @@
 import {
-  Euro, Users, TrendingUp, AlertTriangle,
+  Euro, Users, TrendingUp,
   Package, Clock, FileText,
 } from 'lucide-react'
 import { getCurrentProfile, getCurrentRestaurant } from '@/lib/supabase/auth'
 import { getDashboardSummary } from '@/lib/utils/dashboard-data'
-import { MobileHeader } from '@/components/layout/MobileHeader'
 import { KPICard }      from '@/components/ui/KPICard'
 import { SectionHeader } from '@/components/ui/SectionHeader'
 import { Badge }        from '@/components/ui/Badge'
@@ -60,44 +59,20 @@ export default async function DashboardPage() {
 
   return (
     <>
-      {/* ── Header mobile — fond navy (home) ──────────────── */}
-      <MobileHeader
-        title={restaurantName}
-        variant="dark"
-        badgeCount={summary.alerts.filter(a => a.severity === 'critical').length}
-      />
-
-      {/* ── Header desktop (caché sur mobile) ────────────── */}
-      <div className="hidden lg:flex items-center justify-between mb-6">
+      {/* ── Header de page ───────────────────────────────── */}
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}>
+          <h1
+            className="font-semibold"
+            style={{ fontSize: '28px', color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}
+          >
             {firstName ? `Bonjour ${firstName} 👋` : 'Bonjour 👋'}
           </h1>
-          <p className="text-sm mt-1 capitalize" style={{ color: 'var(--rp-navy-muted)' }}>{today}</p>
+          <p className="text-[14px] mt-1 capitalize" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+            {today}
+          </p>
         </div>
         <DashboardActions />
-      </div>
-
-      {/* ── Header mobile visible (dessus du spacer) ─────── */}
-      <div className="lg:hidden mb-4">
-        {/* Bloc de salutation sous le MobileHeader navy */}
-        <div
-          className="px-4 pt-4 pb-5 rounded-b-[20px] -mt-2"
-          style={{ background: 'var(--rp-navy)' }}
-        >
-          <p
-            className="text-[20px] font-bold text-white"
-            style={{ fontFamily: 'var(--font-display)' }}
-          >
-            {firstName ? `Bonjour ${firstName} 👋` : 'Bonjour 👋'}
-          </p>
-          <p
-            className="text-[13px] mt-0.5 capitalize"
-            style={{ color: 'var(--rp-amber-light)', fontFamily: 'var(--font-body)' }}
-          >
-            {restaurantName} · {today}
-          </p>
-        </div>
       </div>
 
       {/* ═══ SECTION 1 — KPIs 2×2 ══════════════════════════ */}

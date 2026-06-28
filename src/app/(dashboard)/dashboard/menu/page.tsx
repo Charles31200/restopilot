@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { createClient }   from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/supabase/auth'
 import { MenuClient }     from '@/components/menu/MenuClient'
-import { MobileHeader }   from '@/components/layout/MobileHeader'
 import type { MenuRecipe, MenuProduct } from '@/components/menu/MenuClient'
 
 export const metadata: Metadata = { title: 'Menu & Recettes — PilotResto' }
@@ -53,7 +52,15 @@ export default async function MenuPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <MobileHeader title="Menu & Recettes" />
+      {/* ── Header de page ──────────────────────────── */}
+      <div className="mb-6">
+        <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+          Menu &amp; Recettes
+        </h1>
+        <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+          Gérez vos plats, recettes et fiches de coût
+        </p>
+      </div>
       <MenuClient initialItems={initialItems} products={products} />
     </div>
   )

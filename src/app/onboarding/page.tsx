@@ -48,7 +48,7 @@ function FloatingInput({ id, label, error, className, ...props }: FloatingInputP
             'focus:ring-2',
             error
               ? 'border-red-400 text-red-700 focus:border-red-400 focus:ring-red-100'
-              : 'border-[var(--rp-lavender)] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
+              : 'border-[var(--rp-lavender)] text-[var(--rp-navy)] focus:border-[#7798AB] focus:ring-[#7798AB]/20',
             className,
           )}
           {...props}
@@ -59,7 +59,7 @@ function FloatingInput({ id, label, error, className, ...props }: FloatingInputP
             'pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 transition-all text-[15px]',
             // Flotte vers le haut quand le champ est rempli ou en focus
             'peer-placeholder-shown:top-1/2 peer-placeholder-shown:-translate-y-1/2 peer-placeholder-shown:text-[15px]',
-            'peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[var(--rp-amber)]',
+            'peer-focus:top-3 peer-focus:translate-y-0 peer-focus:text-[11px] peer-focus:font-medium peer-focus:text-[#7798AB]',
             '[&:not(:placeholder-shown)]:top-3',
             error ? 'text-red-500' : 'text-[var(--rp-navy-muted)]',
           )}
@@ -113,33 +113,30 @@ export default function OnboardingPage() {
 
   return (
     <main
-      className="min-h-screen flex flex-col items-center justify-center px-4 py-10"
-      style={{ background: 'var(--rp-bg-page)' }}
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-10 relative overflow-hidden"
+      style={{ background: '#0D1B1E' }}
     >
-      <div className="w-full max-w-[400px]">
+      {/* Décor */}
+      <div className="pointer-events-none absolute top-[-100px] right-[-80px] w-[350px] h-[350px] rounded-full"
+        style={{ background: 'rgba(195,219,197,0.06)', filter: 'blur(60px)' }} aria-hidden="true" />
+      <div className="pointer-events-none absolute bottom-[-80px] left-[-60px] w-[300px] h-[300px] rounded-full"
+        style={{ background: 'rgba(232,220,185,0.05)', filter: 'blur(50px)' }} aria-hidden="true" />
+
+      <div className="relative w-full" style={{ maxWidth: '520px' }}>
 
         {/* ── Logo ─────────────────────────────────────────── */}
-        <div className="flex flex-col items-center mb-8">
-          <div
-            className="w-16 h-16 rounded-[18px] flex items-center justify-center mb-4"
-            style={{ background: 'var(--rp-navy)' }}
-          >
-            <span
-              className="text-2xl font-black"
-              style={{ color: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}
-            >
-              RP
-            </span>
-          </div>
+        <div className="flex flex-col items-center mb-6">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/favicon.png" alt="PilotResto" style={{ height: '48px', width: 'auto', marginBottom: '12px' }} />
           <h1
-            className="text-[22px] font-bold text-center"
-            style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}
+            className="text-[22px] font-semibold text-center"
+            style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}
           >
             {step === 1 ? 'Votre restaurant' : 'Votre profil'}
           </h1>
           <p
             className="text-[13px] text-center mt-1"
-            style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}
+            style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}
           >
             {step === 1
               ? 'Configurez votre établissement'
@@ -147,26 +144,22 @@ export default function OnboardingPage() {
           </p>
         </div>
 
-        {/* ── Indicateur de progression ─────────────────────── */}
-        <div className="flex justify-center items-center gap-2 mb-6">
-          {[1, 2].map(s => (
-            <div
-              key={s}
-              className="h-[6px] rounded-full transition-all duration-300"
-              style={{
-                width:      s === step ? 28 : 8,
-                background: s <= step ? 'var(--rp-amber)' : 'var(--rp-lavender)',
-              }}
-            />
-          ))}
+        {/* ── Barre de progression ──────────────────────────── */}
+        <div
+          className="rounded-full overflow-hidden mb-6 mx-8"
+          style={{ height: '4px', background: 'rgba(255,255,255,0.1)' }}
+        >
+          <div
+            className="h-full rounded-full transition-all duration-500"
+            style={{ width: step === 1 ? '50%' : '100%', background: '#C3DBC5' }}
+          />
         </div>
 
         {/* ── Carte formulaire ──────────────────────────────── */}
         <div
-          className="bg-white rounded-2xl p-6"
+          className="bg-white rounded-[24px] p-7"
           style={{
-            border:     '1px solid var(--rp-lavender-light)',
-            boxShadow:  'var(--rp-shadow-card)',
+            boxShadow: '0 24px 64px rgba(0,0,0,0.45)',
           }}
         >
           {/* Erreur serveur */}
@@ -207,8 +200,8 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={goToStep2}
-                  className="mt-2 w-full h-[56px] rounded-full font-semibold text-[15px] text-white transition active:scale-[0.98]"
-                  style={{ background: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}
+                  className="mt-2 w-full h-[52px] rounded-[14px] font-semibold text-[15px] text-white transition active:scale-[0.98]"
+                  style={{ background: '#0D1B1E', fontFamily: 'var(--font-display)' }}
                 >
                   Continuer →
                 </button>
@@ -241,7 +234,7 @@ export default function OnboardingPage() {
                     'flex items-center justify-center gap-2 transition active:scale-[0.98]',
                     'disabled:opacity-60 disabled:cursor-not-allowed',
                   )}
-                  style={{ background: 'var(--rp-amber)', fontFamily: 'var(--font-display)' }}
+                  style={{ background: '#0D1B1E', borderRadius: '14px', fontFamily: 'var(--font-display)' }}
                 >
                   {loading && <Loader2 className="w-4 h-4 animate-spin" />}
                   {loading ? 'Enregistrement…' : 'Accéder au tableau de bord'}
@@ -264,7 +257,7 @@ export default function OnboardingPage() {
         {/* ── Étiquette étape ───────────────────────────────── */}
         <p
           className="text-center mt-4 text-[12px]"
-          style={{ color: 'var(--rp-navy-muted)', fontFamily: 'var(--font-body)' }}
+          style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)' }}
         >
           Étape {step} sur 2
         </p>

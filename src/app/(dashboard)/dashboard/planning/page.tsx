@@ -4,7 +4,6 @@ import { getCurrentUser }     from '@/lib/supabase/auth'
 import { getCurrentWeek, getWeekDays, toISODate, extractTime, calcHours } from '@/lib/utils/week-utils'
 import { calculateShiftCost, calcNightHours, HCR }                        from '@/lib/utils/hcr-rules'
 import { PlanningClient }     from '@/components/planning/PlanningClient'
-import { MobileHeader }       from '@/components/layout/MobileHeader'
 import type { WeekData, ShiftWithEmployee, EmployeeWeeklyStats } from '@/types/planning'
 import type { Employee } from '@/types'
 
@@ -129,18 +128,17 @@ export default async function PlanningPage({
 
   return (
     <>
-      {/* Header mobile */}
-      <MobileHeader title="Planning" variant="light" />
-
-      {/* Titre desktop */}
-      <div className="hidden lg:block mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-display)' }}>
-          Planning du personnel
-        </h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--rp-navy-muted)' }}>
-          {employees.length} employé{employees.length > 1 ? 's' : ''} actif{employees.length > 1 ? 's' : ''}
-          {shifts.length > 0 && ` · ${shifts.length} créneau${shifts.length > 1 ? 'x' : ''} cette semaine`}
-        </p>
+      {/* ── Header de page ──────────────────────────── */}
+      <div className="flex items-start justify-between mb-6">
+        <div>
+          <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+            Planning du personnel
+          </h1>
+          <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+            {employees.length} employé{employees.length > 1 ? 's' : ''} actif{employees.length > 1 ? 's' : ''}
+            {shifts.length > 0 && ` · ${shifts.length} créneau${shifts.length > 1 ? 'x' : ''} cette semaine`}
+          </p>
+        </div>
       </div>
 
       <PlanningClient initialData={weekData} initialWeek={week} />
