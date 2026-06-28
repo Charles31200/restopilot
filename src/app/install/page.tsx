@@ -107,14 +107,23 @@ export default function InstallPage() {
             <h2 className="font-semibold text-white text-sm">Application desktop</h2>
           </div>
           <div className="flex gap-3">
+            <div className="flex flex-col flex-1 gap-1.5">
+              <DownloadButton
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0-arm64.dmg"
+                icon="🍎"
+                label="Télécharger pour Mac"
+                sub="macOS M1 / M2 / M3 · Apple Silicon"
+              />
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0.dmg"
+                className="text-center text-xs transition hover:opacity-80"
+                style={{ color: 'rgba(255,255,255,0.45)' }}
+              >
+                Mac Intel ? <span style={{ textDecoration: 'underline' }}>Téléchargez cette version</span>
+              </a>
+            </div>
             <DownloadButton
-              href="https://github.com/Charles31200/pilotresto-desktop/releases/latest/download/PilotResto.dmg"
-              icon="🍎"
-              label="Télécharger pour Mac"
-              sub="macOS M1 / M2 / M3 · Intel"
-            />
-            <DownloadButton
-              href="https://github.com/Charles31200/pilotresto-desktop/releases/latest/download/PilotResto+Setup+1.0.0.exe"
+              href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
               icon="🪟"
               label="Télécharger pour Windows"
               sub="Windows 10 / 11 · 64 bits"
