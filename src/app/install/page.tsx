@@ -19,7 +19,7 @@ function InstructionBlock({ title, icon, steps }: { title: string; icon: string;
           <li key={s.n} className="flex items-start gap-3">
             <span
               className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold"
-              style={{ background: '#B8962E', color: 'white' }}
+              style={{ background: '#7798AB', color: 'white' }}
             >
               {s.n}
             </span>
@@ -33,11 +33,39 @@ function InstructionBlock({ title, icon, steps }: { title: string; icon: string;
   )
 }
 
+function DownloadButton({
+  href,
+  icon,
+  label,
+  sub,
+}: {
+  href: string
+  icon: string
+  label: string
+  sub: string
+}) {
+  return (
+    <a
+      href={href}
+      className="flex flex-col items-center gap-1.5 flex-1 rounded-2xl py-5 px-4 transition active:scale-95 hover:opacity-90"
+      style={{
+        background: '#0D1B1E',
+        border: '1px solid rgba(255,255,255,0.15)',
+        textDecoration: 'none',
+      }}
+    >
+      <span style={{ fontSize: '28px', lineHeight: 1 }}>{icon}</span>
+      <span className="font-semibold text-white text-sm text-center">{label}</span>
+      <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>{sub}</span>
+    </a>
+  )
+}
+
 export default function InstallPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-5 py-12"
-      style={{ background: '#1B2A4A' }}
+      style={{ background: '#0D1B1E' }}
     >
       {/* Logo */}
       <div className="mb-8 flex flex-col items-center gap-3">
@@ -56,7 +84,7 @@ export default function InstallPage() {
         <div className="text-center mb-8">
           <div
             className="inline-flex items-center gap-2 rounded-full text-xs font-semibold mb-4 px-4 py-1.5"
-            style={{ background: 'rgba(184,150,46,0.2)', color: '#F5C46A', border: '1px solid rgba(184,150,46,0.4)' }}
+            style={{ background: 'rgba(119,152,171,0.2)', color: '#C3DBC5', border: '1px solid rgba(119,152,171,0.4)' }}
           >
             Étape requise
           </div>
@@ -72,7 +100,36 @@ export default function InstallPage() {
           </p>
         </div>
 
-        {/* Instructions par plateforme */}
+        {/* ── Application desktop ─────────────────────────────── */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-3">
+            <span style={{ fontSize: '18px' }}>💻</span>
+            <h2 className="font-semibold text-white text-sm">Application desktop</h2>
+          </div>
+          <div className="flex gap-3">
+            <DownloadButton
+              href="https://github.com/Charles31200/pilotresto-desktop/releases/latest/download/PilotResto.dmg"
+              icon="🍎"
+              label="Télécharger pour Mac"
+              sub="macOS M1 / M2 / M3 · Intel"
+            />
+            <DownloadButton
+              href="https://github.com/Charles31200/pilotresto-desktop/releases/latest/download/PilotResto+Setup+1.0.0.exe"
+              icon="🪟"
+              label="Télécharger pour Windows"
+              sub="Windows 10 / 11 · 64 bits"
+            />
+          </div>
+        </div>
+
+        {/* Séparateur */}
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
+          <span className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>ou installer en PWA</span>
+          <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
+        </div>
+
+        {/* Instructions PWA par plateforme */}
         <div className="space-y-4 mb-8">
           <InstructionBlock
             title="iPhone / iPad (Safari)"
@@ -98,7 +155,7 @@ export default function InstallPage() {
 
           <InstructionBlock
             title="Ordinateur Mac / Windows (Chrome)"
-            icon="💻"
+            icon="🌐"
             steps={[
               { n: '1', text: 'Ouvrez cette page dans Google Chrome' },
               { n: '2', text: 'Cliquez sur l\'icône d\'installation dans la barre d\'adresse (⊕)' },
@@ -112,9 +169,9 @@ export default function InstallPage() {
           href="/login?source=pwa"
           className="block w-full text-center font-bold text-base rounded-2xl py-4 transition active:scale-95"
           style={{
-            background:  '#B8962E',
-            color:       'white',
-            boxShadow:   '0 4px 20px rgba(184,150,46,0.35)',
+            background: '#7798AB',
+            color: 'white',
+            boxShadow: '0 4px 20px rgba(119,152,171,0.35)',
           }}
         >
           J&rsquo;ai installé l&rsquo;application →
