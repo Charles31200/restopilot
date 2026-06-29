@@ -33,9 +33,9 @@ export default async function DashboardLayout({
   const restaurantName = restaurant?.name ?? 'Mon restaurant'
 
   return (
-    <div className="min-h-screen" style={{ background: '#F8F9FA' }}>
+    <div className="min-h-screen" style={{ background: '#F5F4F0' }}>
 
-      {/* ── Top bar fixe ─────────────────────────────────── */}
+      {/* ── Sidebar + Header ─────────────────────────────── */}
       <TopBar
         restaurantName={restaurantName}
         userInitials={userInitials}
@@ -43,9 +43,11 @@ export default async function DashboardLayout({
         userEmail={user.email ?? ''}
       />
 
-      {/* ── Offset pour la top bar ───────────────────────── */}
-      <div style={{ paddingTop: '56px' }}>
-
+      {/* ── Contenu : décalé header (48px) + sidebar desktop (52px) + bottom nav mobile (64px) */}
+      <div
+        className="md:pl-[52px] pb-[64px] md:pb-0"
+        style={{ paddingTop: '48px' }}
+      >
         {/* ── Bannière essai ───────────────────────────────── */}
         <TrialBanner />
 
@@ -57,14 +59,14 @@ export default async function DashboardLayout({
         {/* ── Footer ───────────────────────────────────────── */}
         <footer
           className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 py-4 text-[11px] border-t"
-          style={{ borderColor: 'rgba(119,152,171,0.12)', color: '#7798AB' }}
+          style={{ borderColor: '#EEEEEE', color: '#888888' }}
         >
           <span>© 2026 PilotResto</span>
-          <span style={{ color: 'rgba(119,152,171,0.3)' }}>·</span>
+          <span style={{ color: '#CCCCCC' }}>·</span>
           <a href="/cgu-cgv"                      className="hover:text-gray-700 transition-colors">CGU / CGV</a>
-          <span style={{ color: 'rgba(119,152,171,0.3)' }}>·</span>
+          <span style={{ color: '#CCCCCC' }}>·</span>
           <a href="/politique-de-confidentialite" className="hover:text-gray-700 transition-colors">Politique de confidentialité</a>
-          <span style={{ color: 'rgba(119,152,171,0.3)' }}>·</span>
+          <span style={{ color: '#CCCCCC' }}>·</span>
           <a href="mailto:charles.lecussan@gmail.com" className="hover:text-gray-700 transition-colors">Contact</a>
         </footer>
       </div>

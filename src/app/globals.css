@@ -16,12 +16,12 @@
   --color-dark-80:     rgba(13,27,30,0.8);
   --color-dark-10:     rgba(13,27,30,0.05);
   --color-blue-20:     rgba(119,152,171,0.2);
-  --color-text-primary:   #0D1B1E;
-  --color-text-secondary: #7798AB;
-  --color-text-muted:     rgba(13,27,30,0.4);
-  --color-bg:          #F8F9FA;
+  --color-text-primary:   #111111;
+  --color-text-secondary: #888888;
+  --color-text-muted:     rgba(17,17,17,0.4);
+  --color-bg:          #F5F4F0;
   --color-card:        #FFFFFF;
-  --color-border:      rgba(119,152,171,0.15);
+  --color-border:      #EEEEEE;
 
   /* ── Typographie Apple-like ──────────────────────────────────  */
   --font-sans:   -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -70,7 +70,7 @@
 
   /* Fond & blanc */
   --rp-white:        #FFFFFF;
-  --rp-bg-page:      #F8F9FA;
+  --rp-bg-page:      #F5F4F0;
 
   /* Sémantiques (conservés) */
   --rp-success:      #16A34A;
@@ -81,14 +81,14 @@
   --rp-danger-bg:    #FEE2E2;
 
   /* Ombres */
-  --rp-shadow-card:       0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --rp-shadow-card:       0 1px 4px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
   --rp-shadow-modal:      0 20px 60px rgba(0,0,0,0.15);
   --rp-shadow-bottom-nav: 0 -2px 16px rgba(0,0,0,0.06);
 
   /* Rayons (alias) */
   --rp-radius-sm:   8px;
   --rp-radius-md:   12px;
-  --rp-radius-lg:   16px;
+  --rp-radius-lg:   20px;
   --rp-radius-xl:   24px;
   --rp-radius-full: 9999px;
 
@@ -206,20 +206,20 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Bouton primaire */
 .btn-primary {
-  background:    var(--color-dark);
+  background:    #111111;
   color:         white;
   border:        none;
-  border-radius: var(--radius-md);
+  border-radius: 12px;
   padding:       12px 24px;
   font-size:     var(--font-size-md);
   font-weight:   500;
   cursor:        pointer;
-  transition:    opacity 0.2s;
+  transition:    background 0.15s;
   display:       inline-flex;
   align-items:   center;
   gap:           8px;
 }
-.btn-primary:hover { opacity: 0.85; }
+.btn-primary:hover { background: #333333; opacity: 1; }
 
 /* Bouton secondaire */
 .btn-secondary {
@@ -250,12 +250,12 @@ h1, h2, h3, h4, h5, h6 {
 .rp-btn-primary {
   min-height:     48px;
   padding:        0 24px;
-  background:     var(--color-dark);
+  background:     #111111;
   color:          white;
-  border-radius:  var(--radius-md);
+  border-radius:  12px;
   font-weight:    600;
   font-size:      var(--font-size-md);
-  transition:     opacity 0.2s, transform 0.1s;
+  transition:     background 0.15s, transform 0.1s;
   display:        inline-flex;
   align-items:    center;
   justify-content: center;
@@ -265,7 +265,7 @@ h1, h2, h3, h4, h5, h6 {
   outline:        none;
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-primary:hover  { opacity: 0.85; }
+.rp-btn-primary:hover  { background: #333333; opacity: 1; }
 .rp-btn-primary:active { transform: scale(0.98); }
 
 /* Bouton secondaire rp (rétrocompat) */
@@ -334,6 +334,45 @@ h1, h2, h3, h4, h5, h6 {
 }
 .rp-fab:hover  { opacity: 0.85; }
 .rp-fab:active { transform: scale(0.95); }
+
+/* KPI cards */
+.kpi-card {
+  background:    #FFFFFF;
+  border-radius: 20px;
+  padding:       24px;
+  box-shadow:    0 1px 4px rgba(0,0,0,0.06);
+  border:        1px solid #EEEEEE;
+  position:      relative;
+  overflow:      hidden;
+}
+.kpi-card .kpi-value {
+  font-size:   32px;
+  font-weight: 700;
+  color:       #111111;
+  line-height: 1.1;
+  font-family: var(--font-display);
+}
+.kpi-card .kpi-label {
+  font-size:  13px;
+  color:      #888888;
+  margin-top: 4px;
+}
+
+/* Bouton accent */
+.btn-accent {
+  background:    #7798AB;
+  color:         white;
+  border-radius: 12px;
+  padding:       10px 20px;
+  font-weight:   600;
+  border:        none;
+  cursor:        pointer;
+  transition:    background 0.15s;
+  display:       inline-flex;
+  align-items:   center;
+  gap:           8px;
+}
+.btn-accent:hover { background: #5B7A8D; }
 
 /* Scrollbar fine */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
