@@ -43,9 +43,9 @@ export default async function DashboardLayout({
         userEmail={user.email ?? ''}
       />
 
-      {/* ── Contenu : décalé header (52px) + sidebar desktop (220px) + bottom nav mobile (64px) */}
+      {/* ── Contenu : décalé header (52px) + sidebar desktop collapsed (72px) + bottom nav mobile (64px) */}
       <div
-        className="md:pl-[220px] pb-[64px] md:pb-0"
+        className="md:pl-[72px] pb-[64px] md:pb-0"
         style={{ paddingTop: '52px' }}
       >
         {/* ── Bannière essai ───────────────────────────────── */}

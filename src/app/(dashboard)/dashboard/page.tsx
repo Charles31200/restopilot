@@ -1,16 +1,11 @@
-import {
-  Euro, Users, TrendingUp,
-  Package, Clock, FileText,
-} from 'lucide-react'
+import { Search } from 'lucide-react'
+import { createClient }   from '@/lib/supabase/server'
 import { getCurrentProfile, getCurrentRestaurant } from '@/lib/supabase/auth'
 import { getDashboardSummary } from '@/lib/utils/dashboard-data'
-import { KPICard }      from '@/components/ui/KPICard'
-import { SectionHeader } from '@/components/ui/SectionHeader'
-import { Badge }        from '@/components/ui/Badge'
-import { ListItem }     from '@/components/ui/ListItem'
-import { WeeklyBarChart }    from '@/components/dashboard/WeeklyBarChart'
+import { RevenueLineChart } from '@/components/dashboard/RevenueLineChart'
+import { RevenueBarChart }  from '@/components/dashboard/RevenueBarChart'
 import { DashboardActions } from '@/components/dashboard/DashboardActions'
-import type { AlertType, AlertSeverity } from '@/types/dashboard'
+import type { Employee, EmployeeRole } from '@/types'
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -18,28 +13,18 @@ function fmt(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
 }
 
-// ── Config alertes ────────────────────────────────────────────
-
-const ALERT_ICONS: Record<AlertType, React.ReactNode> = {
-  stock:    <Package    size={20} strokeWidth={1.75} style={{ color: 'var(--rp-danger)'  }} />,
-  overtime: <Clock      size={20} strokeWidth={1.75} style={{ color: 'var(--rp-warning)' }} />,
-  invoice:  <FileText   size={20} strokeWidth={1.75} style={{ color: 'var(--rp-blue)'   }} />,
+function trendText(trend: number) {
+  const sign = trend >= 0 ? '+' : ''
+  return `${sign}${trend.toFixed(0)}% vs hier`
 }
 
-const ALERT_SEVERITY_BADGE: Record<AlertSeverity, React.ReactNode> = {
-  critical: <Badge variant="danger"  size="sm">Critique</Badge>,
-  warning:  <Badge variant="warning" size="sm">Attention</Badge>,
-  info:     <Badge variant="blue"    size="sm">Info</Badge>,
-}
-
-// ── Icône météo financière ────────────────────────────────────
-
-function weatherEmoji(trend: number) {
-  if (trend >= 10)  return '🌞'
-  if (trend >= 2)   return '☀️'
-  if (trend >= -2)  return '⛅'
-  if (trend >= -10) return '🌦️'
-  return '🌧️'
+const ROLE_LABELS: Record<EmployeeRole, string> = {
+  cuisinier: 'Cuisinier',
+  serveur:   'Serveur',
+  barman:    'Barman',
+  plongeur:  'Plongeur',
+  manager:   'Manager',
+  autre:     'Employé',
 }
 
 // ── Page ──────────────────────────────────────────────────────
@@ -51,157 +36,168 @@ export default async function DashboardPage() {
     getDashboardSummary(),
   ])
 
-  const firstName      = profile?.first_name ?? ''
-  const restaurantName = restaurant?.name ?? 'Mon restaurant'
-  const alerts         = summary.alerts.slice(0, 3)
-  const topDishes      = summary.topDishes.slice(0, 5)
-  const today = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
+  let employees: Employee[] = []
+  if (restaurant?.id) {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('restaurant_id', restaurant.id)
+      .eq('is_active', true)
+      .order('first_name')
+      .limit(5)
+    employees = (data ?? []) as Employee[]
+  }
+
+  const firstName    = profile?.first_name ?? ''
+  const ticketMoyen  = summary.covers.day > 0 ? summary.revenue.day / summary.covers.day : 0
+  const topDishes    = summary.topDishes.slice(0, 7)
 
   return (
     <>
       {/* ── Header de page ───────────────────────────────── */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1
-            className="font-semibold"
-            style={{ fontSize: '28px', color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}
-          >
+          <h1 className="font-semibold" style={{ fontSize: '24px', color: '#111111', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
             {firstName ? `Bonjour ${firstName} 👋` : 'Bonjour 👋'}
           </h1>
-          <p className="text-[14px] mt-1 capitalize" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
-            {today}
-          </p>
         </div>
         <DashboardActions />
       </div>
 
-      {/* ═══ SECTION 1 — KPIs 2×2 ══════════════════════════ */}
-      <div className="grid grid-cols-2 gap-3">
-        <KPICard
-          label="CA aujourd'hui"
-          value={fmt(summary.revenue.day)}
-          trend={summary.revenue.dayTrend}
-          trendLabel="vs hier"
-          icon={<Euro size={20} strokeWidth={1.75} />}
-          color="amber"
-        />
-        <KPICard
-          label="CA semaine"
-          value={fmt(summary.revenue.week)}
-          trend={summary.revenue.weekTrend}
-          trendLabel="vs s. dernière"
-          icon={<TrendingUp size={20} strokeWidth={1.75} />}
-          color="success"
-        />
-        <KPICard
-          label="Couverts / jour"
-          value={String(summary.covers.day)}
-          trend={summary.covers.trend}
-          trendLabel="vs hier"
-          icon={<Users size={20} strokeWidth={1.75} />}
-          color="blue"
-        />
-        <KPICard
-          label="Marge brute"
-          value={fmt(summary.grossMargin)}
-          trend={summary.grossMarginPct > 20 ? summary.grossMarginPct - 20 : summary.grossMarginPct - 20}
-          trendLabel="du CA"
-          icon={<TrendingUp size={20} strokeWidth={1.75} />}
-          color={summary.grossMarginPct > 20 ? 'success' : 'danger'}
-        />
-      </div>
-
-      {/* ═══ SECTION 2 — Alertes ════════════════════════════ */}
-      {alerts.length > 0 && (
-        <>
-          <SectionHeader
-            title="Alertes actives"
-            onSeeAll={summary.alerts.length > 3 ? '/dashboard/comptabilite' : undefined}
+      {/* ── Tabs + recherche ─────────────────────────────── */}
+      <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+        <div className="inline-flex items-center gap-1 rounded-[10px] p-1" style={{ background: '#F5F5F5' }}>
+          {['Jour', 'Semaine', 'Mois'].map((tab, i) => (
+            <span
+              key={tab}
+              className="px-3.5 py-1.5 rounded-[8px] text-[13px] font-medium"
+              style={
+                i === 0
+                  ? { background: '#FFFFFF', color: '#111111', boxShadow: '0 1px 2px rgba(0,0,0,0.08)' }
+                  : { color: '#888888' }
+              }
+            >
+              {tab}
+            </span>
+          ))}
+        </div>
+        <div className="relative flex-1 max-w-[280px] min-w-[180px]">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: '#BBBBBB' }} />
+          <input
+            type="text"
+            placeholder="Search..."
+            disabled
+            className="w-full rounded-[10px] text-[13px] outline-none"
+            style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', padding: '9px 12px 9px 36px', color: '#111111' }}
           />
-          <div
-            className="rounded-[16px] overflow-hidden"
-            style={{ background: 'var(--rp-white)', border: '1px solid var(--rp-lavender-light)', boxShadow: 'var(--rp-shadow-card)' }}
-          >
-            {alerts.map((alert, i) => (
-              <ListItem
-                key={alert.id}
-                leading={
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--rp-lavender-light)' }}>
-                    {ALERT_ICONS[alert.type]}
-                  </div>
-                }
-                title={alert.title}
-                subtitle={alert.description}
-                trailing={ALERT_SEVERITY_BADGE[alert.severity]}
-                chevron
-                onClick={undefined}
-                noSeparator={i === alerts.length - 1}
-              />
-            ))}
-            {summary.alerts.length > 3 && (
-              <a
-                href="/dashboard/comptabilite"
-                className="flex items-center justify-center h-11 text-[13px] font-semibold"
-                style={{ color: 'var(--rp-amber)', borderTop: '1px solid var(--rp-lavender-light)', fontFamily: 'var(--font-body)' }}
-              >
-                Voir toutes les alertes ({summary.alerts.length})
-              </a>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* ═══ SECTION 3 — Graphe semaine ═════════════════════ */}
-      <SectionHeader title="Cette semaine" />
-      <div
-        className="rounded-[16px] overflow-hidden"
-        style={{ background: 'var(--rp-white)', border: '1px solid var(--rp-lavender-light)', boxShadow: 'var(--rp-shadow-card)', padding: '16px' }}
-      >
-        <WeeklyBarChart data={summary.weeklyData} />
+        </div>
       </div>
 
-      {/* ═══ SECTION 4 — Top plats ══════════════════════════ */}
-      {topDishes.length > 0 && (
-        <>
-          <SectionHeader title="Top plats" onSeeAll="/dashboard/comptabilite" />
-          <div
-            className="rounded-[16px] overflow-hidden mb-4"
-            style={{ background: 'var(--rp-white)', border: '1px solid var(--rp-lavender-light)', boxShadow: 'var(--rp-shadow-card)' }}
-          >
-            {topDishes.map((dish, i) => (
-              <ListItem
-                key={dish.name}
-                leading={
+      {/* ── KPIs ──────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+        <KpiCard label="Chiffre d'affaires du jour" value={fmt(summary.revenue.day)} sub={trendText(summary.revenue.dayTrend)} />
+        <KpiCard label="Nombre de couverts" value={String(summary.covers.day)} sub={trendText(summary.covers.trend)} />
+        <KpiCard label="Ticket moyen" value={fmt(ticketMoyen)} sub={`Food cost ${summary.foodCostPct.toFixed(0)}%`} />
+      </div>
+
+      {/* ── Graphe CA + Employés ──────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-5">
+        <div className="lg:col-span-2 kpi-card" style={{ padding: '20px' }}>
+          <h2 className="text-[15px] font-semibold mb-2" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            Revenus des dernières semaines
+          </h2>
+          <RevenueLineChart data={summary.weeklyData} />
+        </div>
+
+        <div className="kpi-card" style={{ padding: '20px' }}>
+          <h2 className="text-[15px] font-semibold mb-4" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            Employés
+          </h2>
+          {employees.length === 0 ? (
+            <p className="text-[13px]" style={{ color: '#888888' }}>Aucun employé actif</p>
+          ) : (
+            <div className="space-y-4">
+              {employees.map(emp => (
+                <div key={emp.id} className="flex items-center gap-3">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center text-[13px] font-bold"
-                    style={{ background: 'var(--rp-amber-light)', color: 'var(--rp-amber-dark)', fontFamily: 'var(--font-display)' }}
+                    className="w-9 h-9 rounded-full flex items-center justify-center font-semibold text-[12px] flex-shrink-0 text-white"
+                    style={{ background: emp.color || '#7798AB' }}
                   >
-                    #{dish.rank}
+                    {emp.first_name[0]}{emp.last_name[0]}
                   </div>
-                }
-                title={dish.name}
-                subtitle={fmt(dish.revenue)}
-                trailing={
-                  <div className="text-right">
-                    <p className="text-[15px] font-semibold tabular-nums" style={{ color: 'var(--rp-navy)', fontFamily: 'var(--font-body)' }}>
-                      ×{dish.quantity}
+                  <div className="min-w-0">
+                    <p className="text-[14px] font-semibold truncate" style={{ color: '#111111' }}>
+                      {emp.first_name} {emp.last_name}
                     </p>
-                    {dish.foodCostPct > 0 && (
-                      <Badge variant={dish.foodCostPct > 35 ? 'danger' : 'success'} size="sm">
-                        {dish.foodCostPct.toFixed(0)}% FC
-                      </Badge>
-                    )}
+                    <p className="text-[12px] truncate" style={{ color: '#888888' }}>
+                      {ROLE_LABELS[emp.role]}
+                    </p>
                   </div>
-                }
-                noSeparator={i === topDishes.length - 1}
-              />
-            ))}
-          </div>
-        </>
-      )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Ventes récentes + Revenus par mois ───────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="kpi-card" style={{ padding: '20px' }}>
+          <h2 className="text-[15px] font-semibold mb-3" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            Top plats de la semaine
+          </h2>
+          {topDishes.length === 0 ? (
+            <p className="text-[13px]" style={{ color: '#888888' }}>Aucune vente cette semaine</p>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr style={{ borderBottom: '1px solid #F0F0F0' }}>
+                  <th className="text-left text-[12px] font-medium pb-2" style={{ color: '#888888' }}>Plat</th>
+                  <th className="text-right text-[12px] font-medium pb-2" style={{ color: '#888888' }}>Qté</th>
+                  <th className="text-right text-[12px] font-medium pb-2" style={{ color: '#888888' }}>Food cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {topDishes.map(dish => (
+                  <tr key={dish.name} style={{ borderBottom: '1px solid #F7F7F7' }}>
+                    <td className="py-2.5 text-[13px]" style={{ color: '#111111' }}>{dish.name}</td>
+                    <td className="py-2.5 text-[13px] text-right tabular-nums" style={{ color: '#111111' }}>{dish.quantity}</td>
+                    <td
+                      className="py-2.5 text-[13px] text-right tabular-nums font-medium"
+                      style={{ color: dish.foodCostPct > 32 ? '#DC2626' : '#16A34A' }}
+                    >
+                      {dish.foodCostPct.toFixed(0)}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <div className="kpi-card" style={{ padding: '20px' }}>
+          <h2 className="text-[15px] font-semibold mb-2" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            Revenus par semaine
+          </h2>
+          <RevenueBarChart data={summary.weeklyData} />
+        </div>
+      </div>
 
       {/* ── FAB mobile + modal (rendu côté client) ────────── */}
       <DashboardActions />
     </>
+  )
+}
+
+// ── KPI Card (style référence) ──────────────────────────────
+
+function KpiCard({ label, value, sub }: { label: string; value: string; sub: string }) {
+  return (
+    <div className="kpi-card">
+      <p className="kpi-label">{label}</p>
+      <p className="kpi-value" style={{ marginTop: '6px' }}>{value}</p>
+      <p className="text-[12px] mt-2" style={{ color: '#888888' }}>{sub}</p>
+    </div>
   )
 }

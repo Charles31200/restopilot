@@ -39,6 +39,9 @@ const PAGE_TITLES: Record<string, string> = {
   '/dashboard/comptabilite': 'Comptabilité',
 }
 
+const SIDEBAR_COLLAPSED = 72
+const SIDEBAR_EXPANDED  = 240
+
 // ── Types ─────────────────────────────────────────────────────
 
 type TopBarProps = {
@@ -48,6 +51,102 @@ type TopBarProps = {
   userEmail:      string
 }
 
+type NavItemDef = { href: string; label: string; icon: typeof LayoutDashboard; exact: boolean }
+
+// ── Item de navigation ──────────────────────────────────────
+
+function SidebarNavItem({ item, expanded, active }: { item: NavItemDef; expanded: boolean; active: boolean }) {
+  return (
+    <Link
+      href={item.href}
+      prefetch={true}
+      title={expanded ? undefined : item.label}
+      className="flex items-center rounded-[8px] transition-colors duration-150"
+      style={{
+        gap:         expanded ? '12px' : '0',
+        padding:     expanded ? '8px 12px' : '8px',
+        justifyContent: expanded ? 'flex-start' : 'center',
+        background:  active ? '#F5F5F5' : 'transparent',
+        color:       active ? '#111111' : '#888888',
+        fontWeight:  active ? 500 : 400,
+      }}
+    >
+      <item.icon size={20} style={{ color: active ? '#111111' : '#888888', flexShrink: 0 }} />
+      {expanded && (
+        <span className="whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontSize: '14px', fontFamily: 'var(--font-body)' }}>
+          {item.label}
+        </span>
+      )}
+    </Link>
+  )
+}
+
+// ── User dropdown ────────────────────────────────────────────
+
+function UserDropdown({
+  dropdownRef, userFullName, userEmail, signing, onSignOut, onClose,
+}: {
+  dropdownRef: React.RefObject<HTMLDivElement | null>
+  userFullName: string
+  userEmail: string
+  signing: boolean
+  onSignOut: () => void
+  onClose: () => void
+}) {
+  return (
+    <div
+      ref={dropdownRef}
+      className="absolute z-[60] w-56 rounded-[12px] overflow-hidden"
+      style={{
+        bottom:     'calc(100% + 8px)',
+        left:       '0',
+        background: '#FFFFFF',
+        border:     '1px solid #E5E5E5',
+        boxShadow:  '0 8px 32px rgba(0,0,0,0.12)',
+      }}
+    >
+      <div className="px-4 py-3 border-b" style={{ borderColor: '#E5E5E5' }}>
+        <p className="text-[13px] font-semibold truncate" style={{ color: '#111111' }}>{userFullName}</p>
+        <p className="text-[11px] mt-0.5 truncate" style={{ color: '#888888' }}>{userEmail}</p>
+      </div>
+      <div className="py-1">
+        <a
+          href="/dashboard/compte"
+          onClick={onClose}
+          className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
+          style={{ color: '#111111' }}
+        >
+          <User size={14} style={{ color: '#888888' }} />
+          Mon profil
+        </a>
+        {MORE_ITEMS.map(item => (
+          <Link
+            key={item.href}
+            href={item.href}
+            onClick={onClose}
+            className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
+            style={{ color: '#111111' }}
+          >
+            <item.icon size={14} style={{ color: '#888888' }} />
+            {item.label}
+          </Link>
+        ))}
+      </div>
+      <div className="border-t py-1" style={{ borderColor: '#E5E5E5' }}>
+        <button
+          type="button"
+          onClick={onSignOut}
+          disabled={signing}
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-red-500 transition-colors hover:bg-red-50 disabled:opacity-60"
+        >
+          <LogOut size={14} />
+          {signing ? 'Déconnexion…' : 'Se déconnecter'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Composant ─────────────────────────────────────────────────
 
 export function TopBar({ restaurantName, userInitials, userFullName, userEmail }: TopBarProps) {
@@ -55,6 +154,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userMenuOpen,   setUserMenuOpen]   = useState(false)
   const [signing,        setSigning]        = useState(false)
+  const [expanded,       setExpanded]       = useState(false)
 
   const dropdownRef  = useRef<HTMLDivElement>(null)
   const avatarBtnRef = useRef<HTMLButtonElement>(null)
@@ -94,120 +194,61 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
     await signOutAction()
   }
 
-  // ── Item de navigation ────────────────────────────────────
-  const NavItem = ({ item }: { item: { href: string; label: string; icon: typeof LayoutDashboard; exact: boolean } }) => {
-    const active = isActive(item.href, item.exact)
-    return (
-      <Link
-        href={item.href}
-        prefetch={true}
-        className="flex items-center gap-3 rounded-[8px] transition-colors duration-150"
-        style={{
-          padding:     '8px 12px',
-          background:  active ? '#EBEBEA' : 'transparent',
-          color:       active ? '#111111' : '#888888',
-          fontWeight:  active ? 500 : 400,
-        }}
-      >
-        <item.icon size={20} style={{ color: active ? '#111111' : '#888888', flexShrink: 0 }} />
-        <span style={{ fontSize: '14px', fontFamily: 'var(--font-body)' }}>{item.label}</span>
-      </Link>
-    )
-  }
-
-  // ── User dropdown ─────────────────────────────────────────
-  const UserDropdown = () => (
-    <div
-      ref={dropdownRef}
-      className="absolute z-[60] w-56 rounded-[12px] overflow-hidden"
-      style={{
-        bottom:     'calc(100% + 8px)',
-        left:       '0',
-        background: '#FFFFFF',
-        border:     '1px solid #E5E5E5',
-        boxShadow:  '0 8px 32px rgba(0,0,0,0.12)',
-      }}
-    >
-      <div className="px-4 py-3 border-b" style={{ borderColor: '#E5E5E5' }}>
-        <p className="text-[13px] font-semibold truncate" style={{ color: '#111111' }}>{userFullName}</p>
-        <p className="text-[11px] mt-0.5 truncate" style={{ color: '#888888' }}>{userEmail}</p>
-      </div>
-      <div className="py-1">
-        <a
-          href="/dashboard/compte"
-          onClick={() => setUserMenuOpen(false)}
-          className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
-          style={{ color: '#111111' }}
-        >
-          <User size={14} style={{ color: '#888888' }} />
-          Mon profil
-        </a>
-        {MORE_ITEMS.map(item => (
-          <Link
-            key={item.href}
-            href={item.href}
-            onClick={() => setUserMenuOpen(false)}
-            className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
-            style={{ color: '#111111' }}
-          >
-            <item.icon size={14} style={{ color: '#888888' }} />
-            {item.label}
-          </Link>
-        ))}
-      </div>
-      <div className="border-t py-1" style={{ borderColor: '#E5E5E5' }}>
-        <button
-          type="button"
-          onClick={handleSignOut}
-          disabled={signing}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-red-500 transition-colors hover:bg-red-50 disabled:opacity-60"
-        >
-          <LogOut size={14} />
-          {signing ? 'Déconnexion…' : 'Se déconnecter'}
-        </button>
-      </div>
-    </div>
-  )
-
   return (
     <>
-      {/* ══ SIDEBAR — desktop uniquement (220px) ═══════════════ */}
+      {/* ══ SIDEBAR — desktop uniquement, hover-expand ═══════ */}
       <aside
-        className="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col"
-        style={{ width: '220px', background: '#F7F7F5', borderRight: '1px solid #E5E5E5' }}
+        className="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col transition-[width] duration-150 ease-out"
+        style={{
+          width:      expanded ? `${SIDEBAR_EXPANDED}px` : `${SIDEBAR_COLLAPSED}px`,
+          background: '#FFFFFF',
+          borderRight: '1px solid #E5E5E5',
+          boxShadow:  expanded ? '4px 0 24px rgba(0,0,0,0.08)' : 'none',
+          overflow:   'hidden',
+        }}
+        onMouseEnter={() => setExpanded(true)}
+        onMouseLeave={() => { setExpanded(false); setUserMenuOpen(false) }}
       >
         {/* Logo + nom */}
-        <Link href="/dashboard" className="flex items-center gap-2.5 flex-shrink-0" style={{ padding: '20px' }}>
+        <Link
+          href="/dashboard"
+          className="flex items-center flex-shrink-0"
+          style={{ gap: expanded ? '10px' : '0', padding: expanded ? '20px' : '20px 0', justifyContent: 'center' }}
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/favicon.png" alt="PilotResto" style={{ height: '26px', width: 'auto' }} />
-          <span className="font-bold text-[15px]" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
-            PilotResto
-          </span>
+          <img src="/favicon.png" alt="PilotResto" style={{ height: '26px', width: '26px', objectFit: 'contain', flexShrink: 0 }} />
+          {expanded && (
+            <span className="font-bold text-[15px] whitespace-nowrap" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+              PilotResto
+            </span>
+          )}
         </Link>
 
         {/* Navigation sectionnée */}
-        <nav className="flex-1 overflow-y-auto px-3 space-y-5">
+        <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 space-y-5">
           <div>
-            <p
-              className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: '#BBBBBB' }}
-            >
-              Principal
-            </p>
+            {expanded && (
+              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#BBBBBB' }}>
+                Principal
+              </p>
+            )}
             <div className="space-y-0.5">
-              {MAIN_ITEMS.map(item => <NavItem key={item.href} item={item} />)}
+              {MAIN_ITEMS.map(item => (
+                <SidebarNavItem key={item.href} item={item} expanded={expanded} active={isActive(item.href, item.exact)} />
+              ))}
             </div>
           </div>
 
           <div>
-            <p
-              className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider"
-              style={{ color: '#BBBBBB' }}
-            >
-              Paramètres
-            </p>
+            {expanded && (
+              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#BBBBBB' }}>
+                Paramètres
+              </p>
+            )}
             <div className="space-y-0.5">
-              {SETTINGS_ITEMS.map(item => <NavItem key={item.href} item={item} />)}
+              {SETTINGS_ITEMS.map(item => (
+                <SidebarNavItem key={item.href} item={item} expanded={expanded} active={isActive(item.href, item.exact)} />
+              ))}
             </div>
           </div>
         </nav>
@@ -218,8 +259,8 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
             ref={avatarBtnRef}
             type="button"
             onClick={() => setUserMenuOpen(v => !v)}
-            className="w-full flex items-center gap-2.5 rounded-[8px] transition-colors hover:bg-[#EBEBEA]"
-            style={{ padding: '8px' }}
+            className="w-full flex items-center rounded-[8px] transition-colors hover:bg-[#F5F5F5]"
+            style={{ gap: expanded ? '10px' : '0', padding: '8px', justifyContent: expanded ? 'flex-start' : 'center' }}
             aria-expanded={userMenuOpen}
           >
             <div
@@ -228,20 +269,31 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
             >
               {userInitials}
             </div>
-            <span className="text-[13px] truncate text-left" style={{ color: '#111111', fontFamily: 'var(--font-body)' }}>
-              {userFullName}
-            </span>
+            {expanded && (
+              <span className="text-[13px] truncate text-left whitespace-nowrap" style={{ color: '#111111', fontFamily: 'var(--font-body)' }}>
+                {userFullName}
+              </span>
+            )}
           </button>
-          {userMenuOpen && <UserDropdown />}
+          {userMenuOpen && (
+            <UserDropdown
+              dropdownRef={dropdownRef}
+              userFullName={userFullName}
+              userEmail={userEmail}
+              signing={signing}
+              onSignOut={handleSignOut}
+              onClose={() => setUserMenuOpen(false)}
+            />
+          )}
         </div>
       </aside>
 
       {/* ══ HEADER TOP ════════════════════════════════════════ */}
       <header
-        className="fixed top-0 left-0 right-0 z-40 md:left-[220px]"
+        className="fixed top-0 left-0 right-0 z-40"
         style={{ height: '52px', background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}
       >
-        <div className="flex items-center h-full px-4 gap-3">
+        <div className="flex items-center h-full px-4 gap-3 md:pl-[88px]">
           {/* Hamburger mobile */}
           <button
             type="button"
@@ -311,7 +363,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
                   className="flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all"
                   style={{
                     color:      active ? '#111111' : '#888888',
-                    background: active ? '#EBEBEA' : 'transparent',
+                    background: active ? '#F5F5F5' : 'transparent',
                     fontFamily: 'var(--font-body)',
                     fontSize:   '14px',
                     fontWeight: active ? 500 : 400,
