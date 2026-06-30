@@ -40,6 +40,85 @@ const SUBSCRIPTION_EXEMPT = [
   '/add-card',
 ]
 
+// ── Cache cookie des vérifications dashboard (profil + abonnement) ──
+//
+// Évite de refaire l'aller-retour Supabase (profiles + subscriptions)
+// à chaque navigation entre pages du dashboard. Le cookie est signé
+// (HMAC-SHA256) avec SUPABASE_SERVICE_ROLE_KEY pour empêcher un
+// utilisateur de forger un statut "active" côté client — un cookie
+// invalide ou expiré déclenche une relecture fraîche depuis Supabase.
+
+const CACHE_COOKIE  = 'rp_dash_cache'
+const CACHE_TTL_MS  = 60_000
+
+type DashboardCache = {
+  uid:              string
+  firstName:        string | null
+  restaurantId:     string | null
+  subStatus:        string | null
+  hasPaymentMethod: boolean | null
+  exp:              number
+}
+
+function toHex(buf: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+}
+
+function b64urlEncode(str: string): string {
+  const bytes = new TextEncoder().encode(str)
+  let bin = ''
+  bytes.forEach(b => { bin += String.fromCharCode(b) })
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '')
+}
+
+function b64urlDecode(str: string): string {
+  const bin = atob(str.replace(/-/g, '+').replace(/_/g, '/'))
+  const bytes = Uint8Array.from(bin, c => c.charCodeAt(0))
+  return new TextDecoder().decode(bytes)
+}
+
+async function sign(payload: string): Promise<string> {
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? ''
+  const key = await crypto.subtle.importKey(
+    'raw', new TextEncoder().encode(secret), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+  )
+  const sig = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(payload))
+  return toHex(sig)
+}
+
+async function readDashboardCache(request: NextRequest, uid: string): Promise<DashboardCache | null> {
+  const raw = request.cookies.get(CACHE_COOKIE)?.value
+  if (!raw) return null
+  const [payloadB64, sig] = raw.split('.')
+  if (!payloadB64 || !sig) return null
+
+  try {
+    const expectedSig = await sign(payloadB64)
+    if (expectedSig !== sig) return null // cookie altéré → on ignore
+
+    const cache = JSON.parse(b64urlDecode(payloadB64)) as DashboardCache
+    if (cache.uid !== uid) return null      // cache d'un autre utilisateur
+    if (Date.now() > cache.exp) return null // expiré (TTL 60s)
+
+    return cache
+  } catch {
+    return null
+  }
+}
+
+async function writeDashboardCache(response: NextResponse, data: Omit<DashboardCache, 'exp'>) {
+  const cache: DashboardCache = { ...data, exp: Date.now() + CACHE_TTL_MS }
+  const payloadB64 = b64urlEncode(JSON.stringify(cache))
+  const sig = await sign(payloadB64)
+  response.cookies.set(CACHE_COOKIE, `${payloadB64}.${sig}`, {
+    httpOnly:  true,
+    secure:    true,
+    sameSite:  'lax',
+    maxAge:    CACHE_TTL_MS / 1000,
+    path:      '/',
+  })
+}
+
 export default async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: { headers: request.headers },
@@ -120,52 +199,80 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // ── 5-6. Vérifications dashboard ──────────────────────────────
+  // ── 5-6. Vérifications dashboard (profil + abonnement) ────────
   if (isDashboardRoute) {
     const isExempt = SUBSCRIPTION_EXEMPT.some(p => pathname.startsWith(p))
 
-    try {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('restaurant_id, first_name')
-        .eq('id', user.id)
-        .single()
+    // Cache valide (≤ 60s, signé, même utilisateur) → on saute Supabase
+    const cached = await readDashboardCache(request, user.id)
 
-      // 5. Onboarding incomplet → /onboarding
-      if (!profile?.first_name) {
-        return NextResponse.redirect(new URL('/onboarding', request.url))
-      }
+    let firstName:        string | null
+    let restaurantId:     string | null
+    let subStatus:        string | null
+    let hasPaymentMethod: boolean | null
 
-      // 6. Vérifier l'abonnement (sauf routes exemptées)
-      if (!isExempt) {
-        if (!profile.restaurant_id) {
-          return NextResponse.redirect(new URL('/onboarding-payment', request.url))
-        }
-
-        const { data: sub } = await supabase
-          .from('subscriptions')
-          .select('status, has_payment_method')
-          .eq('restaurant_id', profile.restaurant_id)
+    if (cached) {
+      firstName        = cached.firstName
+      restaurantId     = cached.restaurantId
+      subStatus        = cached.subStatus
+      hasPaymentMethod = cached.hasPaymentMethod
+    } else {
+      try {
+        // Une seule requête : profile + restaurant + abonnement imbriqués
+        // (jointure PostgREST via les FK profiles.restaurant_id → restaurants.id
+        // et subscriptions.restaurant_id → restaurants.id), au lieu de deux
+        // allers-retours séquentiels.
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('restaurant_id, first_name, restaurants(subscriptions(status, has_payment_method))')
+          .eq('id', user.id)
           .single()
 
-        // active | trialing → OK ; tout le reste → onboarding-payment
-        const isActive = sub?.status === 'active' || sub?.status === 'trialing'
+        type EmbeddedRestaurant = {
+          subscriptions?: { status: string; has_payment_method: boolean }[]
+        } | null
 
-        if (!isActive) {
-          const url = new URL('/onboarding-payment', request.url)
-          url.searchParams.set('reason', 'subscription_required')
-          return NextResponse.redirect(url)
-        }
+        const restaurant = (profile?.restaurants ?? null) as unknown as EmbeddedRestaurant
+        const sub = restaurant?.subscriptions?.[0] ?? null
 
-        // Trialing sans carte bancaire → /add-card
-        if (sub?.status === 'trialing' && sub?.has_payment_method === false) {
-          return NextResponse.redirect(new URL('/add-card', request.url))
-        }
+        firstName        = profile?.first_name    ?? null
+        restaurantId      = profile?.restaurant_id ?? null
+        subStatus         = sub?.status            ?? null
+        hasPaymentMethod  = sub?.has_payment_method ?? null
 
-        response.headers.set('x-subscription-status', sub.status)
+        await writeDashboardCache(response, { uid: user.id, firstName, restaurantId, subStatus, hasPaymentMethod })
+      } catch {
+        // Fail-open : ne pas bloquer des utilisateurs valides en cas d'erreur DB
+        return response
       }
-    } catch {
-      // Fail-open : ne pas bloquer des utilisateurs valides en cas d'erreur DB
+    }
+
+    // 5. Onboarding incomplet → /onboarding
+    if (!firstName) {
+      return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
+
+    // 6. Vérifier l'abonnement (sauf routes exemptées)
+    if (!isExempt) {
+      if (!restaurantId) {
+        return NextResponse.redirect(new URL('/onboarding-payment', request.url))
+      }
+
+      // active | trialing → OK ; tout le reste → onboarding-payment
+      const isActive = subStatus === 'active' || subStatus === 'trialing'
+
+      if (!isActive) {
+        const url = new URL('/onboarding-payment', request.url)
+        url.searchParams.set('reason', 'subscription_required')
+        return NextResponse.redirect(url)
+      }
+
+      // Trialing sans carte bancaire → /add-card
+      if (subStatus === 'trialing' && hasPaymentMethod === false) {
+        return NextResponse.redirect(new URL('/add-card', request.url))
+      }
+
+      if (subStatus) response.headers.set('x-subscription-status', subStatus)
     }
   }
 

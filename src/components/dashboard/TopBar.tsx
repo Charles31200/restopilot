@@ -155,6 +155,12 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
   const [userMenuOpen,   setUserMenuOpen]   = useState(false)
   const [signing,        setSigning]        = useState(false)
   const [expanded,       setExpanded]       = useState(false)
+  const [isElectron,     setIsElectron]     = useState(false)
+
+  // Détection Electron — réserve l'espace des boutons macOS natifs (28px)
+  useEffect(() => {
+    setIsElectron(navigator.userAgent.includes('Electron'))
+  }, [])
 
   const dropdownRef  = useRef<HTMLDivElement>(null)
   const avatarBtnRef = useRef<HTMLButtonElement>(null)
@@ -209,11 +215,24 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         onMouseEnter={() => setExpanded(true)}
         onMouseLeave={() => { setExpanded(false); setUserMenuOpen(false) }}
       >
+        {/* Zone de déplacement de la fenêtre (boutons macOS natifs) — Electron uniquement */}
+        {isElectron && (
+          <div
+            className="flex-shrink-0"
+            style={{ height: '28px', WebkitAppRegion: 'drag' } as React.CSSProperties}
+          />
+        )}
+
         {/* Logo + nom */}
         <Link
           href="/dashboard"
           className="flex items-center flex-shrink-0"
-          style={{ gap: expanded ? '10px' : '0', padding: expanded ? '20px' : '20px 0', justifyContent: 'center' }}
+          style={{
+            gap: expanded ? '10px' : '0',
+            padding: expanded ? '20px' : '20px 0',
+            justifyContent: 'center',
+            WebkitAppRegion: 'no-drag',
+          } as React.CSSProperties}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/favicon.png" alt="PilotResto" style={{ height: '26px', width: '26px', objectFit: 'contain', flexShrink: 0 }} />
@@ -290,16 +309,24 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
 
       {/* ══ HEADER TOP ════════════════════════════════════════ */}
       <header
-        className="fixed top-0 left-0 right-0 z-40"
-        style={{ height: '52px', background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}
+        className="fixed top-0 left-0 right-0 z-40 flex flex-col"
+        style={{ height: isElectron ? '80px' : '52px', background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}
       >
-        <div className="flex items-center h-full px-4 gap-3 md:pl-[88px]">
+        {/* Zone de déplacement de la fenêtre (boutons macOS natifs) — Electron uniquement */}
+        {isElectron && (
+          <div
+            className="flex-shrink-0"
+            style={{ height: '28px', WebkitAppRegion: 'drag' } as React.CSSProperties}
+          />
+        )}
+
+        <div className="flex items-center flex-1 px-4 gap-3 md:pl-[88px]">
           {/* Hamburger mobile */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(v => !v)}
             className="md:hidden w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100"
-            style={{ color: '#111111', flexShrink: 0 }}
+            style={{ color: '#111111', flexShrink: 0, WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -317,7 +344,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           <button
             type="button"
             className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100"
-            style={{ color: '#888888' }}
+            style={{ color: '#888888', WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             aria-label="Notifications"
           >
             <Bell size={16} />
@@ -328,6 +355,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
             type="button"
             onClick={() => setUserMenuOpen(v => !v)}
             className="md:hidden flex-shrink-0"
+            style={{ WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             aria-label="Menu utilisateur"
           >
             <div
@@ -345,7 +373,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         <div
           className="fixed left-0 right-0 z-30 md:hidden"
           style={{
-            top:          '52px',
+            top:          isElectron ? '80px' : '52px',
             background:   '#FFFFFF',
             borderBottom: '1px solid #E5E5E5',
             boxShadow:    '0 8px 32px rgba(0,0,0,0.08)',

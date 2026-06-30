@@ -35,16 +35,20 @@ $$;
 
 -- ── restaurants ───────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS restaurants (
-  id                 uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  name               text        NOT NULL,
-  siret              text,
-  address            text,
-  timezone           text        NOT NULL DEFAULT 'Europe/Paris',
-  plan_id            text        NOT NULL DEFAULT 'starter',
-  stripe_customer_id text,
-  created_at         timestamptz NOT NULL DEFAULT NOW(),
-  updated_at         timestamptz NOT NULL DEFAULT NOW()
+  id                        uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name                      text        NOT NULL,
+  siret                     text,
+  address                   text,
+  timezone                  text        NOT NULL DEFAULT 'Europe/Paris',
+  plan_id                   text        NOT NULL DEFAULT 'starter',
+  stripe_customer_id        text,
+  last_stock_alert_sent_at  timestamptz,
+  created_at                timestamptz NOT NULL DEFAULT NOW(),
+  updated_at                timestamptz NOT NULL DEFAULT NOW()
 );
+
+ALTER TABLE restaurants
+  ADD COLUMN IF NOT EXISTS last_stock_alert_sent_at timestamptz;
 
 CREATE OR REPLACE TRIGGER set_restaurants_updated_at
   BEFORE UPDATE ON restaurants

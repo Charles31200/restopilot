@@ -1,8 +1,9 @@
 import { redirect }         from 'next/navigation'
 import type { Metadata }    from 'next'
 import { getCurrentUser, getCurrentProfile, getCurrentRestaurant } from '@/lib/supabase/auth'
-import { TopBar }           from '@/components/dashboard/TopBar'
-import { TrialBanner }      from '@/components/dashboard/TrialBanner'
+import { TopBar }                   from '@/components/dashboard/TopBar'
+import { TrialBanner }              from '@/components/dashboard/TrialBanner'
+import { DashboardContentWrapper }  from '@/components/dashboard/DashboardContentWrapper'
 
 export const metadata: Metadata = {
   title:       'PilotResto',
@@ -43,11 +44,8 @@ export default async function DashboardLayout({
         userEmail={user.email ?? ''}
       />
 
-      {/* ── Contenu : décalé header (52px) + sidebar desktop collapsed (72px) + bottom nav mobile (64px) */}
-      <div
-        className="md:pl-[72px] pb-[64px] md:pb-0"
-        style={{ paddingTop: '52px' }}
-      >
+      {/* ── Contenu : décalé header (52px, +28px en Electron) + sidebar desktop collapsed (72px) + bottom nav mobile (64px) */}
+      <DashboardContentWrapper>
         {/* ── Bannière essai ───────────────────────────────── */}
         <TrialBanner />
 
@@ -69,7 +67,7 @@ export default async function DashboardLayout({
           <span style={{ color: '#CCCCCC' }}>·</span>
           <a href="mailto:charles.lecussan@gmail.com" className="hover:text-gray-700 transition-colors">Contact</a>
         </footer>
-      </div>
+      </DashboardContentWrapper>
     </div>
   )
 }
