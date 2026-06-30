@@ -28,21 +28,21 @@ type ModalType = 'product' | 'delivery' | 'inventory' | 'history' | null
 // ── Helpers visuels ───────────────────────────────────────────
 
 const STATUS_CONFIG: Record<StockStatus, {
-  label: string; cls: string; icon: React.ReactNode
+  label: string; color: string; icon: React.ReactNode
 }> = {
   critical: {
-    label: 'CRITIQUE',
-    cls:   'bg-red-100 text-red-700',
+    label: 'Critique',
+    color: '#DC2626',
     icon:  <AlertTriangle className="w-3 h-3" />,
   },
   low: {
-    label: 'FAIBLE',
-    cls:   'bg-amber-100 text-amber-700',
+    label: 'Faible',
+    color: '#D97706',
     icon:  <MinusCircle className="w-3 h-3" />,
   },
   ok: {
     label: 'OK',
-    cls:   'bg-green-100 text-green-700',
+    color: '#16A34A',
     icon:  <CheckCircle2 className="w-3 h-3" />,
   },
 }
@@ -50,10 +50,10 @@ const STATUS_CONFIG: Record<StockStatus, {
 function StatusBadge({ status }: { status: StockStatus }) {
   const cfg = STATUS_CONFIG[status]
   return (
-    <span className={cn(
-      'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide',
-      cfg.cls
-    )}>
+    <span
+      className="inline-flex items-center gap-1 rounded-[6px] border px-2.5 py-1 text-[12px] font-medium whitespace-nowrap"
+      style={{ borderColor: '#E5E5E5', color: cfg.color }}
+    >
       {cfg.icon}
       {cfg.label}
     </span>
@@ -61,10 +61,10 @@ function StatusBadge({ status }: { status: StockStatus }) {
 }
 
 function SortIcon({ col, active, dir }: { col: string; active: boolean; dir: SortDir }) {
-  if (!active) return <ChevronsUpDown className="w-3 h-3 text-gray-300" />
+  if (!active) return <ChevronsUpDown className="w-3 h-3" style={{ color: '#CCCCCC' }} />
   return dir === 'asc'
-    ? <ChevronUp   className="w-3 h-3 text-blue-500" />
-    : <ChevronDown className="w-3 h-3 text-blue-500" />
+    ? <ChevronUp   className="w-3 h-3" style={{ color: '#111111' }} />
+    : <ChevronDown className="w-3 h-3" style={{ color: '#111111' }} />
 }
 
 // ── Props ─────────────────────────────────────────────────────
@@ -249,7 +249,7 @@ export function StocksClient({
   return (
     <div className="space-y-4">
       {/* ── Onglets ── */}
-      <div className="flex items-center gap-1 border-b border-gray-200">
+      <div className="flex items-center gap-1 border-b" style={{ borderColor: '#E5E5E5' }}>
         {[
           { id: 'products', label: `Ingrédients${total > 0 ? ` (${total})` : ''}` },
           { id: 'recipes',  label: 'Fiches techniques' },
@@ -257,16 +257,14 @@ export function StocksClient({
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
-            className={cn(
-              'px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors',
-              activeTab === tab.id
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
-            )}
+            className="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
+            style={activeTab === tab.id
+              ? { borderColor: '#111111', color: '#111111' }
+              : { borderColor: 'transparent', color: '#888888' }}
           >
             {tab.label}
             {tab.id === 'products' && criticalCount > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 bg-red-100 text-red-700 text-[10px] font-bold rounded-full">
+              <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{ background: '#FEE2E2', color: '#DC2626' }}>
                 {criticalCount}
               </span>
             )}
@@ -281,13 +279,14 @@ export function StocksClient({
           <div className="flex flex-wrap items-center gap-3">
             {/* Recherche */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#BBBBBB' }} />
               <input
                 type="text"
                 placeholder="Rechercher un produit…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                className="w-full h-10 pl-10 pr-4 rounded-[10px] border text-sm outline-none transition-all"
+                style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
               />
             </div>
 
@@ -295,7 +294,8 @@ export function StocksClient({
             <select
               value={category}
               onChange={e => setCategory(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-xl text-sm outline-none focus:border-blue-500 min-w-[160px]"
+              className="h-10 px-3 rounded-[10px] border text-sm outline-none min-w-[160px]"
+              style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
             >
               <option value="">Toutes catégories</option>
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
@@ -305,7 +305,8 @@ export function StocksClient({
             <select
               value={status}
               onChange={e => setStatus(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-xl text-sm outline-none focus:border-blue-500 min-w-[140px]"
+              className="h-10 px-3 rounded-[10px] border text-sm outline-none min-w-[140px]"
+              style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
             >
               <option value="">Tous statuts</option>
               <option value="critical">Critique</option>
@@ -318,7 +319,8 @@ export function StocksClient({
             {/* Boutons action */}
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
+              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
               title="Exporter en CSV"
             >
               <Download className="w-4 h-4" />
@@ -326,28 +328,32 @@ export function StocksClient({
             </button>
             <button
               onClick={() => { setSelectedProduct(null); setOpenModal('history') }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
+              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
             >
               <History className="w-4 h-4" />
               Historique
             </button>
             <button
               onClick={() => setOpenModal('inventory')}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
+              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
             >
               <ClipboardList className="w-4 h-4" />
               Inventaire
             </button>
             <button
               onClick={() => { setDeliveryProduct(null); setOpenModal('delivery') }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 bg-white rounded-xl hover:bg-gray-50 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
+              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
             >
               <Truck className="w-4 h-4" />
               Livraison
             </button>
             <button
               onClick={() => { setSelectedProduct(null); setOpenModal('product') }}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors"
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium text-white rounded-[10px] transition-colors"
+              style={{ background: '#000000' }}
             >
               <Plus className="w-4 h-4" />
               Ajouter
@@ -355,11 +361,11 @@ export function StocksClient({
           </div>
 
           {/* Tableau */}
-          <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+          <div className="rounded-[12px] overflow-hidden" style={{ border: '1px solid #E5E5E5', background: '#FFFFFF' }}>
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr className="bg-gray-50 border-b border-gray-200">
+                  <tr style={{ borderBottom: '1px solid #E5E5E5' }}>
                     {([
                       { key: 'name',          label: 'Nom'          },
                       { key: 'category',      label: 'Catégorie'    },
@@ -372,9 +378,10 @@ export function StocksClient({
                       <th
                         key={i}
                         className={cn(
-                          'px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap',
-                          col.key && 'cursor-pointer hover:text-gray-700 select-none'
+                          'px-4 py-3 text-left text-[12px] font-medium whitespace-nowrap',
+                          col.key && 'cursor-pointer select-none'
                         )}
+                        style={{ color: '#888888' }}
                         onClick={() => col.key && handleSort(col.key)}
                       >
                         <span className="flex items-center gap-1.5">
@@ -388,37 +395,42 @@ export function StocksClient({
                   </tr>
                 </thead>
 
-                <tbody className="divide-y divide-gray-100">
+                <tbody>
                   {isLoading ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-12 text-center">
-                        <Loader2 className="w-5 h-5 animate-spin text-gray-400 mx-auto" />
+                        <Loader2 className="w-5 h-5 animate-spin mx-auto" style={{ color: '#BBBBBB' }} />
                       </td>
                     </tr>
                   ) : products.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-16 text-center">
-                        <p className="text-sm text-gray-400">Aucun produit trouvé.</p>
+                        <p className="text-sm" style={{ color: '#BBBBBB' }}>Aucun produit trouvé.</p>
                       </td>
                     </tr>
                   ) : products.map(product => (
                     <tr
                       key={product.id}
-                      className={cn(
-                        'group hover:bg-gray-50/50 transition-colors',
-                        product.status === 'critical' && 'bg-red-50/30'
-                      )}
+                      className="group transition-colors"
+                      style={{
+                        borderBottom: '1px solid #F0F0F0',
+                        background: product.status === 'critical' ? '#FEF2F2' : 'transparent',
+                      }}
+                      onMouseEnter={e => { if (product.status !== 'critical') e.currentTarget.style.background = '#F7F7F7' }}
+                      onMouseLeave={e => { if (product.status !== 'critical') e.currentTarget.style.background = 'transparent' }}
                     >
-                      <td className="px-4 py-3 font-medium text-gray-900">
+                      <td className="px-4 py-3 font-medium" style={{ color: '#111111' }}>
                         {product.name}
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
-                        {product.category ?? '—'}
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center rounded-[6px] border px-2.5 py-1 text-[12px] font-medium whitespace-nowrap" style={{ borderColor: '#E5E5E5', color: '#333333' }}>
+                          {product.category ?? 'Sans catégorie'}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 tabular-nums font-semibold text-gray-800">
+                      <td className="px-4 py-3 tabular-nums font-semibold" style={{ color: '#111111' }}>
                         {formatQty(product.stock_qty)} {product.unit}
                       </td>
-                      <td className="px-4 py-3 tabular-nums text-gray-500">
+                      <td className="px-4 py-3 tabular-nums" style={{ color: '#888888' }}>
                         {product.min_threshold > 0
                           ? `${formatQty(product.min_threshold)} ${product.unit}`
                           : '—'
@@ -427,7 +439,7 @@ export function StocksClient({
                       <td className="px-4 py-3">
                         <StatusBadge status={product.status} />
                       </td>
-                      <td className="px-4 py-3 text-gray-500">
+                      <td className="px-4 py-3" style={{ color: '#888888' }}>
                         {product.supplier_name ?? '—'}
                       </td>
                       <td className="px-4 py-3">
@@ -462,7 +474,7 @@ export function StocksClient({
                           {/* Modifier */}
                           <button
                             onClick={() => { setSelectedProduct(product); setOpenModal('product') }}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
                             title="Modifier"
                           >
                             <Pencil className="w-4 h-4" />
@@ -485,25 +497,27 @@ export function StocksClient({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50">
-                <p className="text-xs text-gray-500">
+              <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid #F0F0F0', background: '#FAFAFA' }}>
+                <p className="text-xs" style={{ color: '#888888' }}>
                   {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} sur {total} produits
                 </p>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    style={{ color: '#888888' }}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-xs text-gray-600 px-2">
+                  <span className="text-xs px-2" style={{ color: '#888888' }}>
                     {page} / {totalPages}
                   </span>
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    style={{ color: '#888888' }}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
