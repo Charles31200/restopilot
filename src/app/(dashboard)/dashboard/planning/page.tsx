@@ -131,10 +131,10 @@ export default async function PlanningPage({
       {/* ── Header de page ──────────────────────────── */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111111', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
             Planning du personnel
           </h1>
-          <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+          <p className="text-[13px] mt-1" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
             {employees.length} employé{employees.length > 1 ? 's' : ''} actif{employees.length > 1 ? 's' : ''}
             {shifts.length > 0 && ` · ${shifts.length} créneau${shifts.length > 1 ? 'x' : ''} cette semaine`}
           </p>

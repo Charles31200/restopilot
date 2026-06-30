@@ -12,19 +12,32 @@ import { signOutAction } from '@/lib/supabase/actions'
 
 // ── Navigation ────────────────────────────────────────────────
 
-const NAV_ITEMS = [
-  { href: '/dashboard',              label: 'Tableau de bord', shortLabel: 'Accueil',   icon: LayoutDashboard, exact: true  },
-  { href: '/dashboard/stocks',       label: 'Stocks',          shortLabel: 'Stocks',    icon: Package,         exact: false },
-  { href: '/dashboard/menu',         label: 'Menu & Recettes', shortLabel: 'Menu',      icon: UtensilsCrossed, exact: false },
-  { href: '/dashboard/planning',     label: 'Planning',        shortLabel: 'Planning',  icon: CalendarDays,    exact: false },
-  { href: '/dashboard/comptabilite', label: 'Comptabilité',    shortLabel: 'Compta',    icon: Receipt,         exact: false },
-  { href: '/dashboard/parametres/integrations', label: 'Intégrations', shortLabel: 'Intégrations', icon: Settings, exact: false },
+const MAIN_ITEMS = [
+  { href: '/dashboard',              label: 'Dashboard',       shortLabel: 'Accueil',  icon: LayoutDashboard, exact: true  },
+  { href: '/dashboard/stocks',       label: 'Stocks',          shortLabel: 'Stocks',   icon: Package,         exact: false },
+  { href: '/dashboard/menu',         label: 'Menu',            shortLabel: 'Menu',     icon: UtensilsCrossed, exact: false },
+  { href: '/dashboard/planning',     label: 'Planning',        shortLabel: 'Planning', icon: CalendarDays,    exact: false },
+  { href: '/dashboard/comptabilite', label: 'Comptabilité',    shortLabel: 'Compta',   icon: Receipt,         exact: false },
+] as const
+
+const SETTINGS_ITEMS = [
+  { href: '/dashboard/parametres/integrations', label: 'Intégrations', icon: Settings,          exact: false },
+  { href: '/dashboard/parametres',               label: 'Paramètres',   icon: SlidersHorizontal, exact: false },
 ] as const
 
 const MORE_ITEMS = [
-  { href: '/dashboard/parametres',            label: 'Paramètres', icon: SlidersHorizontal },
   { href: '/dashboard/parametres/abonnement', label: 'Abonnement', icon: CreditCard },
 ]
+
+const ALL_NAV = [...MAIN_ITEMS, ...SETTINGS_ITEMS]
+
+const PAGE_TITLES: Record<string, string> = {
+  '/dashboard':              'Dashboard',
+  '/dashboard/stocks':       'Stocks',
+  '/dashboard/menu':         'Menu & Recettes',
+  '/dashboard/planning':     'Planning',
+  '/dashboard/comptabilite': 'Comptabilité',
+}
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -43,11 +56,18 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
   const [userMenuOpen,   setUserMenuOpen]   = useState(false)
   const [signing,        setSigning]        = useState(false)
 
-  const dropdownRef    = useRef<HTMLDivElement>(null)
-  const avatarBtnRef   = useRef<HTMLButtonElement>(null)
+  const dropdownRef  = useRef<HTMLDivElement>(null)
+  const avatarBtnRef = useRef<HTMLButtonElement>(null)
 
   const isActive = (href: string, exact: boolean) =>
     exact ? pathname === href : pathname.startsWith(href)
+
+  const pageTitle = (() => {
+    const match = Object.keys(PAGE_TITLES)
+      .sort((a, b) => b.length - a.length)
+      .find(href => href === '/dashboard' ? pathname === href : pathname.startsWith(href))
+    return match ? PAGE_TITLES[match] : restaurantName
+  })()
 
   // Ferme dropdown au clic extérieur
   useEffect(() => {
@@ -74,20 +94,41 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
     await signOutAction()
   }
 
-  // ── User dropdown partagé ─────────────────────────────────
+  // ── Item de navigation ────────────────────────────────────
+  const NavItem = ({ item }: { item: { href: string; label: string; icon: typeof LayoutDashboard; exact: boolean } }) => {
+    const active = isActive(item.href, item.exact)
+    return (
+      <Link
+        href={item.href}
+        prefetch={true}
+        className="flex items-center gap-3 rounded-[8px] transition-colors duration-150"
+        style={{
+          padding:     '8px 12px',
+          background:  active ? '#EBEBEA' : 'transparent',
+          color:       active ? '#111111' : '#888888',
+          fontWeight:  active ? 500 : 400,
+        }}
+      >
+        <item.icon size={20} style={{ color: active ? '#111111' : '#888888', flexShrink: 0 }} />
+        <span style={{ fontSize: '14px', fontFamily: 'var(--font-body)' }}>{item.label}</span>
+      </Link>
+    )
+  }
+
+  // ── User dropdown ─────────────────────────────────────────
   const UserDropdown = () => (
     <div
       ref={dropdownRef}
-      className="fixed z-[60] w-56 rounded-[16px] overflow-hidden"
+      className="absolute z-[60] w-56 rounded-[12px] overflow-hidden"
       style={{
-        bottom:      '12px',
-        left:        '60px',
-        background:  '#FFFFFF',
-        border:      '1px solid #EEEEEE',
-        boxShadow:   '0 8px 32px rgba(0,0,0,0.14)',
+        bottom:     'calc(100% + 8px)',
+        left:       '0',
+        background: '#FFFFFF',
+        border:     '1px solid #E5E5E5',
+        boxShadow:  '0 8px 32px rgba(0,0,0,0.12)',
       }}
     >
-      <div className="px-4 py-3 border-b" style={{ borderColor: '#EEEEEE' }}>
+      <div className="px-4 py-3 border-b" style={{ borderColor: '#E5E5E5' }}>
         <p className="text-[13px] font-semibold truncate" style={{ color: '#111111' }}>{userFullName}</p>
         <p className="text-[11px] mt-0.5 truncate" style={{ color: '#888888' }}>{userEmail}</p>
       </div>
@@ -114,7 +155,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           </Link>
         ))}
       </div>
-      <div className="border-t py-1" style={{ borderColor: '#EEEEEE' }}>
+      <div className="border-t py-1" style={{ borderColor: '#E5E5E5' }}>
         <button
           type="button"
           onClick={handleSignOut}
@@ -130,67 +171,77 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
 
   return (
     <>
-      {/* ══ SIDEBAR — desktop uniquement ═════════════════════ */}
+      {/* ══ SIDEBAR — desktop uniquement (220px) ═══════════════ */}
       <aside
-        className="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col items-center py-3 gap-1"
-        style={{ width: '52px', background: '#111111' }}
+        className="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col"
+        style={{ width: '220px', background: '#F7F7F5', borderRight: '1px solid #E5E5E5' }}
       >
-        {/* Logo */}
-        <Link href="/dashboard" className="mb-3 flex-shrink-0 flex items-center justify-center">
+        {/* Logo + nom */}
+        <Link href="/dashboard" className="flex items-center gap-2.5 flex-shrink-0" style={{ padding: '20px' }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/favicon.png" alt="PilotResto" style={{ height: '28px', width: '28px', objectFit: 'contain' }} />
+          <img src="/favicon.png" alt="PilotResto" style={{ height: '26px', width: 'auto' }} />
+          <span className="font-bold text-[15px]" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            PilotResto
+          </span>
         </Link>
 
-        {/* Nav icons */}
-        <nav className="flex flex-col items-center gap-1 flex-1 w-full px-2">
-          {NAV_ITEMS.map(item => {
-            const active = isActive(item.href, item.exact)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch={true}
-                title={item.label}
-                className="flex items-center justify-center rounded-[10px] transition-all duration-150"
-                style={{
-                  width:      '36px',
-                  height:     '36px',
-                  color:      active ? '#FFFFFF' : 'rgba(255,255,255,0.5)',
-                  background: active ? 'rgba(255,255,255,0.12)' : 'transparent',
-                }}
-              >
-                <item.icon size={20} />
-              </Link>
-            )
-          })}
+        {/* Navigation sectionnée */}
+        <nav className="flex-1 overflow-y-auto px-3 space-y-5">
+          <div>
+            <p
+              className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider"
+              style={{ color: '#BBBBBB' }}
+            >
+              Principal
+            </p>
+            <div className="space-y-0.5">
+              {MAIN_ITEMS.map(item => <NavItem key={item.href} item={item} />)}
+            </div>
+          </div>
+
+          <div>
+            <p
+              className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider"
+              style={{ color: '#BBBBBB' }}
+            >
+              Paramètres
+            </p>
+            <div className="space-y-0.5">
+              {SETTINGS_ITEMS.map(item => <NavItem key={item.href} item={item} />)}
+            </div>
+          </div>
         </nav>
 
-        {/* Avatar bas de sidebar */}
-        <button
-          ref={avatarBtnRef}
-          type="button"
-          onClick={() => setUserMenuOpen(v => !v)}
-          className="mt-auto flex-shrink-0"
-          aria-label="Menu utilisateur"
-          aria-expanded={userMenuOpen}
-        >
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[11px] select-none"
-            style={{ background: '#7798AB', color: 'white', fontFamily: 'var(--font-display)' }}
+        {/* Avatar utilisateur en bas */}
+        <div className="relative flex-shrink-0 border-t" style={{ borderColor: '#E5E5E5', padding: '12px' }}>
+          <button
+            ref={avatarBtnRef}
+            type="button"
+            onClick={() => setUserMenuOpen(v => !v)}
+            className="w-full flex items-center gap-2.5 rounded-[8px] transition-colors hover:bg-[#EBEBEA]"
+            style={{ padding: '8px' }}
+            aria-expanded={userMenuOpen}
           >
-            {userInitials}
-          </div>
-        </button>
-
-        {userMenuOpen && <UserDropdown />}
+            <div
+              className="w-8 h-8 rounded-full flex items-center justify-center font-semibold text-[11px] select-none flex-shrink-0"
+              style={{ background: '#7798AB', color: 'white', fontFamily: 'var(--font-display)' }}
+            >
+              {userInitials}
+            </div>
+            <span className="text-[13px] truncate text-left" style={{ color: '#111111', fontFamily: 'var(--font-body)' }}>
+              {userFullName}
+            </span>
+          </button>
+          {userMenuOpen && <UserDropdown />}
+        </div>
       </aside>
 
       {/* ══ HEADER TOP ════════════════════════════════════════ */}
       <header
-        className="fixed top-0 left-0 right-0 z-40"
-        style={{ height: '48px', background: '#FFFFFF', borderBottom: '1px solid #EEEEEE' }}
+        className="fixed top-0 left-0 right-0 z-40 md:left-[220px]"
+        style={{ height: '52px', background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}
       >
-        <div className="flex items-center h-full px-4 gap-3 md:pl-[68px]">
+        <div className="flex items-center h-full px-4 gap-3">
           {/* Hamburger mobile */}
           <button
             type="button"
@@ -202,12 +253,12 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
-          {/* Nom du restaurant */}
+          {/* Titre de la page */}
           <span
-            className="flex-1 truncate text-[15px]"
+            className="flex-1 truncate text-[16px]"
             style={{ color: '#111111', fontWeight: 600, fontFamily: 'var(--font-display)' }}
           >
-            {restaurantName}
+            {pageTitle}
           </span>
 
           {/* Cloche */}
@@ -242,14 +293,14 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         <div
           className="fixed left-0 right-0 z-30 md:hidden"
           style={{
-            top:          '48px',
+            top:          '52px',
             background:   '#FFFFFF',
-            borderBottom: '1px solid #EEEEEE',
+            borderBottom: '1px solid #E5E5E5',
             boxShadow:    '0 8px 32px rgba(0,0,0,0.08)',
           }}
         >
           <nav className="px-3 py-2 space-y-0.5">
-            {[...NAV_ITEMS, ...MORE_ITEMS].map(item => {
+            {[...ALL_NAV, ...MORE_ITEMS].map(item => {
               const active = 'exact' in item
                 ? isActive(item.href, item.exact)
                 : pathname.startsWith(item.href)
@@ -257,13 +308,13 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all"
+                  className="flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all"
                   style={{
                     color:      active ? '#111111' : '#888888',
-                    background: active ? '#F5F4F0' : 'transparent',
+                    background: active ? '#EBEBEA' : 'transparent',
                     fontFamily: 'var(--font-body)',
                     fontSize:   '14px',
-                    fontWeight: active ? 600 : 400,
+                    fontWeight: active ? 500 : 400,
                   }}
                 >
                   <item.icon size={17} />
@@ -272,12 +323,12 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
               )
             })}
           </nav>
-          <div className="px-3 pb-3 border-t" style={{ borderColor: '#EEEEEE' }}>
+          <div className="px-3 pb-3 border-t" style={{ borderColor: '#E5E5E5' }}>
             <button
               type="button"
               onClick={handleSignOut}
               disabled={signing}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[14px] transition-colors text-red-500 hover:bg-red-50 disabled:opacity-60"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-[8px] text-[14px] transition-colors text-red-500 hover:bg-red-50 disabled:opacity-60"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               <LogOut size={17} />
@@ -293,11 +344,11 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         style={{
           height:        '64px',
           background:    '#FFFFFF',
-          borderTop:     '1px solid #EEEEEE',
+          borderTop:     '1px solid #E5E5E5',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
-        {NAV_ITEMS.slice(0, 5).map(item => {
+        {MAIN_ITEMS.map(item => {
           const active = isActive(item.href, item.exact)
           return (
             <Link

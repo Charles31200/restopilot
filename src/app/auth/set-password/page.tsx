@@ -81,139 +81,136 @@ export default function SetPasswordPage() {
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-5 py-10"
-      style={{ background: '#0D1B1E' }}
+      style={{ background: '#FFFFFF' }}
     >
-      <div
-        className="w-full max-w-[420px] rounded-[24px] overflow-hidden"
-        style={{ background: '#fff', boxShadow: '0 24px 64px rgba(0,0,0,.45)' }}
-      >
+      <div className="w-full max-w-[400px]">
         {/* Logo */}
-        <div className="pt-8 pb-2 flex justify-center">
+        <div className="pb-6 flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/favicon.png" alt="PilotResto" style={{ height: '56px', width: 'auto' }} />
+          <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto', marginBottom: '10px' }} />
+          <span className="font-extrabold text-[20px]" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            PilotResto
+          </span>
         </div>
 
-        <div className="px-8 pb-8 pt-4">
+        {/* Succès */}
+        {done ? (
+          <div className="text-center py-4">
+            <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
+              <CheckCircle2 className="w-7 h-7" style={{ color: '#166534' }} />
+            </div>
+            <p className="font-bold text-[17px] mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+              Mot de passe créé !
+            </p>
+            <p className="text-[13px]" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+              Redirection en cours…
+            </p>
+          </div>
 
-          {/* Succès */}
-          {done ? (
-            <div className="text-center py-4">
-              <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
-                <CheckCircle2 className="w-7 h-7" style={{ color: '#166534' }} />
+        ) : !ready ? (
+          /* Attente de la session */
+          <div className="text-center py-8">
+            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" style={{ color: '#111111' }} />
+            <p className="text-[14px]" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+              Vérification en cours…
+            </p>
+          </div>
+
+        ) : (
+          /* Formulaire */
+          <>
+            <h1 className="text-[24px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+              Créez votre mot de passe
+            </h1>
+            <p className="text-[13px] text-center mb-5" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+              ✉️ Votre email est confirmé
+            </p>
+
+            {error && (
+              <div className="mb-4 p-3 rounded-[8px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+                {error}
               </div>
-              <p className="font-bold text-[17px] mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
-                Mot de passe créé !
-              </p>
-              <p className="text-[13px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-                Redirection en cours…
-              </p>
-            </div>
+            )}
 
-          ) : !ready ? (
-            /* Attente de la session */
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 animate-spin mx-auto mb-3" style={{ color: '#D4952A' }} />
-              <p className="text-[14px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-                Vérification en cours…
-              </p>
-            </div>
-
-          ) : (
-            /* Formulaire */
-            <>
-              <h1 className="text-[19px] font-bold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
-                Créez votre mot de passe
-              </h1>
-              <p className="text-[13px] text-center mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-                ✉️ Votre email est confirmé
-              </p>
-
-              {error && (
-                <div className="mb-4 p-3 rounded-[10px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-3">
-                {/* Mot de passe */}
-                <div className="relative">
-                  <input
-                    type={showPwd ? 'text' : 'password'}
-                    placeholder="Mot de passe (min. 8 caractères)"
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                    autoComplete="new-password"
-                    disabled={loading}
-                    required
-                    className="w-full rounded-[12px] text-[15px] outline-none transition-colors duration-150"
-                    style={{
-                      background:  '#F2F2F7',
-                      border:      '1.5px solid transparent',
-                      padding:     '14px 44px 14px 16px',
-                      color:       '#0D1B1E',
-                      fontFamily:  'var(--font-body)',
-                    }}
-                    onFocus={e => (e.target.style.borderColor = '#D4952A')}
-                    onBlur={e  => (e.target.style.borderColor = 'transparent')}
-                  />
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={() => setShowPwd(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: '#9CA3AF' }}
-                  >
-                    {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-
-                {/* Confirmation */}
-                <div className="relative">
-                  <input
-                    type={showConfirm ? 'text' : 'password'}
-                    placeholder="Confirmer le mot de passe"
-                    value={confirmPassword}
-                    onChange={e => setConfirmPassword(e.target.value)}
-                    autoComplete="new-password"
-                    disabled={loading}
-                    required
-                    className="w-full rounded-[12px] text-[15px] outline-none transition-colors duration-150"
-                    style={{
-                      background:  '#F2F2F7',
-                      border:      '1.5px solid transparent',
-                      padding:     '14px 44px 14px 16px',
-                      color:       '#0D1B1E',
-                      fontFamily:  'var(--font-body)',
-                    }}
-                    onFocus={e => (e.target.style.borderColor = '#D4952A')}
-                    onBlur={e  => (e.target.style.borderColor = 'transparent')}
-                  />
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={() => setShowConfirm(v => !v)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2"
-                    style={{ color: '#9CA3AF' }}
-                  >
-                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
-                  </button>
-                </div>
-
+            <form onSubmit={handleSubmit} className="space-y-3">
+              {/* Mot de passe */}
+              <div className="relative">
+                <input
+                  type={showPwd ? 'text' : 'password'}
+                  placeholder="Mot de passe (min. 8 caractères)"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  disabled={loading}
+                  required
+                  className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150"
+                  style={{
+                    background:  '#FFFFFF',
+                    border:      '1px solid #E5E5E5',
+                    padding:     '12px 44px 12px 16px',
+                    color:       '#111111',
+                    fontFamily:  'var(--font-body)',
+                  }}
+                  onFocus={e => (e.target.style.borderColor = '#111111')}
+                  onBlur={e  => (e.target.style.borderColor = '#E5E5E5')}
+                />
                 <button
-                  type="submit"
-                  disabled={loading || !password || !confirmPassword}
-                  className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
-                  style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => setShowPwd(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: '#9CA3AF' }}
                 >
-                  {loading ? <><Loader2 size={16} className="animate-spin" />Création…</> : 'Créer mon compte'}
+                  {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
-              </form>
-            </>
-          )}
-        </div>
+              </div>
+
+              {/* Confirmation */}
+              <div className="relative">
+                <input
+                  type={showConfirm ? 'text' : 'password'}
+                  placeholder="Confirmer le mot de passe"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  disabled={loading}
+                  required
+                  className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150"
+                  style={{
+                    background:  '#FFFFFF',
+                    border:      '1px solid #E5E5E5',
+                    padding:     '12px 44px 12px 16px',
+                    color:       '#111111',
+                    fontFamily:  'var(--font-body)',
+                  }}
+                  onFocus={e => (e.target.style.borderColor = '#111111')}
+                  onBlur={e  => (e.target.style.borderColor = '#E5E5E5')}
+                />
+                <button
+                  type="button"
+                  tabIndex={-1}
+                  onClick={() => setShowConfirm(v => !v)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                  style={{ color: '#9CA3AF' }}
+                >
+                  {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !password || !confirmPassword}
+                className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
+                style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
+              >
+                {loading ? <><Loader2 size={16} className="animate-spin" />Création…</> : 'Créer mon compte'}
+              </button>
+            </form>
+          </>
+        )}
       </div>
 
-      <p className="mt-5 text-[11px]" style={{ color: 'rgba(255,255,255,.25)', fontFamily: 'var(--font-body)' }}>
+      <p className="mt-8 text-[11px]" style={{ color: '#BBBBBB', fontFamily: 'var(--font-body)' }}>
         © 2026 PilotResto · Essai gratuit 14 jours
       </p>
     </div>

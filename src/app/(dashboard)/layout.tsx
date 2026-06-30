@@ -33,7 +33,7 @@ export default async function DashboardLayout({
   const restaurantName = restaurant?.name ?? 'Mon restaurant'
 
   return (
-    <div className="min-h-screen" style={{ background: '#F5F4F0' }}>
+    <div className="min-h-screen" style={{ background: '#FFFFFF' }}>
 
       {/* ── Sidebar + Header ─────────────────────────────── */}
       <TopBar
@@ -43,10 +43,10 @@ export default async function DashboardLayout({
         userEmail={user.email ?? ''}
       />
 
-      {/* ── Contenu : décalé header (48px) + sidebar desktop (52px) + bottom nav mobile (64px) */}
+      {/* ── Contenu : décalé header (52px) + sidebar desktop (220px) + bottom nav mobile (64px) */}
       <div
-        className="md:pl-[52px] pb-[64px] md:pb-0"
-        style={{ paddingTop: '48px' }}
+        className="md:pl-[220px] pb-[64px] md:pb-0"
+        style={{ paddingTop: '52px' }}
       >
         {/* ── Bannière essai ───────────────────────────────── */}
         <TrialBanner />
@@ -59,7 +59,7 @@ export default async function DashboardLayout({
         {/* ── Footer ───────────────────────────────────────── */}
         <footer
           className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 py-4 text-[11px] border-t"
-          style={{ borderColor: '#EEEEEE', color: '#888888' }}
+          style={{ borderColor: '#E5E5E5', color: '#888888' }}
         >
           <span>© 2026 PilotResto</span>
           <span style={{ color: '#CCCCCC' }}>·</span>

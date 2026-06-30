@@ -11,16 +11,16 @@ import { signUpAction, verifyOtpAction } from '@/lib/supabase/actions'
 function RPInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
-      className="w-full rounded-[12px] text-[15px] outline-none transition-colors duration-150"
+      className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150"
       style={{
-        background: '#F2F2F7',
-        border:     '1.5px solid transparent',
-        padding:    '14px 16px',
-        color:      '#0D1B1E',
+        background: '#FFFFFF',
+        border:     '1px solid #E5E5E5',
+        padding:    '12px 16px',
+        color:      '#111111',
         fontFamily: 'var(--font-body)',
       }}
-      onFocus={e => (e.target.style.borderColor = '#7798AB')}
-      onBlur={e  => (e.target.style.borderColor = 'transparent')}
+      onFocus={e => (e.target.style.borderColor = '#111111')}
+      onBlur={e  => (e.target.style.borderColor = '#E5E5E5')}
       {...props}
     />
   )
@@ -34,8 +34,8 @@ function SubmitBtn({
   return (
     <button
       type="submit"
-      className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
-      style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+      className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
+      style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
       {...props}
     >
       {loading && <Loader2 size={16} className="animate-spin" />}
@@ -173,12 +173,12 @@ export default function RegisterPage() {
           <Mail className="w-6 h-6" style={{ color: '#166534' }} />
         </div>
 
-        <h2 className="text-[18px] font-bold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+        <h2 className="text-[18px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
           Code de confirmation
         </h2>
         <p className="text-[13px] text-center mb-6" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
           Entrez le code à 6 chiffres envoyé à{' '}
-          <strong style={{ color: '#0D1B1E' }}>{email}</strong>
+          <strong style={{ color: '#111111' }}>{email}</strong>
         </p>
 
         {/* 6 cases OTP */}
@@ -195,18 +195,18 @@ export default function RegisterPage() {
               onKeyDown={e => handleOtpKeyDown(i, e)}
               onFocus={e => e.target.select()}
               disabled={otpLoading}
-              className="text-center text-[22px] font-bold rounded-[12px] outline-none transition-all"
+              className="text-center text-[22px] font-bold rounded-[8px] outline-none transition-all"
               style={{
                 width:       '44px',
                 height:      '56px',
-                background:  '#F2F2F7',
-                border:      digit ? '2px solid #D4952A' : '1.5px solid transparent',
-                color:       '#0D1B1E',
+                background:  '#FFFFFF',
+                border:      digit ? '2px solid #111111' : '1px solid #E5E5E5',
+                color:       '#111111',
                 fontFamily:  'var(--font-display)',
-                caretColor:  '#7798AB',
+                caretColor:  '#111111',
               }}
-              onFocusCapture={e => (e.target.style.borderColor = '#7798AB')}
-              onBlurCapture={e => { if (!digit) e.target.style.borderColor = 'transparent' }}
+              onFocusCapture={e => (e.target.style.borderColor = '#111111')}
+              onBlurCapture={e => { if (!digit) e.target.style.borderColor = '#E5E5E5' }}
               autoFocus={i === 0}
               autoComplete={i === 0 ? 'one-time-code' : 'off'}
             />
@@ -226,8 +226,8 @@ export default function RegisterPage() {
             type="button"
             onClick={() => handleOtpSubmit(otpCode)}
             disabled={!otpComplete || otpLoading}
-            className="w-full h-[52px] rounded-[14px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-40 mb-3"
-            style={{ background: '#0D1B1E', color: '#fff', fontFamily: 'var(--font-display)' }}
+            className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-40 mb-3"
+            style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
           >
             {otpLoading ? <><Loader2 size={16} className="animate-spin" />Vérification…</> : 'Confirmer'}
           </button>
@@ -266,10 +266,10 @@ export default function RegisterPage() {
   // ── Formulaire d'inscription ──────────────────────────────────
   return (
     <>
-      <h2 className="text-[22px] font-semibold text-center mb-1" style={{ color: '#0D1B1E', fontFamily: 'var(--font-display)' }}>
+      <h2 className="text-[24px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
         Créer un compte
       </h2>
-      <p className="text-[13px] text-center mb-5" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+      <p className="text-[13px] text-center mb-5" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
         14 jours gratuits · Sans engagement
       </p>
 
@@ -278,8 +278,8 @@ export default function RegisterPage() {
         type="button"
         onClick={handleGoogle}
         disabled={disabled}
-        className="w-full h-[50px] flex items-center justify-center gap-2.5 rounded-[12px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
-        style={{ background: '#F2F2F7', color: '#0D1B1E', fontFamily: 'var(--font-body)' }}
+        className="w-full h-[44px] flex items-center justify-center gap-2.5 rounded-[8px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
+        style={{ background: '#F5F5F5', color: '#111111', border: '1px solid #E5E5E5', fontFamily: 'var(--font-body)' }}
       >
         {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
         Continuer avec Google

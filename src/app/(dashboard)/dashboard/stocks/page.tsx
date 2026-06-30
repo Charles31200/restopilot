@@ -37,16 +37,15 @@ export default async function StocksPage() {
       {/* ── Header de page ──────────────────────────── */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
-            Gestion des stocks
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111111', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+            Stocks
           </h1>
-          <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>
+          <p className="text-[13px] mt-1" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
             Ingrédients · Livraisons · Inventaire · Fiches techniques
           </p>
         </div>
         {criticalCount > 0 && (
-          <span className="mt-1 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold"
-            style={{ background: '#FEE2E2', color: '#DC2626' }}>
+          <span className="mt-1 rp-tag" style={{ background: '#FEE2E2', color: '#DC2626' }}>
             {criticalCount} alerte{criticalCount > 1 ? 's' : ''} critique{criticalCount > 1 ? 's' : ''}
           </span>
         )}

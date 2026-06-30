@@ -19,9 +19,13 @@
   --color-text-primary:   #111111;
   --color-text-secondary: #888888;
   --color-text-muted:     rgba(17,17,17,0.4);
-  --color-bg:          #F5F4F0;
+  --color-bg:          #FFFFFF;
   --color-card:        #FFFFFF;
-  --color-border:      #EEEEEE;
+  --color-border:      #E5E5E5;
+  --color-sidebar:        #F7F7F5;
+  --color-sidebar-active: #EBEBEA;
+  --color-accent:         #7798AB;
+  --color-btn-primary:    #000000;
 
   /* ── Typographie Apple-like ──────────────────────────────────  */
   --font-sans:   -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -70,7 +74,7 @@
 
   /* Fond & blanc */
   --rp-white:        #FFFFFF;
-  --rp-bg-page:      #F5F4F0;
+  --rp-bg-page:      #FFFFFF;
 
   /* Sémantiques (conservés) */
   --rp-success:      #16A34A;
@@ -206,10 +210,10 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Bouton primaire */
 .btn-primary {
-  background:    #111111;
+  background:    #000000;
   color:         white;
   border:        none;
-  border-radius: 12px;
+  border-radius: 8px;
   padding:       12px 24px;
   font-size:     var(--font-size-md);
   font-weight:   500;
@@ -219,7 +223,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items:   center;
   gap:           8px;
 }
-.btn-primary:hover { background: #333333; opacity: 1; }
+.btn-primary:hover { background: #222222; opacity: 1; }
 
 /* Bouton secondaire */
 .btn-secondary {
@@ -250,9 +254,9 @@ h1, h2, h3, h4, h5, h6 {
 .rp-btn-primary {
   min-height:     48px;
   padding:        0 24px;
-  background:     #111111;
+  background:     #000000;
   color:          white;
-  border-radius:  12px;
+  border-radius:  8px;
   font-weight:    600;
   font-size:      var(--font-size-md);
   transition:     background 0.15s, transform 0.1s;
@@ -265,7 +269,7 @@ h1, h2, h3, h4, h5, h6 {
   outline:        none;
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-primary:hover  { background: #333333; opacity: 1; }
+.rp-btn-primary:hover  { background: #222222; opacity: 1; }
 .rp-btn-primary:active { transform: scale(0.98); }
 
 /* Bouton secondaire rp (rétrocompat) */
@@ -338,10 +342,10 @@ h1, h2, h3, h4, h5, h6 {
 /* KPI cards */
 .kpi-card {
   background:    #FFFFFF;
-  border-radius: 20px;
+  border-radius: 12px;
   padding:       24px;
-  box-shadow:    0 1px 4px rgba(0,0,0,0.06);
-  border:        1px solid #EEEEEE;
+  box-shadow:    none;
+  border:        1px solid #E5E5E5;
   position:      relative;
   overflow:      hidden;
 }
@@ -373,6 +377,19 @@ h1, h2, h3, h4, h5, h6 {
   gap:           8px;
 }
 .btn-accent:hover { background: #5B7A8D; }
+
+/* Tag (style liste/tableau) */
+.rp-tag {
+  display:        inline-flex;
+  align-items:    center;
+  background:     #F0F0F0;
+  color:          #333333;
+  border-radius:  6px;
+  padding:        3px 10px;
+  font-size:      12px;
+  font-weight:    500;
+  white-space:    nowrap;
+}
 
 /* Scrollbar fine */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
