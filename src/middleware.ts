@@ -17,11 +17,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
 // Routes 100 % publiques — pas de Supabase, pas de cookie PWA
+// NB : /login et /register sont intentionnellement absents ici pour que
+// le middleware puisse rediriger les utilisateurs déjà connectés vers
+// /dashboard (règle 3 ci-dessous). Les rendre FULLY_PUBLIC ferait
+// court-circuiter cette vérification → flash de la page de connexion.
 const FULLY_PUBLIC = [
   '/',
   '/landing',
-  '/login',
-  '/register',
   '/install',
   '/contact',
   '/pricing',

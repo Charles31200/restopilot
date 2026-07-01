@@ -3,30 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Menu, X, ArrowRight, ChevronDown, ChevronUp } from 'lucide-react'
-
-// ─── FAQ Accordion ────────────────────────────────────────────
-function FAQItem({ q, a }: { q: string; a: string }) {
-  const [open, setOpen] = useState(false)
-  return (
-    <div className="border-b border-gray-200 last:border-b-0">
-      <button
-        className="w-full text-left py-5 flex justify-between items-center gap-4 font-semibold text-gray-900 text-base"
-        onClick={() => setOpen(!open)}
-        aria-expanded={open}
-      >
-        <span>{q}</span>
-        {open
-          ? <ChevronUp className="w-5 h-5 flex-shrink-0 text-gray-400" />
-          : <ChevronDown className="w-5 h-5 flex-shrink-0 text-gray-400" />
-        }
-      </button>
-      {open && (
-        <p className="pb-5 text-sm text-gray-600 leading-relaxed">{a}</p>
-      )}
-    </div>
-  )
-}
+import { Menu, X, Loader2 } from 'lucide-react'
 
 // ─── Animated counter ────────────────────────────────────────
 function Counter({ target, isVisible }: { target: number; isVisible: boolean }) {
@@ -50,23 +27,60 @@ function Counter({ target, isVisible }: { target: number; isVisible: boolean }) 
   return <>{count}</>
 }
 
-// ─── Apple icon SVG ──────────────────────────────────────────
-function AppleIcon({ size = 18 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 814 1000" fill="currentColor" aria-hidden="true">
-      <path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-167.2-140.9c-52.3-88.2-87.5-231.7-87.5-375.8 0-231.9 151.6-354.3 300.5-354.3 79.7 0 145.9 52.3 195.4 52.3 47.5 0 122.4-55.5 210.9-55.5zm-105.9-157.1c-37.5 0-94.4-26.1-131.9-60.7-33.6-31.1-65.8-81.5-65.8-131.9 0-6.4.6-12.9 1.9-19.4 0-6.4 0-12.9-1.9-19.4 35.6-.9 96.1 34.9 135.9 74.3 33.6 33.6 60 83.5 60 131.9z"/>
-    </svg>
-  )
-}
-
-// ─── Star SVG ────────────────────────────────────────────────
-function StarIcon() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 20 20" fill="#B8962E" aria-hidden="true">
-      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-    </svg>
-  )
-}
+// ─── Stripe price IDs ────────────────────────────────────────
+const PLANS = [
+  {
+    id:             'starter',
+    name:           'Starter',
+    monthly:        39,
+    annualTotal:    368,
+    annualMonthly:  31,
+    priceIdMonthly: 'price_1TjRUOEw9od5qGxlmwXgMQQD',
+    priceIdAnnual:  'price_1TjRUOEw9od5qGxlnDbe4Nqv',
+    popular:        false,
+    features: [
+      'Dashboard & KPIs',
+      'Gestion des stocks',
+      'Planning HCR',
+      'Export FEC',
+      '1 établissement',
+    ],
+  },
+  {
+    id:             'pro',
+    name:           'Pro',
+    monthly:        79,
+    annualTotal:    663,
+    annualMonthly:  55,
+    priceIdMonthly: 'price_1TjRUvEw9od5qGxl9yxWt6JO',
+    priceIdAnnual:  'price_1TjRVfEw9od5qGxlsOTeBSyV',
+    popular:        true,
+    features: [
+      'Tout Starter',
+      'Connexion caisses (Lightspeed, Tiller, Zelty)',
+      'Factures IA (OCR)',
+      'Rapports avancés',
+      '1 établissement',
+    ],
+  },
+  {
+    id:             'multi',
+    name:           'Multi',
+    monthly:        149,
+    annualTotal:    1430,
+    annualMonthly:  119,
+    priceIdMonthly: 'price_1TjRWjEw9od5qGxlAzYYrIqd',
+    priceIdAnnual:  'price_1TjRXBEw9od5qGxlw0BvlHds',
+    popular:        false,
+    features: [
+      'Tout Pro',
+      'Multi-établissements',
+      'Tableau de bord consolidé',
+      'Accès équipe illimité',
+      'Support prioritaire',
+    ],
+  },
+]
 
 // ═══════════════════════════════════════════════════════════════
 // PAGE PRINCIPALE
@@ -74,160 +88,210 @@ function StarIcon() {
 
 export default function HomePage() {
   const router = useRouter()
-  const [menuOpen, setMenuOpen]         = useState(false)
-  const [scrolled, setScrolled]         = useState(false)
-  const [statsVisible, setStatsVisible] = useState(false)
+
+  const [menuOpen,      setMenuOpen]      = useState(false)
+  const [scrolled,      setScrolled]      = useState(false)
+  const [statsVisible,  setStatsVisible]  = useState(false)
+  const [isAnnual,      setIsAnnual]      = useState(false)
+  const [checkoutLoading, setCheckoutLoading] = useState<string | null>(null)
+  const [checkoutError,   setCheckoutError]   = useState<string | null>(null)
+  const [contactSent,   setContactSent]   = useState(false)
+  const [contactLoading, setContactLoading] = useState(false)
+
   const statsRef = useRef<HTMLDivElement>(null)
 
-  // Redirige vers /login si l'utilisateur est dans l'app Electron
+  // Electron → /login
   useEffect(() => {
-    if (navigator.userAgent.includes('Electron')) {
-      router.replace('/login')
-    }
+    if (navigator.userAgent.includes('Electron')) router.replace('/login')
   }, [router])
 
-  // Effet header scroll
+  // Sticky nav shadow
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 50)
+    const onScroll = () => setScrolled(window.scrollY > 10)
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  // Animations fade-up au scroll
+  // Fade-up animations
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') })
-      },
+    const obs = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
       { threshold: 0.1 }
     )
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el))
-    return () => observer.disconnect()
+    document.querySelectorAll('.fade-up').forEach(el => obs.observe(el))
+    return () => obs.disconnect()
   }, [])
 
-  // Déclenchement des compteurs stats
+  // Stats counter trigger
   useEffect(() => {
     const el = statsRef.current
     if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setStatsVisible(true); observer.disconnect() } },
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setStatsVisible(true); obs.disconnect() } },
       { threshold: 0.3 }
     )
-    observer.observe(el)
-    return () => observer.disconnect()
+    obs.observe(el)
+    return () => obs.disconnect()
   }, [])
 
-  return (
-    <div className="min-h-screen" style={{ background: '#FFFFFF', fontFamily: 'var(--font-body, system-ui)' }}>
+  // Stripe checkout
+  const handleCheckout = async (priceId: string) => {
+    setCheckoutLoading(priceId)
+    setCheckoutError(null)
+    try {
+      const res = await fetch('/api/stripe/create-checkout', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ priceId }),
+      })
+      if (res.status === 401) {
+        router.push(`/register?priceId=${encodeURIComponent(priceId)}`)
+        return
+      }
+      const json = await res.json()
+      if (json.url) { window.location.href = json.url; return }
+      setCheckoutError(json.error ?? 'Une erreur est survenue.')
+    } catch {
+      setCheckoutError('Erreur réseau. Veuillez réessayer.')
+    } finally {
+      setCheckoutLoading(null)
+    }
+  }
 
-      {/* ══ 1. HEADER STICKY ══════════════════════════════════════ */}
+  // Contact form
+  const handleContact = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setContactLoading(true)
+    const fd = new FormData(e.currentTarget)
+    try {
+      const res = await fetch('/api/contact', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName: fd.get('firstName'),
+          lastName:  fd.get('lastName'),
+          email:     fd.get('email'),
+          message:   fd.get('message'),
+        }),
+      })
+      if (res.ok) setContactSent(true)
+    } catch { /* silent */ } finally {
+      setContactLoading(false)
+    }
+  }
+
+  // ── Shared button styles ────────────────────────────────────
+  const btnBlack = {
+    display:        'inline-flex',
+    alignItems:     'center',
+    justifyContent: 'center',
+    gap:            '8px',
+    background:     '#111111',
+    color:          '#FFFFFF',
+    borderRadius:   '9999px',
+    padding:        '14px 28px',
+    fontSize:       '13px',
+    fontWeight:     700,
+    letterSpacing:  '0.1em',
+    textTransform:  'uppercase' as const,
+    border:         'none',
+    cursor:         'pointer',
+    textDecoration: 'none',
+  }
+  const btnOutline = {
+    ...btnBlack,
+    background:   '#FFFFFF',
+    color:        '#111111',
+    border:       '1px solid #111111',
+  }
+  const btnOutlineWhite = {
+    ...btnBlack,
+    background:   'transparent',
+    color:        '#FFFFFF',
+    border:       '2px solid rgba(255,255,255,0.7)',
+  }
+
+  return (
+    <div style={{ background: '#FFFFFF', fontFamily: 'var(--font-body, system-ui)', color: '#111111' }}>
+
+      {/* ══ NAV STICKY ════════════════════════════════════════════ */}
       <header
-        className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="fixed top-0 left-0 right-0 z-50 transition-all duration-200"
         style={{
-          background:     scrolled ? 'rgba(255,255,255,0.97)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(8px)'              : 'none',
-          boxShadow:      scrolled ? '0 1px 16px rgba(27,42,74,0.08)' : 'none',
+          background:     'rgba(255,255,255,0.96)',
+          backdropFilter: 'blur(12px)',
+          borderBottom:   scrolled ? '1px solid #E5E5E5' : '1px solid transparent',
         }}
       >
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-4 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-5 sm:px-8" style={{ height: '64px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/favicon.png" alt="PilotResto" style={{ height: '36px', width: 'auto' }} />
-            <span
-              className="font-bold text-lg tracking-tight"
-              style={{ color: scrolled ? '#1B2A4A' : 'white', fontFamily: 'var(--font-display, system-ui)' }}
-            >
+            <img src="/favicon.png" alt="PilotResto" style={{ height: '32px', width: 'auto' }} />
+            <span style={{ fontWeight: 800, fontSize: '17px', color: '#111111', fontFamily: 'var(--font-display, system-ui)', letterSpacing: '-0.02em' }}>
               PilotResto
             </span>
           </Link>
 
           {/* Nav desktop */}
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden md:flex" style={{ gap: '40px' }}>
             {[
               { href: '#fonctionnalites', label: 'Fonctionnalités' },
-              { href: '/pricing',         label: 'Tarifs' },
-              { href: '/contact',         label: 'Contact' },
-            ].map(link => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium transition-colors hover:opacity-100"
-                style={{ color: scrolled ? '#374151' : 'rgba(255,255,255,0.82)' }}
+              { href: '#tarifs',          label: 'Tarifs' },
+              { href: '#contact',         label: 'Contact' },
+            ].map(l => (
+              <a key={l.href} href={l.href}
+                style={{ color: '#555555', fontSize: '14px', fontWeight: 500, textDecoration: 'none' }}
+                className="hover:text-black transition-colors"
               >
-                {link.label}
+                {l.label}
               </a>
             ))}
           </nav>
 
           {/* CTAs desktop */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/login"
-              className="text-sm font-semibold px-4 py-2 rounded-xl border transition-all"
-              style={{
-                color:       scrolled ? '#1B2A4A' : 'white',
-                borderColor: scrolled ? 'rgba(27,42,74,0.3)' : 'rgba(255,255,255,0.45)',
-              }}
-            >
+          <div className="hidden md:flex" style={{ gap: '12px', alignItems: 'center' }}>
+            <Link href="/login" style={{ ...btnOutline, padding: '10px 20px', fontSize: '12px' }}>
               Se connecter
             </Link>
-            <Link
-              href="/contact"
-              className="text-sm font-bold px-5 py-2.5 rounded-xl transition-all active:scale-95"
-              style={{ background: '#B8962E', color: 'white', boxShadow: '0 2px 12px rgba(184,150,46,0.4)' }}
-            >
-              Demander une démo
+            <Link href="/register" style={{ ...btnBlack, padding: '10px 20px', fontSize: '12px' }}>
+              Commencer gratuitement
             </Link>
           </div>
 
           {/* Hamburger mobile */}
           <button
-            className="md:hidden p-2 rounded-xl transition-colors"
-            style={{ color: scrolled ? '#1B2A4A' : 'white' }}
+            className="md:hidden p-2"
+            style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#111111' }}
             onClick={() => setMenuOpen(!menuOpen)}
-            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-label={menuOpen ? 'Fermer' : 'Menu'}
           >
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
-        {/* Menu mobile déroulant */}
+        {/* Menu mobile */}
         {menuOpen && (
-          <div className="md:hidden border-t" style={{ background: '#1B2A4A', borderColor: 'rgba(255,255,255,0.1)' }}>
-            <div className="px-5 py-5 flex flex-col gap-4">
+          <div style={{ background: '#FFFFFF', borderTop: '1px solid #E5E5E5' }}>
+            <div className="px-5 py-6 flex flex-col gap-5">
               {[
                 { href: '#fonctionnalites', label: 'Fonctionnalités' },
-                { href: '/pricing',         label: 'Tarifs' },
-                { href: '/contact',         label: 'Contact' },
-              ].map(link => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="font-medium text-base py-1"
-                  style={{ color: 'rgba(255,255,255,0.82)' }}
-                  onClick={() => setMenuOpen(false)}
+                { href: '#tarifs',          label: 'Tarifs' },
+                { href: '#contact',         label: 'Contact' },
+              ].map(l => (
+                <a key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
+                  style={{ color: '#111111', fontSize: '16px', fontWeight: 600, textDecoration: 'none' }}
                 >
-                  {link.label}
+                  {l.label}
                 </a>
               ))}
-              <div className="flex flex-col gap-3 pt-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
-                <Link
-                  href="/login"
-                  className="text-center py-3 rounded-xl border text-white font-semibold text-sm"
-                  style={{ borderColor: 'rgba(255,255,255,0.3)' }}
-                  onClick={() => setMenuOpen(false)}
-                >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', paddingTop: '12px', borderTop: '1px solid #E5E5E5' }}>
+                <Link href="/login" onClick={() => setMenuOpen(false)} style={{ ...btnOutline, justifyContent: 'center' }}>
                   Se connecter
                 </Link>
-                <Link
-                  href="/contact"
-                  className="text-center py-3 rounded-xl font-bold text-sm text-white"
-                  style={{ background: '#B8962E' }}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  Demander une démo
+                <Link href="/register" onClick={() => setMenuOpen(false)} style={{ ...btnBlack, justifyContent: 'center' }}>
+                  Commencer gratuitement
                 </Link>
               </div>
             </div>
@@ -235,213 +299,205 @@ export default function HomePage() {
         )}
       </header>
 
-      {/* ══ 2. HERO ═══════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Image de fond */}
+      {/* ══ 1. HERO ═══════════════════════════════════════════════ */}
+      <section style={{ position: 'relative', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80"
+          src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600"
           alt=""
           aria-hidden="true"
-          className="absolute inset-0 w-full h-full object-cover"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        {/* Overlay navy */}
-        <div className="absolute inset-0" style={{ background: 'rgba(27,42,74,0.78)' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.55)' }} />
 
-        {/* Contenu */}
-        <div className="relative z-10 text-center px-5 sm:px-6 max-w-4xl mx-auto pt-24">
-          {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold mb-8 fade-up"
-            style={{ background: 'rgba(184,150,46,0.2)', color: '#F5C46A', border: '1px solid rgba(184,150,46,0.4)' }}
-          >
-            ✨ Logiciel de gestion #1 pour indépendants
-          </div>
-
-          {/* Titre */}
+        <div className="relative z-10 text-center px-5 sm:px-8 w-full" style={{ maxWidth: '860px', margin: '0 auto', paddingTop: '80px' }}>
           <h1
-            className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight fade-up"
-            style={{ fontFamily: 'var(--font-display, system-ui)', transitionDelay: '0.1s' }}
+            className="fade-up"
+            style={{
+              fontSize:    'clamp(40px, 7vw, 72px)',
+              fontWeight:  800,
+              color:       '#FFFFFF',
+              lineHeight:  1.1,
+              letterSpacing: '-0.03em',
+              fontFamily:  'var(--font-display, system-ui)',
+              marginBottom: '20px',
+            }}
           >
             Gérez votre restaurant.<br />Enfin simplement.
           </h1>
-
-          {/* Sous-titre */}
           <p
-            className="text-lg sm:text-xl mb-10 max-w-xl mx-auto leading-relaxed fade-up"
-            style={{ color: 'rgba(255,255,255,0.75)', transitionDelay: '0.2s' }}
+            className="fade-up"
+            style={{ fontSize: '20px', color: 'rgba(255,255,255,0.85)', marginBottom: '40px', transitionDelay: '0.1s' }}
           >
-            PilotResto centralise stocks, planning et comptabilité en une seule plateforme.
-            Essai gratuit 14 jours.
+            Moins de paperasse, plus de temps en cuisine.
           </p>
-
-          {/* Boutons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 fade-up" style={{ transitionDelay: '0.3s' }}>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-bold rounded-2xl px-8 py-4 text-base transition-all active:scale-95"
-              style={{ background: '#B8962E', color: 'white', boxShadow: '0 4px 24px rgba(184,150,46,0.45)' }}
-            >
-              Demander une démo
-              <ArrowRight className="w-5 h-5" />
+          <div className="fade-up" style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', justifyContent: 'center', transitionDelay: '0.2s' }}>
+            <Link href="/register" style={btnBlack}>
+              Commencer gratuitement →
             </Link>
-            <Link
-              href="/pricing"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold rounded-2xl px-8 py-4 text-base text-white border-2 transition-all hover:bg-white/10 active:scale-95"
-              style={{ borderColor: 'rgba(255,255,255,0.5)' }}
-            >
+            <a href="#tarifs" style={btnOutlineWhite}>
               Voir les tarifs
-            </Link>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5" style={{ opacity: 0.5 }}>
-          <div className="w-px h-8 bg-white animate-pulse" />
-          <div className="w-2 h-2 rounded-full bg-white" />
-        </div>
-      </section>
-
-      {/* ══ 3. TÉLÉCHARGEMENT APP ═════════════════════════════════ */}
-      <section className="py-14 sm:py-18" style={{ background: '#0D1B1E' }}>
-        <div className="max-w-xl mx-auto px-5 sm:px-6 fade-up">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest mb-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Disponible sur Mac et Windows
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Mac */}
-            <div className="flex flex-col flex-1 gap-2">
-              <a
-                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0-arm64.dmg"
-                className="flex flex-col items-center gap-1.5 rounded-2xl py-5 px-4 transition active:scale-95 hover:opacity-90"
-                style={{ background: '#0D1B1E', border: '1px solid rgba(255,255,255,0.15)', textDecoration: 'none' }}
-              >
-                <span style={{ fontSize: '28px', lineHeight: 1 }}>🍎</span>
-                <span className="font-semibold text-white text-sm text-center">Télécharger pour Mac</span>
-                <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>M1 / M2 / M3 · Intel</span>
-              </a>
-              <a
-                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0.dmg"
-                className="text-center text-xs transition hover:opacity-80"
-                style={{ color: 'rgba(255,255,255,0.4)' }}
-              >
-                Mac Intel ? <span style={{ textDecoration: 'underline' }}>Téléchargez cette version</span>
-              </a>
-            </div>
-            {/* Windows */}
-            <a
-              href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
-              className="flex flex-col flex-1 items-center gap-1.5 rounded-2xl py-5 px-4 transition active:scale-95 hover:opacity-90"
-              style={{ background: '#0D1B1E', border: '1px solid rgba(255,255,255,0.15)', textDecoration: 'none' }}
-            >
-              <span style={{ fontSize: '28px', lineHeight: 1 }}>🪟</span>
-              <span className="font-semibold text-white text-sm text-center">Télécharger pour Windows</span>
-              <span className="text-xs text-center" style={{ color: 'rgba(255,255,255,0.45)' }}>Windows 10 / 11</span>
             </a>
           </div>
         </div>
       </section>
 
-      {/* ══ 4. PROBLÈME ══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24" style={{ background: '#F8F9FB' }}>
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
-          <div className="text-center mb-12 fade-up">
-            <h2
-              className="text-2xl sm:text-4xl font-extrabold leading-tight"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
+      {/* ══ 2. TÉLÉCHARGEMENT ════════════════════════════════════ */}
+      <section style={{ background: '#111111', padding: '80px 20px' }}>
+        <div style={{ maxWidth: '720px', margin: '0 auto' }}>
+          <p className="fade-up text-center" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
+            Application desktop disponible sur
+          </p>
+          <div className="fade-up" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            {/* Mac */}
+            <div style={{ flex: '1 1 260px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0-arm64.dmg"
+                style={{
+                  display:        'flex',
+                  flexDirection:  'column',
+                  alignItems:     'center',
+                  gap:            '10px',
+                  border:         '1px solid rgba(255,255,255,0.2)',
+                  borderRadius:   '16px',
+                  padding:        '32px',
+                  textDecoration: 'none',
+                  transition:     'border-color 0.2s',
+                }}
+              >
+                <span style={{ fontSize: '36px' }}>🍎</span>
+                <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '15px' }}>Télécharger pour Mac</span>
+                <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px' }}>M1 / M2 / M3 · Intel</span>
+              </a>
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0.dmg"
+                style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}
+              >
+                Mac Intel ? Téléchargez cette version
+              </a>
+            </div>
+            {/* Windows */}
+            <a
+              href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
+              style={{
+                flex:           '1 1 260px',
+                display:        'flex',
+                flexDirection:  'column',
+                alignItems:     'center',
+                gap:            '10px',
+                border:         '1px solid rgba(255,255,255,0.2)',
+                borderRadius:   '16px',
+                padding:        '32px',
+                textDecoration: 'none',
+              }}
             >
-              Les restaurateurs perdent 2h/jour<br className="hidden sm:block" /> en gestion administrative
-            </h2>
+              <span style={{ fontSize: '36px' }}>🪟</span>
+              <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '15px' }}>Télécharger pour Windows</span>
+              <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px' }}>Windows 10 / 11</span>
+            </a>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        </div>
+      </section>
+
+      {/* ══ 3. ACCROCHE / PROBLÈME ═══════════════════════════════ */}
+      <section style={{ background: '#FFFFFF', padding: '120px 20px' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto' }}>
+          <h2
+            className="fade-up text-center"
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', marginBottom: '64px', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)' }}
+          >
+            Les restaurateurs perdent 2h/jour<br />en gestion administrative
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '24px' }}>
             {[
               { icon: '😓', text: 'Les tableurs Excel ne sont pas faits pour gérer un restaurant' },
-              { icon: '🗂️', text: 'Les données éparpillées entre 5 outils différents' },
+              { icon: '📦', text: 'Les données éparpillées entre 5 outils différents' },
               { icon: '⏰', text: 'Du temps perdu en admin = moins de temps en cuisine' },
             ].map((item, i) => (
               <div
                 key={i}
-                className="fade-up bg-white rounded-2xl p-6 border border-gray-200 text-center"
-                style={{ transitionDelay: `${i * 0.1}s` }}
+                className="fade-up"
+                style={{
+                  border:       '1px solid #E5E5E5',
+                  borderRadius: '16px',
+                  padding:      '32px',
+                  textAlign:    'center',
+                  transitionDelay: `${i * 0.1}s`,
+                }}
               >
-                <span style={{ fontSize: '40px' }}>{item.icon}</span>
-                <p className="mt-4 text-gray-700 font-medium text-sm leading-relaxed">{item.text}</p>
+                <span style={{ fontSize: '40px', display: 'block', marginBottom: '16px' }}>{item.icon}</span>
+                <p style={{ fontSize: '15px', color: '#333333', fontWeight: 500, lineHeight: 1.6 }}>{item.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ 5. STATS ══════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-4xl mx-auto px-5 sm:px-6" ref={statsRef}>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
-            {[
-              { value: 14,  suffix: ' jours', label: 'Essai gratuit' },
-              { value: 3,   suffix: ' min',   label: 'Pour démarrer' },
-              { value: 100, suffix: '%',      label: 'Données sécurisées' },
-            ].map((stat, i) => (
-              <div key={i} className="fade-up" style={{ transitionDelay: `${i * 0.15}s` }}>
-                <div
-                  className="text-5xl font-extrabold mb-2 tabular-nums"
-                  style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-                >
-                  <Counter target={stat.value} isVisible={statsVisible} />
-                  {stat.suffix}
-                </div>
-                <p className="text-gray-500 text-sm font-medium">{stat.label}</p>
+      {/* ══ 4. CHIFFRES ═══════════════════════════════════════════ */}
+      <section style={{ background: '#FFFFFF', padding: '80px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div ref={statsRef} style={{ maxWidth: '760px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '40px', textAlign: 'center' }}>
+          {[
+            { value: 14,  suffix: ' jours', label: 'Essai gratuit' },
+            { value: 3,   suffix: ' min',   label: 'Pour démarrer' },
+            { value: 100, suffix: '%',      label: 'Données sécurisées' },
+          ].map((stat, i) => (
+            <div key={i} className="fade-up" style={{ transitionDelay: `${i * 0.15}s` }}>
+              <div style={{ fontSize: '64px', fontWeight: 800, color: '#111111', lineHeight: 1, fontFamily: 'var(--font-display, system-ui)' }}>
+                <Counter target={stat.value} isVisible={statsVisible} />{stat.suffix}
               </div>
-            ))}
-          </div>
+              <p style={{ fontSize: '16px', color: '#888888', marginTop: '8px' }}>{stat.label}</p>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* ══ 6. FONCTIONNALITÉS ═══════════════════════════════════ */}
-      <section id="fonctionnalites" className="py-16 sm:py-24" style={{ background: '#F8F9FB' }}>
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
-          <div className="text-center mb-12 fade-up">
-            <h2
-              className="text-2xl sm:text-4xl font-extrabold"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              Tout ce dont vous avez besoin
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      {/* ══ 5. FONCTIONNALITÉS ═══════════════════════════════════ */}
+      <section id="fonctionnalites" style={{ background: '#FFFFFF', padding: '120px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto' }}>
+          <h2
+            className="fade-up text-center"
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', marginBottom: '64px', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)' }}
+          >
+            Tout ce dont vous avez besoin
+          </h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '20px' }}>
             {[
               { icon: '📊', title: 'Dashboard',    desc: 'CA en temps réel, marges et indicateurs clés au quotidien.' },
               { icon: '📦', title: 'Stocks',       desc: 'Alertes automatiques, valorisation et suivi des entrées/sorties.' },
               { icon: '👥', title: 'Planning',     desc: 'Conforme HCR, gestion des congés et exports planning PDF.' },
-              { icon: '📄', title: 'FEC',          desc: 'Export comptable en un clic, compatible avec tous les logiciels.' },
-              { icon: '🔗', title: 'Caisses',      desc: 'Connexion Lightspeed, Tiller, Zelty et synchronisation auto.' },
-              { icon: '🧾', title: 'Factures IA',  desc: 'Scan automatique OCR, extraction et catégorisation intelligente.' },
+              { icon: '🧾', title: 'FEC',          desc: 'Export comptable en un clic, conforme à la législation française.' },
+              { icon: '🔗', title: 'Caisses',      desc: 'Connexion Lightspeed, Tiller, Zelty et autres caisses.' },
+              { icon: '🤖', title: 'Factures IA',  desc: 'Scan automatique OCR, extraction et classement des factures.' },
             ].map((feat, i) => (
               <div
                 key={i}
-                className="fade-up bg-white rounded-2xl p-6 border border-gray-100 hover:shadow-md transition-shadow"
-                style={{ transitionDelay: `${i * 0.08}s` }}
+                className="fade-up"
+                style={{
+                  border:       '1px solid #E5E5E5',
+                  borderRadius: '16px',
+                  padding:      '32px',
+                  transitionDelay: `${i * 0.08}s`,
+                }}
               >
-                <span style={{ fontSize: '32px' }}>{feat.icon}</span>
-                <h3 className="font-bold text-gray-900 mt-3 mb-1.5 text-base">{feat.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{feat.desc}</p>
+                <span style={{ fontSize: '32px', display: 'block', marginBottom: '16px' }}>{feat.icon}</span>
+                <h3 style={{ fontWeight: 700, fontSize: '16px', color: '#111111', marginBottom: '8px' }}>{feat.title}</h3>
+                <p style={{ fontSize: '14px', color: '#666666', lineHeight: 1.6 }}>{feat.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ 7. COMMENT ÇA MARCHE ══════════════════════════════════ */}
-      <section className="py-16 sm:py-24" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6">
-          <div className="text-center mb-12 fade-up">
-            <h2
-              className="text-2xl sm:text-4xl font-extrabold"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              Comment ça marche ?
-            </h2>
-          </div>
-          <div className="space-y-5">
+      {/* ══ 6. COMMENT ÇA MARCHE ══════════════════════════════════ */}
+      <section style={{ background: '#FFFFFF', padding: '120px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+          <h2
+            className="fade-up text-center"
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', marginBottom: '64px', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)' }}
+          >
+            Comment ça marche ?
+          </h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {[
               { n: '1', title: 'Téléchargez l\'application', detail: '2 min' },
               { n: '2', title: 'Configurez votre restaurant', detail: '3 min' },
@@ -449,29 +505,42 @@ export default function HomePage() {
             ].map((step, i) => (
               <div
                 key={i}
-                className="fade-up flex items-center gap-5 p-6 rounded-2xl border border-gray-100 bg-gray-50/50"
-                style={{ transitionDelay: `${i * 0.15}s` }}
+                className="fade-up"
+                style={{
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          '20px',
+                  border:       '1px solid #E5E5E5',
+                  borderRadius: '16px',
+                  padding:      '24px 28px',
+                  transitionDelay: `${i * 0.15}s`,
+                }}
               >
-                <div
-                  className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center font-extrabold text-xl text-white"
-                  style={{ background: '#1B2A4A' }}
-                >
+                <div style={{
+                  flexShrink:    0,
+                  width:         '44px',
+                  height:        '44px',
+                  borderRadius:  '9999px',
+                  background:    '#111111',
+                  color:         '#FFFFFF',
+                  display:       'flex',
+                  alignItems:    'center',
+                  justifyContent: 'center',
+                  fontWeight:    800,
+                  fontSize:      '18px',
+                }}>
                   {step.n}
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 text-base">{step.title}</h3>
-                  <p className="text-sm font-semibold mt-0.5" style={{ color: '#B8962E' }}>{step.detail}</p>
+                <div>
+                  <h3 style={{ fontWeight: 700, fontSize: '16px', color: '#111111' }}>{step.title}</h3>
+                  <p style={{ fontSize: '13px', color: '#888888', marginTop: '2px' }}>{step.detail}</p>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-      {/* ══ 8. RÉASSURANCE ════════════════════════════════════════ */}
-      <section className="py-12 sm:py-16" style={{ background: '#F8F9FB' }}>
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Badges réassurance */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '12px', marginTop: '48px' }}>
             {[
               { icon: '🔒', text: 'Données hébergées en France' },
               { icon: '🇫🇷', text: 'Conçu pour la restauration française' },
@@ -480,122 +549,288 @@ export default function HomePage() {
             ].map((b, i) => (
               <div
                 key={i}
-                className="fade-up bg-white rounded-2xl p-5 text-center border border-gray-100"
-                style={{ transitionDelay: `${i * 0.1}s` }}
+                className="fade-up"
+                style={{
+                  border:       '1px solid #E5E5E5',
+                  borderRadius: '12px',
+                  padding:      '16px',
+                  display:      'flex',
+                  alignItems:   'center',
+                  gap:          '12px',
+                  transitionDelay: `${i * 0.1}s`,
+                }}
               >
-                <span style={{ fontSize: '28px' }}>{b.icon}</span>
-                <p className="text-xs font-semibold text-gray-700 mt-2 leading-snug">{b.text}</p>
+                <span style={{ fontSize: '22px' }}>{b.icon}</span>
+                <p style={{ fontSize: '12px', fontWeight: 600, color: '#333333', lineHeight: 1.4 }}>{b.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ 9. TÉMOIGNAGE ════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24" style={{ background: '#1B2A4A' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center fade-up">
-          <div className="flex justify-center gap-1 mb-8">
-            {Array.from({ length: 5 }).map((_, i) => <StarIcon key={i} />)}
-          </div>
-          <blockquote
-            className="text-white text-lg sm:text-2xl font-medium leading-relaxed mb-8"
-            style={{ fontFamily: 'var(--font-display, system-ui)' }}
-          >
-            &ldquo;PilotResto nous a fait gagner 2h par jour. Le planning et les stocks
-            en un seul endroit, c&rsquo;est exactement ce dont on avait besoin.&rdquo;
-          </blockquote>
-          <p className="font-semibold text-white text-sm">Pierre M.</p>
-          <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.45)' }}>
-            Restaurant Le Comptoir, Lyon
-          </p>
-        </div>
-      </section>
-
-      {/* ══ 10. FAQ ═══════════════════════════════════════════════ */}
-      <section className="py-16 sm:py-24" style={{ background: '#FFFFFF' }}>
-        <div className="max-w-2xl mx-auto px-5 sm:px-6 fade-up">
+      {/* ══ 7. TARIFS ═════════════════════════════════════════════ */}
+      <section id="tarifs" style={{ background: '#FFFFFF', padding: '120px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto' }}>
           <h2
-            className="text-2xl sm:text-4xl font-extrabold text-center mb-12"
-            style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
+            className="fade-up text-center"
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', marginBottom: '32px', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)' }}
           >
-            Questions fréquentes
+            Nos offres
           </h2>
-          <div className="rounded-2xl border border-gray-200 overflow-hidden divide-y divide-gray-200">
-            <div className="px-6">
-              <FAQItem
-                q="Dois-je installer quelque chose ?"
-                a="Oui, téléchargez l'application Mac gratuitement depuis ce site. L'installation prend moins de 2 minutes."
-              />
-              <FAQItem
-                q="Puis-je annuler à tout moment ?"
-                a="Oui, sans engagement depuis votre espace client. Aucuns frais de résiliation."
-              />
-              <FAQItem
-                q="Mes données sont-elles sécurisées ?"
-                a="Oui, chiffrées (TLS + AES-256) et hébergées sur des serveurs européens, conformément au RGPD."
-              />
-              <FAQItem
-                q="Sur quels appareils fonctionne PilotResto ?"
-                a="Mac (application desktop) et navigateur web (Chrome, Safari, Firefox)."
-              />
-              <FAQItem
-                q="Que se passe-t-il après 14 jours ?"
-                a="Vous choisissez un plan ou votre accès est suspendu sans frais. Aucun débit automatique."
-              />
+
+          {/* Toggle mensuel / annuel */}
+          <div className="fade-up" style={{ display: 'flex', justifyContent: 'center', marginBottom: '56px' }}>
+            <div style={{ display: 'flex', background: '#F5F5F5', borderRadius: '9999px', padding: '4px', gap: '4px' }}>
+              {['Mensuel', 'Annuel (−20%)'].map((label, i) => {
+                const active = i === (isAnnual ? 1 : 0)
+                return (
+                  <button
+                    key={label}
+                    onClick={() => setIsAnnual(i === 1)}
+                    style={{
+                      padding:      '8px 20px',
+                      borderRadius: '9999px',
+                      border:       'none',
+                      cursor:       'pointer',
+                      fontSize:     '13px',
+                      fontWeight:   700,
+                      letterSpacing: '0.05em',
+                      background:   active ? '#111111' : 'transparent',
+                      color:        active ? '#FFFFFF' : '#888888',
+                      transition:   'all 0.2s',
+                    }}
+                  >
+                    {label}
+                  </button>
+                )
+              })}
             </div>
           </div>
+
+          {checkoutError && (
+            <p className="text-center mb-6" style={{ color: '#DC2626', fontSize: '14px' }}>{checkoutError}</p>
+          )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+            {PLANS.map((plan, i) => {
+              const priceId   = isAnnual ? plan.priceIdAnnual : plan.priceIdMonthly
+              const isLoading = checkoutLoading === priceId
+              return (
+                <div
+                  key={plan.id}
+                  className="fade-up"
+                  style={{
+                    border:       `1px solid ${plan.popular ? '#111111' : '#E5E5E5'}`,
+                    borderRadius: '16px',
+                    padding:      '32px',
+                    background:   plan.popular ? '#111111' : '#FFFFFF',
+                    position:     'relative',
+                    transitionDelay: `${i * 0.1}s`,
+                  }}
+                >
+                  {plan.popular && (
+                    <div style={{
+                      position:     'absolute',
+                      top:          '-12px',
+                      left:         '50%',
+                      transform:    'translateX(-50%)',
+                      background:   '#FFFFFF',
+                      color:        '#111111',
+                      fontSize:     '11px',
+                      fontWeight:   800,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      padding:      '4px 14px',
+                      borderRadius: '9999px',
+                      border:       '1px solid #E5E5E5',
+                      whiteSpace:   'nowrap',
+                    }}>
+                      Le plus populaire
+                    </div>
+                  )}
+
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: plan.popular ? '#FFFFFF' : '#111111', marginBottom: '8px' }}>
+                    {plan.name}
+                  </h3>
+
+                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '40px', fontWeight: 800, color: plan.popular ? '#FFFFFF' : '#111111', lineHeight: 1 }}>
+                      {isAnnual ? plan.annualMonthly : plan.monthly}€
+                    </span>
+                    <span style={{ fontSize: '14px', color: plan.popular ? 'rgba(255,255,255,0.6)' : '#888888' }}>/mois</span>
+                  </div>
+                  {isAnnual && (
+                    <p style={{ fontSize: '12px', color: plan.popular ? 'rgba(255,255,255,0.5)' : '#888888', marginBottom: '24px' }}>
+                      soit {plan.annualTotal}€ facturés annuellement
+                    </p>
+                  )}
+                  {!isAnnual && <div style={{ marginBottom: '24px' }} />}
+
+                  <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 28px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    {plan.features.map(f => (
+                      <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', fontSize: '14px', color: plan.popular ? 'rgba(255,255,255,0.85)' : '#333333' }}>
+                        <span style={{ flexShrink: 0, marginTop: '2px' }}>✓</span>
+                        {f}
+                      </li>
+                    ))}
+                  </ul>
+
+                  <button
+                    onClick={() => handleCheckout(priceId)}
+                    disabled={!!checkoutLoading}
+                    style={{
+                      width:          '100%',
+                      padding:        '14px',
+                      borderRadius:   '9999px',
+                      border:         plan.popular ? '2px solid rgba(255,255,255,0.3)' : '2px solid #111111',
+                      background:     plan.popular ? 'rgba(255,255,255,0.12)' : '#111111',
+                      color:          plan.popular ? '#FFFFFF' : '#FFFFFF',
+                      fontSize:       '13px',
+                      fontWeight:     700,
+                      letterSpacing:  '0.1em',
+                      textTransform:  'uppercase',
+                      cursor:         checkoutLoading ? 'not-allowed' : 'pointer',
+                      opacity:        checkoutLoading && !isLoading ? 0.5 : 1,
+                      display:        'flex',
+                      alignItems:     'center',
+                      justifyContent: 'center',
+                      gap:            '8px',
+                    }}
+                  >
+                    {isLoading && <Loader2 size={14} className="animate-spin" />}
+                    S&apos;inscrire
+                  </button>
+                </div>
+              )
+            })}
+          </div>
         </div>
       </section>
 
-      {/* ══ 11. CTA FINAL ════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" style={{ background: '#B8962E' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center fade-up">
+      {/* ══ 8. PHOTOS RESTAURANT ══════════════════════════════════ */}
+      <section style={{ background: '#FFFFFF', padding: '120px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto' }}>
           <h2
-            className="text-2xl sm:text-5xl font-bold text-white mb-8 leading-tight"
-            style={{ fontFamily: 'var(--font-display, system-ui)' }}
+            className="fade-up text-center"
+            style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', marginBottom: '48px', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)' }}
           >
-            Prêt à simplifier votre gestion ?
+            Suivez notre actualité
           </h2>
-          <p className="text-white/75 text-base sm:text-lg mb-10 max-w-lg mx-auto">
-            Téléchargez l&rsquo;app Mac ou demandez une démo personnalisée.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="fade-up" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px', marginBottom: '40px' }}>
+            {[
+              'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600',
+              'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600',
+              'https://images.unsplash.com/photo-1559339352-11d035aa65de?w=600',
+              'https://images.unsplash.com/photo-1537047902294-62a40c20a6ae?w=600',
+            ].map((src, i) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                key={i}
+                src={src}
+                alt={`Restaurant ${i + 1}`}
+                style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '12px' }}
+              />
+            ))}
+          </div>
+          <div style={{ textAlign: 'center' }}>
             <a
-              href="/downloads/PilotResto.dmg"
-              download
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-bold bg-white transition hover:bg-white/90 active:scale-95 shadow-lg"
-              style={{ color: '#1B2A4A', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
+              href="https://instagram.com/restopilot"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={btnBlack}
             >
-              <AppleIcon size={18} />
-              Télécharger pour Mac
+              SUIVRE
             </a>
-            <Link
-              href="/contact"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 font-semibold border-2 text-white transition hover:bg-white/10 active:scale-95"
-              style={{ borderColor: 'rgba(255,255,255,0.6)', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
-            >
-              Demander une démo
-              <ArrowRight className="w-4 h-4" />
-            </Link>
           </div>
         </div>
       </section>
 
-      {/* ══ 12. FOOTER ═══════════════════════════════════════════ */}
-      <footer style={{ background: '#1B2A4A' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/favicon.png" alt="PilotResto" style={{ height: '28px', width: 'auto' }} />
-            <span className="text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
-              © 2026 PilotResto — restopilot.pro
-            </span>
+      {/* ══ 9. CONTACT ════════════════════════════════════════════ */}
+      <section id="contact" style={{ background: '#FFFFFF', padding: '120px 20px', borderTop: '1px solid #E5E5E5' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '80px', alignItems: 'start' }}>
+
+          {/* Gauche */}
+          <div className="fade-up">
+            <h2 style={{ fontSize: 'clamp(28px, 4vw, 48px)', fontWeight: 800, color: '#111111', letterSpacing: '-0.02em', fontFamily: 'var(--font-display, system-ui)', marginBottom: '16px' }}>
+              Vous avez<br />un projet ?
+            </h2>
+            <p style={{ fontSize: '16px', color: '#555555', lineHeight: 1.7 }}>
+              Parlez-nous de votre restaurant et nous reviendrons vers vous sous 24h.
+            </p>
+            <p style={{ fontSize: '14px', color: '#888888', marginTop: '24px' }}>
+              charles.lecussan@gmail.com
+            </p>
           </div>
-          <div className="flex items-center gap-6 text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>
-            <Link href="/cgu-cgv"                     className="hover:text-white/60 transition-colors">CGU / CGV</Link>
-            <Link href="/politique-de-confidentialite" className="hover:text-white/60 transition-colors">Confidentialité</Link>
-            <Link href="/contact"                      className="hover:text-white/60 transition-colors">Contact</Link>
+
+          {/* Droite — formulaire */}
+          <div className="fade-up" style={{ transitionDelay: '0.1s' }}>
+            {contactSent ? (
+              <div style={{ border: '1px solid #E5E5E5', borderRadius: '16px', padding: '40px', textAlign: 'center' }}>
+                <p style={{ fontSize: '40px', marginBottom: '16px' }}>✅</p>
+                <p style={{ fontWeight: 700, fontSize: '18px', color: '#111111' }}>Message envoyé !</p>
+                <p style={{ fontSize: '14px', color: '#888888', marginTop: '8px' }}>Nous vous répondrons sous 24h.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleContact} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  <input
+                    name="firstName"
+                    placeholder="Prénom"
+                    required
+                    style={{ border: '1px solid #E5E5E5', borderRadius: '10px', padding: '14px 16px', fontSize: '14px', outline: 'none', color: '#111111' }}
+                  />
+                  <input
+                    name="lastName"
+                    placeholder="Nom de famille"
+                    required
+                    style={{ border: '1px solid #E5E5E5', borderRadius: '10px', padding: '14px 16px', fontSize: '14px', outline: 'none', color: '#111111' }}
+                  />
+                </div>
+                <input
+                  name="email"
+                  type="email"
+                  placeholder="Email"
+                  required
+                  style={{ border: '1px solid #E5E5E5', borderRadius: '10px', padding: '14px 16px', fontSize: '14px', outline: 'none', color: '#111111' }}
+                />
+                <textarea
+                  name="message"
+                  placeholder="Message"
+                  rows={5}
+                  required
+                  style={{ border: '1px solid #E5E5E5', borderRadius: '10px', padding: '14px 16px', fontSize: '14px', outline: 'none', color: '#111111', resize: 'vertical' }}
+                />
+                <button
+                  type="submit"
+                  disabled={contactLoading}
+                  style={{ ...btnBlack, opacity: contactLoading ? 0.6 : 1, justifyContent: 'center' }}
+                >
+                  {contactLoading && <Loader2 size={14} className="animate-spin" />}
+                  ENVOYER
+                </button>
+              </form>
+            )}
           </div>
+        </div>
+      </section>
+
+      {/* ══ FOOTER ════════════════════════════════════════════════ */}
+      <footer style={{ background: '#FFFFFF', borderTop: '1px solid #E5E5E5', padding: '40px 20px' }}>
+        <div style={{ maxWidth: '980px', margin: '0 auto' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '20px', marginBottom: '32px' }}>
+            <div>
+              <p style={{ fontWeight: 800, fontSize: '16px', color: '#111111', fontFamily: 'var(--font-display, system-ui)' }}>PilotResto</p>
+              <p style={{ fontSize: '13px', color: '#888888', marginTop: '4px' }}>charles.lecussan@gmail.com</p>
+            </div>
+            <div style={{ display: 'flex', gap: '28px' }}>
+              <Link href="/cgu-cgv"                     style={{ fontSize: '13px', color: '#555555', textDecoration: 'none' }}>CGU / CGV</Link>
+              <Link href="/politique-de-confidentialite" style={{ fontSize: '13px', color: '#555555', textDecoration: 'none' }}>Politique de confidentialité</Link>
+              <Link href="/contact"                      style={{ fontSize: '13px', color: '#555555', textDecoration: 'none' }}>Contact</Link>
+            </div>
+          </div>
+          <p style={{ textAlign: 'center', fontSize: '12px', color: '#BBBBBB' }}>
+            © 2026 PilotResto
+          </p>
         </div>
       </footer>
 
