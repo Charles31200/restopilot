@@ -3,23 +3,23 @@
 import { useState, useEffect } from 'react'
 import type { WeeklyDataPoint } from '@/types/dashboard'
 
-// Nom de l'événement déclenché par DashboardActions après chaque vente enregistrée.
-// Les charts l'écoutent pour refetcher /api/dashboard/summary indépendamment
-// de router.refresh(), qui ne propage pas toujours les nouvelles props aux
-// Client Components pré-montés en Next.js App Router.
 export const SALE_ADDED_EVENT = 'rp:sale-added'
 
 export function useWeeklyData(initialData: WeeklyDataPoint[]): WeeklyDataPoint[] {
-  // Initialise l'état avec les données envoyées par le Server Component.
-  // Après le montage, l'état n'est plus synchronisé avec les props (intentionnel :
-  // évite d'écraser des données fraîches si router.refresh() envoie une version
-  // intermédiaire des props avant que le fetch côté client soit terminé).
   const [data, setData] = useState<WeeklyDataPoint[]>(initialData)
 
+  // Sync with new props delivered by router.refresh() — useState ignores prop
+  // changes after initial mount, so we need this effect to pick them up.
+  useEffect(() => {
+    setData(initialData)
+  }, [initialData])
+
+  // Fallback: fetch fresh data when a sale is saved, in case router.refresh()
+  // hasn't propagated new props yet (RSC reconciliation can be async).
   useEffect(() => {
     async function refresh() {
       try {
-        const res = await fetch('/api/dashboard/summary')
+        const res = await fetch('/api/dashboard/summary', { cache: 'no-store' })
         if (!res.ok) return
         const json = await res.json()
         if (Array.isArray(json.weeklyData) && json.weeklyData.length > 0) {
