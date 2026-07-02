@@ -94,10 +94,11 @@ async function sendAlertEmail(toEmail: string, restaurantName: string, products:
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'PilotResto Alertes <alertes@restopilot.pro>',
-        to:      [toEmail],
-        subject: `⚠️ ${products.length} produit${products.length > 1 ? 's' : ''} sous le seuil de stock — ${restaurantName}`,
-        html:    buildEmailHTML(restaurantName, products),
+        from:     'PilotResto Alertes <alertes@restopilot.pro>',
+        to:       [toEmail],
+        reply_to: ['charles.lecussan@gmail.com'],
+        subject:  `⚠️ ${products.length} produit${products.length > 1 ? 's' : ''} sous le seuil de stock — ${restaurantName}`,
+        html:     buildEmailHTML(restaurantName, products),
       }),
     })
     return res.ok
