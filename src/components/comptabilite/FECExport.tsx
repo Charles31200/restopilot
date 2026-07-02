@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   ChevronLeft, ChevronRight, Download, Send, Loader2,
-  CheckCircle2, AlertTriangle, FileCode,
+  CheckCircle2, AlertTriangle, FileCode, Settings,
 } from 'lucide-react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils/cn'
 import { formatMonthLabel } from '@/lib/utils/week-utils'
+import { createClient } from '@/lib/supabase/client'
 
 // ── Helpers ───────────────────────────────────────────────────
 
@@ -30,24 +32,54 @@ function nextMonth(m: string) {
 // ── Composant ─────────────────────────────────────────────────
 
 export function FECExport() {
-  const [month,     setMonth]     = useState(currentMonthStr())
-  const [isSending, setIsSending] = useState(false)
-  const [emailSent, setEmailSent] = useState(false)
-  const [error,     setError]     = useState<string | null>(null)
+  const supabase = useMemo(() => createClient(), [])
+
+  const [month,          setMonth]          = useState(currentMonthStr())
+  const [isSending,      setIsSending]      = useState(false)
+  const [emailSent,      setEmailSent]      = useState(false)
+  const [sentTo,         setSentTo]         = useState<string | null>(null)
+  const [error,          setError]          = useState<string | null>(null)
+  const [accountantEmail, setAccountantEmail] = useState<string | null>(null)
+  const [loadingEmail,   setLoadingEmail]   = useState(true)
 
   const current = currentMonthStr()
+
+  // Charge l'email comptable au montage
+  useEffect(() => {
+    async function load() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { setLoadingEmail(false); return }
+
+      const { data: profile } = await supabase
+        .from('profiles').select('restaurant_id').eq('id', user.id).single()
+      if (!profile?.restaurant_id) { setLoadingEmail(false); return }
+
+      const { data: restaurant } = await supabase
+        .from('restaurants')
+        .select('accountant_email')
+        .eq('id', profile.restaurant_id)
+        .single()
+
+      const email = (restaurant as { accountant_email?: string | null } | null)?.accountant_email ?? null
+      setAccountantEmail(email)
+      setLoadingEmail(false)
+    }
+    load()
+  }, [supabase])
 
   const downloadUrl = `/api/exports/fec?month=${month}`
 
   const sendToAccountant = async () => {
     setIsSending(true)
     setEmailSent(false)
+    setSentTo(null)
     setError(null)
     try {
       const res  = await fetch(`/api/exports/fec?month=${month}`, { method: 'POST' })
       const json = await res.json()
       if (res.ok && json.emailSent) {
         setEmailSent(true)
+        setSentTo(json.recipient ?? null)
       } else {
         setError(json.error ?? 'Envoi impossible. Vérifiez la configuration email.')
       }
@@ -58,6 +90,9 @@ export function FECExport() {
     }
   }
 
+  const hasAccountant = Boolean(accountantEmail)
+  const canSend = hasAccountant && !isSending
+
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-5">
       {/* Titre */}
@@ -66,7 +101,7 @@ export function FECExport() {
           <FileCode className="w-5 h-5 text-purple-600" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Export pour l'expert-comptable</h2>
+          <h2 className="text-sm font-semibold text-gray-900">Export pour l&apos;expert-comptable</h2>
           <p className="text-xs text-gray-400 mt-0.5">Fichier FEC au format officiel DGFiP</p>
         </div>
       </div>
@@ -105,7 +140,33 @@ export function FECExport() {
         </ul>
       </div>
 
-      {/* Erreur */}
+      {/* Avertissement email comptable manquant */}
+      {!loadingEmail && !hasAccountant && (
+        <div className="flex items-start gap-2.5 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
+          <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
+          <div className="space-y-1.5">
+            <p className="font-medium">Email comptable non configuré</p>
+            <p>Renseignez l&apos;email de votre expert-comptable dans les paramètres pour activer cet envoi.</p>
+            <Link
+              href="/dashboard/parametres/restaurant"
+              className="inline-flex items-center gap-1 font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900 transition-colors"
+            >
+              <Settings className="w-3.5 h-3.5" />
+              Aller dans les paramètres du restaurant
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Email comptable configuré */}
+      {!loadingEmail && hasAccountant && (
+        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">
+          <Send className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
+          <span>Envoi vers <span className="font-semibold text-gray-800">{accountantEmail}</span></span>
+        </div>
+      )}
+
+      {/* Erreur envoi */}
       {error && (
         <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
           <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -117,7 +178,7 @@ export function FECExport() {
       {emailSent && (
         <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
           <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
-          <p>Fichier FEC envoyé à votre comptable.</p>
+          <p>Fichier FEC envoyé à <span className="font-semibold">{sentTo ?? 'votre comptable'}</span>.</p>
         </div>
       )}
 
@@ -134,10 +195,13 @@ export function FECExport() {
 
         <button
           onClick={sendToAccountant}
-          disabled={isSending}
+          disabled={!canSend}
+          title={!hasAccountant ? "Configurez d'abord l'email de votre expert-comptable dans les paramètres" : undefined}
           className={cn(
             'flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors',
-            'text-gray-700 border-gray-300 hover:bg-gray-50 disabled:opacity-60'
+            canSend
+              ? 'text-gray-700 border-gray-300 hover:bg-gray-50 cursor-pointer'
+              : 'text-gray-400 border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
           )}
         >
           {isSending

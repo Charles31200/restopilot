@@ -15,14 +15,15 @@ const labelCls = 'block text-xs font-semibold mb-1.5'
 export default function RestaurantPage() {
   const supabase = useMemo(() => createClient(), [])
 
-  const [loading,      setLoading]      = useState(true)
-  const [saving,       setSaving]       = useState(false)
-  const [success,      setSuccess]      = useState(false)
-  const [error,        setError]        = useState<string | null>(null)
-  const [restaurantId, setRestaurantId] = useState('')
-  const [name,         setName]         = useState('')
-  const [address,      setAddress]      = useState('')
-  const [siret,        setSiret]        = useState('')
+  const [loading,          setLoading]          = useState(true)
+  const [saving,           setSaving]           = useState(false)
+  const [success,          setSuccess]          = useState(false)
+  const [error,            setError]            = useState<string | null>(null)
+  const [restaurantId,     setRestaurantId]     = useState('')
+  const [name,             setName]             = useState('')
+  const [address,          setAddress]          = useState('')
+  const [siret,            setSiret]            = useState('')
+  const [accountantEmail,  setAccountantEmail]  = useState('')
 
   useEffect(() => {
     async function load() {
@@ -39,7 +40,7 @@ export default function RestaurantPage() {
 
       const { data: restaurant } = await supabase
         .from('restaurants')
-        .select('id, name, address, siret')
+        .select('id, name, address, siret, accountant_email')
         .eq('id', profile.restaurant_id)
         .single()
 
@@ -49,6 +50,7 @@ export default function RestaurantPage() {
       setName(restaurant.name ?? '')
       setAddress(restaurant.address ?? '')
       setSiret(restaurant.siret ?? '')
+      setAccountantEmail(restaurant.accountant_email ?? '')
       setLoading(false)
     }
     load()
@@ -62,12 +64,20 @@ export default function RestaurantPage() {
     setError(null)
     setSuccess(false)
 
+    const emailVal = accountantEmail.trim()
+    if (emailVal && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailVal)) {
+      setError("L'email de l'expert-comptable n'est pas valide.")
+      setSaving(false)
+      return
+    }
+
     const { error: err } = await supabase
       .from('restaurants')
       .update({
-        name:    name.trim(),
-        address: address.trim() || null,
-        siret:   siret.trim()   || null,
+        name:             name.trim(),
+        address:          address.trim() || null,
+        siret:            siret.trim()   || null,
+        accountant_email: emailVal       || null,
       })
       .eq('id', restaurantId)
 
@@ -147,6 +157,24 @@ export default function RestaurantPage() {
                   Le SIRET doit contenir 14 chiffres ({siret.length}/14)
                 </p>
               )}
+            </div>
+
+            <div>
+              <label className={labelCls} style={{ color: 'var(--rp-navy)' }}>
+                Email de votre expert-comptable{' '}
+                <span className="font-normal" style={{ color: 'var(--rp-navy-muted)' }}>(optionnel)</span>
+              </label>
+              <input
+                type="email"
+                value={accountantEmail}
+                onChange={e => setAccountantEmail(e.target.value)}
+                placeholder="comptable@cabinet-xyz.fr"
+                className={inputCls}
+                style={{ borderColor: 'var(--rp-lavender)', color: 'var(--rp-navy)' }}
+              />
+              <p className="text-xs mt-1.5" style={{ color: 'var(--rp-navy-muted)' }}>
+                Utilisé pour l&apos;envoi automatique du fichier FEC depuis la page Comptabilité.
+              </p>
             </div>
 
             {success && (

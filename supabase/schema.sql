@@ -50,6 +50,9 @@ CREATE TABLE IF NOT EXISTS restaurants (
 ALTER TABLE restaurants
   ADD COLUMN IF NOT EXISTS last_stock_alert_sent_at timestamptz;
 
+ALTER TABLE restaurants
+  ADD COLUMN IF NOT EXISTS accountant_email text;
+
 CREATE OR REPLACE TRIGGER set_restaurants_updated_at
   BEFORE UPDATE ON restaurants
   FOR EACH ROW EXECUTE FUNCTION trigger_set_updated_at();

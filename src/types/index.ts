@@ -27,6 +27,7 @@ export type Restaurant = {
   plan_id: string
   stripe_customer_id: string | null
   last_stock_alert_sent_at: string | null
+  accountant_email: string | null
   created_at: string
   updated_at: string
 }

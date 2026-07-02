@@ -109,23 +109,28 @@ export async function POST(request: NextRequest) {
   const [salesRes, invoicesRes, restaurantRes] = await Promise.all([
     supabase.from('sales').select('id, date, total_revenue').eq('restaurant_id', restaurantId).gte('date', from).lte('date', to).order('date'),
     supabase.from('invoices').select('id, invoice_date, supplier_name, amount, vat_amount').eq('restaurant_id', restaurantId).gte('invoice_date', from).lte('invoice_date', to).order('invoice_date'),
-    supabase.from('restaurants').select('name, siret').eq('id', restaurantId).single(),
+    supabase.from('restaurants').select('name, siret, accountant_email').eq('id', restaurantId).single(),
   ])
 
   const sales:    FECSaleInput[]    = (salesRes.data    ?? []).map(s => ({ id: s.id, date: s.date, total_revenue: s.total_revenue }))
   const invoices: FECInvoiceInput[] = (invoicesRes.data ?? []).map(i => ({ id: i.id, invoice_date: i.invoice_date, supplier_name: i.supplier_name, amount: i.amount, vat_amount: i.vat_amount }))
 
-  const siret       = restaurantRes.data?.siret    ?? null
-  const restName    = restaurantRes.data?.name     ?? 'Mon restaurant'
-  const fecText     = generateFEC(sales, invoices, month)
-  const filename    = fecFilename(siret, month)
-  const base64File  = Buffer.from(fecText, 'utf-8').toString('base64')
+  const siret          = restaurantRes.data?.siret    ?? null
+  const restName       = restaurantRes.data?.name     ?? 'Mon restaurant'
+  const accountantEmail = restaurantRes.data?.accountant_email ?? null
 
-  // Destinataire : email du propriétaire (à étendre avec accountant_email si le champ est ajouté à la BDD)
-  const recipientEmail = user.email ?? ''
-  if (!recipientEmail) {
-    return NextResponse.json({ error: 'Aucun email destinataire configuré.' }, { status: 422 })
+  // Destinataire : l'email de l'expert-comptable configuré dans les paramètres
+  if (!accountantEmail) {
+    return NextResponse.json({
+      error: "Aucun email comptable configuré. Renseignez l'email de votre expert-comptable dans les paramètres du restaurant.",
+      missingAccountantEmail: true,
+    }, { status: 422 })
   }
+
+  const ownerEmail = user.email ?? ''
+  const fecText    = generateFEC(sales, invoices, month)
+  const filename   = fecFilename(siret, month)
+  const base64File = Buffer.from(fecText, 'utf-8').toString('base64')
 
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey) {
@@ -139,8 +144,8 @@ export async function POST(request: NextRequest) {
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       from:        'PilotResto <comptabilite@restopilot.pro>',
-      to:          [recipientEmail],
-      reply_to:    ['charles.lecussan@gmail.com'],
+      to:          [accountantEmail],
+      reply_to:    ownerEmail ? [ownerEmail] : ['charles.lecussan@gmail.com'],
       subject:     `Fichier FEC — ${restName} — ${monthLabel}`,
       html:        `<p>Bonjour,</p><p>Veuillez trouver ci-joint le fichier FEC de <strong>${restName}</strong> pour la période <strong>${monthLabel}</strong>.</p><p>Ce fichier est au format officiel DGFiP (article L13 AA du LPF).</p><hr><p style="font-size:11px;color:#9CA3AF;">Généré par PilotResto</p>`,
       attachments: [{ filename, content: base64File }],
@@ -152,5 +157,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `Échec envoi email : ${err.slice(0, 200)}` }, { status: 502 })
   }
 
-  return NextResponse.json({ emailSent: true, recipient: recipientEmail })
+  return NextResponse.json({ emailSent: true, recipient: accountantEmail })
 }
