@@ -5,6 +5,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { WeeklyDataPoint } from '@/types/dashboard'
+import { useWeeklyData } from '@/components/dashboard/useWeeklyData'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
@@ -23,7 +24,8 @@ function makeLastDot(lastIndex: number) {
   }
 }
 
-export function RevenueLineChart({ data }: { data: WeeklyDataPoint[] }) {
+export function RevenueLineChart({ data: initialData }: { data: WeeklyDataPoint[] }) {
+  const data = useWeeklyData(initialData)
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={data} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>

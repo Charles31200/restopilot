@@ -14,13 +14,19 @@ import { useRouter }       from 'next/navigation'
 import { PlusCircle }      from 'lucide-react'
 import { FAB }             from '@/components/ui/FAB'
 import { SaleModal }       from '@/components/dashboard/SaleModal'
+import { SALE_ADDED_EVENT } from '@/components/dashboard/useWeeklyData'
 
 export function DashboardActions() {
   const [open, setOpen] = useState(false)
   const router          = useRouter()
 
   function handleSaved() {
-    router.refresh()   // recharge les Server Components sans perdre le state client
+    // Recharge les Server Components (KPI cards, employés, top plats)
+    router.refresh()
+    // Notifie les graphiques (Client Components) de refetcher leurs données
+    // indépendamment — router.refresh() ne propage pas toujours les nouvelles
+    // props aux composants clients déjà montés en Next.js App Router.
+    window.dispatchEvent(new CustomEvent(SALE_ADDED_EVENT))
   }
 
   return (

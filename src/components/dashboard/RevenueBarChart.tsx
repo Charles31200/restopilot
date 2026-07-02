@@ -5,12 +5,14 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import type { WeeklyDataPoint } from '@/types/dashboard'
+import { useWeeklyData } from '@/components/dashboard/useWeeklyData'
 
 function fmt(n: number) {
   return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n)
 }
 
-export function RevenueBarChart({ data }: { data: WeeklyDataPoint[] }) {
+export function RevenueBarChart({ data: initialData }: { data: WeeklyDataPoint[] }) {
+  const data = useWeeklyData(initialData)
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 10, right: 8, left: 0, bottom: 0 }} barCategoryGap="30%">
