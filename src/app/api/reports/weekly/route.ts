@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'PilotResto <onboarding@resend.dev>',
+        from:    'PilotResto <rapports@restopilot.pro>',
         to:      [ownerEmail],
         subject: `📊 Rapport ${report.weekLabel} — ${restaurantName}`,
         html:    buildEmailHTML(report, restaurantName),

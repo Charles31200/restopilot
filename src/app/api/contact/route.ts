@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         'Content-Type':  'application/json',
       },
       body: JSON.stringify({
-        from:    'PilotResto <onboarding@resend.dev>',
+        from:    'PilotResto <contact@restopilot.pro>',
         to:      ['charles.lecussan@gmail.com'],
         subject: `🍽️ Nouvelle demande — ${d.firstName} ${d.lastName} (${d.restaurantName}, ${d.city})`,
         html,
