@@ -138,8 +138,9 @@ export async function POST(request: NextRequest) {
     method:  'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:        'PilotResto <noreply@restopilot.fr>',
+      from:        'PilotResto <comptabilite@restopilot.pro>',
       to:          [recipientEmail],
+      reply_to:    ['charles.lecussan@gmail.com'],
       subject:     `Fichier FEC — ${restName} — ${monthLabel}`,
       html:        `<p>Bonjour,</p><p>Veuillez trouver ci-joint le fichier FEC de <strong>${restName}</strong> pour la période <strong>${monthLabel}</strong>.</p><p>Ce fichier est au format officiel DGFiP (article L13 AA du LPF).</p><hr><p style="font-size:11px;color:#9CA3AF;">Généré par PilotResto</p>`,
       attachments: [{ filename, content: base64File }],

@@ -348,53 +348,67 @@ export default function HomePage() {
           <p className="fade-up text-center" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.15em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', marginBottom: '32px' }}>
             Application desktop disponible sur
           </p>
-          <div className="fade-up" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div className="fade-up" style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {/* Mac */}
-            <div style={{ flex: '1 1 260px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>macOS · M1 / M2 / M3</span>
               <a
                 href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0-arm64.dmg"
                 style={{
-                  display:        'flex',
-                  flexDirection:  'column',
+                  display:        'inline-flex',
                   alignItems:     'center',
                   gap:            '10px',
-                  border:         '1px solid rgba(255,255,255,0.2)',
-                  borderRadius:   '16px',
-                  padding:        '32px',
+                  background:     '#4F39F5',
+                  color:          '#FFFFFF',
+                  borderRadius:   '9999px',
+                  padding:        '14px 32px',
                   textDecoration: 'none',
-                  transition:     'border-color 0.2s',
+                  fontWeight:     600,
+                  fontSize:       '15px',
+                  transition:     'background 0.18s, transform 0.18s',
                 }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#3d29e0'; (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.03)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#4F39F5'; (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)' }}
               >
-                <span style={{ fontSize: '36px' }}>🍎</span>
-                <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '15px' }}>Télécharger pour Mac</span>
-                <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px' }}>M1 / M2 / M3 · Intel</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                </svg>
+                Télécharger
               </a>
               <a
                 href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto-1.0.0.dmg"
-                style={{ textAlign: 'center', fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}
+                style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', textDecoration: 'underline' }}
               >
                 Mac Intel ? Téléchargez cette version
               </a>
             </div>
             {/* Windows */}
-            <a
-              href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
-              style={{
-                flex:           '1 1 260px',
-                display:        'flex',
-                flexDirection:  'column',
-                alignItems:     'center',
-                gap:            '10px',
-                border:         '1px solid rgba(255,255,255,0.2)',
-                borderRadius:   '16px',
-                padding:        '32px',
-                textDecoration: 'none',
-              }}
-            >
-              <span style={{ fontSize: '36px' }}>🪟</span>
-              <span style={{ fontWeight: 700, color: '#FFFFFF', fontSize: '15px' }}>Télécharger pour Windows</span>
-              <span style={{ color: 'rgba(255,255,255,0.45)', fontSize: '13px' }}>Windows 10 / 11</span>
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+              <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', letterSpacing: '0.02em' }}>Windows 10 / 11</span>
+              <a
+                href="https://github.com/Charles31200/pilotresto-desktop/releases/download/v1.0.0/PilotResto.Setup.1.0.0.exe"
+                style={{
+                  display:        'inline-flex',
+                  alignItems:     'center',
+                  gap:            '10px',
+                  background:     '#4F39F5',
+                  color:          '#FFFFFF',
+                  borderRadius:   '9999px',
+                  padding:        '14px 32px',
+                  textDecoration: 'none',
+                  fontWeight:     600,
+                  fontSize:       '15px',
+                  transition:     'background 0.18s, transform 0.18s',
+                }}
+                onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#3d29e0'; (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.03)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = '#4F39F5'; (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)' }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.801"/>
+                </svg>
+                Télécharger
+              </a>
+            </div>
           </div>
         </div>
       </section>

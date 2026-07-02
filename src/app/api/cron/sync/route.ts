@@ -41,9 +41,10 @@ async function sendErrorAlert(
     method:  'POST',
     headers: { 'Authorization': `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:    'PilotResto Alertes <alertes@restopilot.fr>',
-      to:      [ownerEmail],
-      subject: `⚠️ Sync automatique échouée — ${restaurantName}`,
+      from:     'PilotResto Alertes <alertes@restopilot.pro>',
+      to:       [ownerEmail],
+      reply_to: ['charles.lecussan@gmail.com'],
+      subject:  `⚠️ Sync automatique échouée — ${restaurantName}`,
       html: `
         <p>Bonjour,</p>
         <p>La synchronisation automatique des ventes de <strong>${restaurantName}</strong>

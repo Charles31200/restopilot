@@ -61,7 +61,7 @@ export default function SubscriptionExpiredPage() {
 
           <div className="flex items-center gap-4 pt-1">
             <a
-              href="mailto:hello@restopilot.fr"
+              href="mailto:hello@restopilot.pro"
               className="flex-1 py-2 text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1.5 transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />Contacter le support

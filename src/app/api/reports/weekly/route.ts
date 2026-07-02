@@ -98,7 +98,7 @@ function buildEmailHTML(report: WeeklyReportData, restaurantName: string): strin
     </table>
     ${alertsHTML}
     <hr style="border:none;border-top:1px solid #e5e7eb;margin:16px 0;">
-    <p style="font-size:11px;color:#9CA3AF;text-align:center;">Généré par PilotResto · <a href="https://restopilot.fr" style="color:#3B82F6;">restopilot.fr</a></p>
+    <p style="font-size:11px;color:#9CA3AF;text-align:center;">Généré par PilotResto · <a href="https://restopilot.pro" style="color:#3B82F6;">restopilot.pro</a></p>
   </div>
 </body>
 </html>`

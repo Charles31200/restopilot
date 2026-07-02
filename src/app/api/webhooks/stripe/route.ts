@@ -35,15 +35,16 @@ async function sendPaymentFailedAlert(email: string, restaurantName: string) {
   const resendKey = process.env.RESEND_API_KEY
   if (!resendKey || !email) return
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.restopilot.fr'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? 'https://app.restopilot.pro'
 
   await fetch('https://api.resend.com/emails', {
     method:  'POST',
     headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      from:    'PilotResto <facturation@restopilot.fr>',
-      to:      [email],
-      subject: `⚠️ Échec du paiement — ${restaurantName}`,
+      from:     'PilotResto <facturation@restopilot.pro>',
+      to:       [email],
+      reply_to: ['charles.lecussan@gmail.com'],
+      subject:  `⚠️ Échec du paiement — ${restaurantName}`,
       html: `
         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
           <div style="background:#EF4444;color:#fff;padding:20px;border-radius:8px 8px 0 0;">
