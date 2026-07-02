@@ -39,9 +39,12 @@ async function buildReport(
   const grossMarginPct = revenue > 0 ? +(grossMargin / revenue * 100).toFixed(1) : 0
 
   const alerts: string[] = []
-  if (revenue === 0)              alerts.push('Aucune vente enregistrée cette semaine.')
-  if (laborCost / revenue > 0.4)  alerts.push(`Masse salariale élevée : ${(laborCost / revenue * 100).toFixed(0)} % du CA.`)
-  if (purchases / revenue > 0.35) alerts.push(`Achats élevés : ${(purchases / revenue * 100).toFixed(0)} % du CA.`)
+  if (revenue === 0) {
+    alerts.push('Aucune vente enregistrée cette semaine.')
+  } else {
+    if (laborCost / revenue > 0.4)  alerts.push(`Masse salariale élevée : ${(laborCost / revenue * 100).toFixed(0)} % du CA.`)
+    if (purchases / revenue > 0.35) alerts.push(`Achats élevés : ${(purchases / revenue * 100).toFixed(0)} % du CA.`)
+  }
 
   return {
     week:           weekStr,
@@ -136,41 +139,61 @@ export async function POST(request: NextRequest) {
 
   const report = await buildReport(auth.restaurantId, week)
 
-  // Récupérer l'email du propriétaire + nom du restaurant
-  const supabase = auth.supabase
-  const { data: profile } = await supabase
-    .from('profiles').select('restaurant_id').eq('id', auth.user.id).single()
-  const ownerEmail = auth.user.email ?? ''
+  // Email du compte connecté (Supabase Auth — jamais vide pour un user valide)
+  const ownerEmail = auth.user.email
+  if (!ownerEmail) {
+    return NextResponse.json(
+      { ...report, emailSent: false, emailError: 'Aucune adresse email associée au compte.' },
+      { status: 200 }
+    )
+  }
 
-  const { data: restaurant } = await supabase
+  // Nom du restaurant
+  const { data: restaurant } = await auth.supabase
     .from('restaurants').select('name').eq('id', auth.restaurantId).single()
   const restaurantName = restaurant?.name ?? 'Mon restaurant'
 
   // Envoi via Resend REST API
   const resendKey = process.env.RESEND_API_KEY
-  if (resendKey && ownerEmail) {
-    try {
-      const emailRes = await fetch('https://api.resend.com/emails', {
-        method:  'POST',
-        headers: {
-          'Authorization': `Bearer ${resendKey}`,
-          'Content-Type':  'application/json',
-        },
-        body: JSON.stringify({
-          from:    'PilotResto <noreply@restopilot.fr>',
-          to:      [ownerEmail],
-          subject: `📊 Rapport ${report.weekLabel} — ${restaurantName}`,
-          html:    buildEmailHTML(report, restaurantName),
-        }),
-      })
-
-      if (emailRes.ok) {
-        return NextResponse.json({ ...report, emailSent: true })
-      }
-    } catch {
-      // Email failed but report is still generated
-    }
+  if (!resendKey) {
+    console.error('[reports/weekly] RESEND_API_KEY manquant dans les variables d\'environnement.')
+    return NextResponse.json(
+      { ...report, emailSent: false, emailError: 'Configuration email manquante (RESEND_API_KEY).' },
+      { status: 200 }
+    )
   }
 
-  return NextResponse.json({ ...report, emailSent: false })
+  try {
+    const emailRes = await fetch('https://api.resend.com/emails', {
+      method:  'POST',
+      headers: {
+        'Authorization': `Bearer ${resendKey}`,
+        'Content-Type':  'application/json',
+      },
+      body: JSON.stringify({
+        from:    'PilotResto <onboarding@resend.dev>',
+        to:      [ownerEmail],
+        subject: `📊 Rapport ${report.weekLabel} — ${restaurantName}`,
+        html:    buildEmailHTML(report, restaurantName),
+      }),
+    })
+
+    if (emailRes.ok) {
+      return NextResponse.json({ ...report, emailSent: true, emailTo: ownerEmail })
+    }
+
+    // Remonter la vraie erreur Resend (401 = clé invalide, 403 = domaine non vérifié, 422 = destinataire invalide)
+    const resendError = await emailRes.json().catch(() => ({ message: 'Réponse non-JSON' }))
+    console.error('[reports/weekly] Resend a rejeté l\'email :', emailRes.status, resendError)
+    return NextResponse.json(
+      { ...report, emailSent: false, emailError: `Resend ${emailRes.status}: ${resendError?.message ?? 'Erreur inconnue'}` },
+      { status: 200 }
+    )
+  } catch (err) {
+    console.error('[reports/weekly] Erreur réseau vers Resend :', err)
+    return NextResponse.json(
+      { ...report, emailSent: false, emailError: 'Erreur réseau lors de l\'appel Resend.' },
+      { status: 200 }
+    )
+  }
 }

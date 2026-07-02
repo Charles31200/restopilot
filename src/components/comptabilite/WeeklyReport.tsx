@@ -72,11 +72,15 @@ export function WeeklyReport() {
   const sendEmail = async () => {
     setIsSending(true)
     setEmailSent(false)
+    setError(null)
     try {
       const res  = await fetch(`/api/reports/weekly?week=${week}`, { method: 'POST' })
       const json = await res.json()
-      if (res.ok && json.emailSent) setEmailSent(true)
-      else setError('Envoi impossible. Vérifiez la configuration email.')
+      if (res.ok && json.emailSent) {
+        setEmailSent(true)
+      } else {
+        setError(json.emailError ?? json.error ?? 'Envoi impossible. Vérifiez la configuration email.')
+      }
     } catch {
       setError('Erreur réseau lors de l\'envoi.')
     } finally {
