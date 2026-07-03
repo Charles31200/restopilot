@@ -204,6 +204,7 @@ export default function HomePage() {
           .photos-grid { grid-template-columns: repeat(2, 1fr) !important; }
           .stats-grid  { grid-template-columns: 1fr !important; }
           .stats-grid > div { border-right: none !important; border-bottom: 1px solid #EAEAEA; }
+          .hero-services { grid-template-columns: repeat(2, 1fr) !important; }
         }
       `}</style>
 
@@ -315,43 +316,33 @@ export default function HomePage() {
 
         <main>
 
-          {/* ══ 1. HERO ══════════════════════════════════════════════ */}
-          <section style={{ position: 'relative', minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600"
-              alt="Intérieur d'un restaurant"
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-            <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.60)' }} />
-            {/* bottom fade */}
-            <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '180px', background: 'linear-gradient(to top, rgba(0,0,0,0.35) 0%, transparent 100%)' }} />
-
-            <div className="relative z-10 text-center px-5 sm:px-8 w-full" style={{ maxWidth: '880px', margin: '0 auto', paddingTop: '100px' }}>
+          {/* ══ 1. HERO — fond blanc, services en avant ══════════════ */}
+          <section style={{ background: '#FAFAFA', paddingTop: '120px', paddingBottom: '96px', borderBottom: '1px solid #EAEAEA' }}>
+            <div style={{ maxWidth: '1040px', margin: '0 auto', padding: '0 20px' }}>
 
               {/* Eyebrow badge */}
-              <div className="fade-up" style={{ display: 'inline-flex', marginBottom: '32px' }}>
+              <div className="fade-up" style={{ marginBottom: '28px' }}>
                 <span style={{
                   display: 'inline-block', padding: '5px 14px', borderRadius: '9999px',
-                  border: '1px solid rgba(255,255,255,0.18)',
-                  background: 'rgba(255,255,255,0.06)',
+                  border: '1px solid #EAEAEA',
                   fontSize: '10px', fontWeight: 700, letterSpacing: '0.18em',
-                  textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)',
+                  textTransform: 'uppercase', color: '#7798AB',
                 }}>
                   Gestion restaurant — France
                 </span>
               </div>
 
+              {/* Titre + sous-titre */}
               <h1
                 className="fade-up"
                 style={{
-                  fontSize: 'clamp(46px, 8.5vw, 96px)',
+                  fontSize: 'clamp(40px, 6.5vw, 80px)',
                   fontWeight: 800,
-                  color: '#FFFFFF',
-                  lineHeight: 1.04,
+                  color: '#111111',
+                  lineHeight: 1.06,
                   letterSpacing: '-0.04em',
                   fontFamily: "'Georgia', 'Times New Roman', serif",
-                  marginBottom: '26px',
+                  marginBottom: '20px',
                   textWrap: 'balance',
                   transitionDelay: '0.07s',
                 }}
@@ -362,47 +353,99 @@ export default function HomePage() {
               <p
                 className="fade-up"
                 style={{
-                  fontSize: 'clamp(17px, 2.3vw, 22px)',
-                  color: 'rgba(255,255,255,0.68)',
-                  marginBottom: '52px',
-                  lineHeight: 1.55,
-                  transitionDelay: '0.14s',
+                  fontSize: 'clamp(16px, 2vw, 20px)',
+                  color: '#666666',
+                  marginBottom: '56px',
+                  lineHeight: 1.6,
+                  transitionDelay: '0.13s',
                   textWrap: 'balance',
+                  maxWidth: '540px',
                 }}
               >
                 Moins de paperasse, plus de temps en cuisine.
               </p>
 
-              <div className="fade-up" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', justifyContent: 'center', transitionDelay: '0.22s' }}>
+              {/* Grille 6 services */}
+              <div
+                className="fade-up hero-services"
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(3, 1fr)',
+                  gap: '1px',
+                  background: '#EAEAEA',
+                  marginBottom: '48px',
+                  transitionDelay: '0.18s',
+                }}
+              >
+                {[
+                  { Icon: BarChart2, title: 'Dashboard',   desc: 'CA en temps réel' },
+                  { Icon: Package,   title: 'Stocks',      desc: 'Alertes automatiques' },
+                  { Icon: Calendar,  title: 'Planning',    desc: 'Conforme HCR' },
+                  { Icon: FileText,  title: 'FEC',         desc: 'Export comptable en un clic' },
+                  { Icon: Link2,     title: 'Caisses',     desc: 'Lightspeed, Tiller, Zelty' },
+                  { Icon: Cpu,       title: 'Factures IA', desc: 'Scan OCR automatique' },
+                ].map(({ Icon, title, desc }) => (
+                  <div
+                    key={title}
+                    style={{
+                      background: '#FFFFFF',
+                      padding: '24px 28px',
+                      display: 'flex',
+                      alignItems: 'flex-start',
+                      gap: '14px',
+                    }}
+                  >
+                    <div style={{
+                      width: '36px', height: '36px', borderRadius: '9px',
+                      background: '#EFF3F6', flexShrink: 0,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginTop: '1px',
+                    }}>
+                      <Icon size={17} color="#7798AB" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p style={{ fontSize: '13px', fontWeight: 700, color: '#111', marginBottom: '3px', letterSpacing: '-0.01em' }}>{title}</p>
+                      <p style={{ fontSize: '12px', color: '#888', lineHeight: 1.5 }}>{desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTAs */}
+              <div className="fade-up" style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', transitionDelay: '0.26s' }}>
                 <Link href="/register" className="press" style={{
                   display: 'inline-flex', alignItems: 'center', gap: '10px',
-                  background: '#FFFFFF', color: '#111111',
+                  background: '#111111', color: '#FFFFFF',
                   borderRadius: '9999px', padding: '15px 26px',
                   fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em',
-                  textDecoration: 'none',
-                  transition: `all 0.3s ${CB}`,
+                  textDecoration: 'none', transition: `opacity 0.2s ease`,
                 }}>
                   Commencer gratuitement
-                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '9999px', background: 'rgba(0,0,0,0.07)', flexShrink: 0 }}>→</span>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '26px', height: '26px', borderRadius: '9999px', background: 'rgba(255,255,255,0.12)', flexShrink: 0 }}>→</span>
                 </Link>
                 <a href="#tarifs" className="press" style={{
                   display: 'inline-flex', alignItems: 'center',
-                  background: 'transparent', color: '#FFFFFF',
+                  background: 'transparent', color: '#111111',
                   borderRadius: '9999px', padding: '15px 26px',
                   fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em',
-                  border: '1.5px solid rgba(255,255,255,0.35)',
-                  textDecoration: 'none',
-                  transition: `all 0.3s ${CB}`,
+                  border: '1.5px solid #D0D0D0',
+                  textDecoration: 'none', transition: `border-color 0.2s ease`,
                 }}>
                   Voir les tarifs
                 </a>
               </div>
-            </div>
 
-            {/* Scroll line */}
-            <div style={{ position: 'absolute', bottom: '36px', left: '50%', transform: 'translateX(-50%)' }}>
-              <div style={{ width: '1px', height: '52px', background: 'linear-gradient(to bottom, transparent, rgba(255,255,255,0.28))' }} />
             </div>
+          </section>
+
+          {/* ══ PHOTO RESTAURANT — atmosphérique ═════════════════════ */}
+          <section style={{ lineHeight: 0 }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1600"
+              alt="Intérieur d'un restaurant"
+              style={{ width: '100%', height: 'clamp(240px, 40vw, 520px)', objectFit: 'cover', display: 'block', filter: 'saturate(0.8)' }}
+            />
           </section>
 
           {/* ══ 2. STATS ══════════════════════════════════════════════ */}
