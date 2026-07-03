@@ -184,6 +184,22 @@ export type Subscription = {
   updated_at: string
 }
 
+export type ShiftRequestStatus = 'pending' | 'approved' | 'rejected'
+
+export type ShiftRequest = {
+  id:             string
+  restaurant_id:  string
+  shift_id:       string
+  employee_id:    string
+  proposed_start: string
+  proposed_end:   string
+  reason:         string | null
+  status:         ShiftRequestStatus
+  manager_note:   string | null
+  created_at:     string
+  updated_at:     string
+}
+
 // ── Types étendus (jointures fréquentes) ──────────────────────
 
 export type RecipeWithIngredients = Recipe & {
@@ -297,6 +313,11 @@ type PosIntegrationInsert = WithDefaults<
   'is_active' | 'updated_at'
 >
 
+type ShiftRequestInsert = WithDefaults<
+  ToInsert<Omit<ShiftRequest, 'id' | 'created_at'>>,
+  'status' | 'updated_at'
+>
+
 
 export type Database = {
   public: {
@@ -383,6 +404,12 @@ export type Database = {
         Row: PosIntegration
         Insert: PosIntegrationInsert
         Update: Partial<Omit<PosIntegration, 'id'>>
+        Relationships: R
+      }
+      shift_requests: {
+        Row: ShiftRequest
+        Insert: ShiftRequestInsert
+        Update: Partial<Omit<ShiftRequest, 'id'>>
         Relationships: R
       }
     }

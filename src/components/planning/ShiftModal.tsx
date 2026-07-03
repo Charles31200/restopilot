@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { Loader2, AlertCircle, AlertTriangle, CheckCircle2, Euro } from 'lucide-react'
+import { Loader2, AlertCircle, AlertTriangle, CheckCircle2, Euro, CalendarClock } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/utils/cn'
 import {
@@ -66,10 +66,17 @@ type ShiftModalProps = {
 export function ShiftModal({
   shift, preDate, preEmployee, employees, weekShifts, onClose, onSaved, onDeleted,
 }: ShiftModalProps) {
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [violations,  setViolations]  = useState<HCRViolation[]>([])
-  const [costBreakdown, setCostBreakdown] = useState<ReturnType<typeof calculateShiftCost> | null>(null)
-  const [isDeleting, setIsDeleting]   = useState(false)
+  const [serverError,      setServerError]      = useState<string | null>(null)
+  const [violations,       setViolations]       = useState<HCRViolation[]>([])
+  const [costBreakdown,    setCostBreakdown]    = useState<ReturnType<typeof calculateShiftCost> | null>(null)
+  const [isDeleting,       setIsDeleting]       = useState(false)
+  const [showRequestForm,  setShowRequestForm]  = useState(false)
+  const [reqStart,         setReqStart]         = useState('')
+  const [reqEnd,           setReqEnd]           = useState('')
+  const [reqReason,        setReqReason]        = useState('')
+  const [reqSubmitting,    setReqSubmitting]    = useState(false)
+  const [reqError,         setReqError]         = useState<string | null>(null)
+  const [reqSuccess,       setReqSuccess]       = useState(false)
   const isEdit = !!shift?.id
 
   const defaultDate = shift
@@ -187,6 +194,33 @@ export function ShiftModal({
     const res = await fetch(`/api/shifts/${shift.id}`, { method: 'DELETE' })
     setIsDeleting(false)
     if (res.ok) onDeleted?.(shift.id)
+  }
+
+  const handleRequestSubmit = async () => {
+    if (!shift || !reqStart || !reqEnd) return
+    setReqSubmitting(true)
+    setReqError(null)
+    try {
+      const date = toISODate(new Date(shift.start_time))
+      const res = await fetch('/api/shift-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          shift_id:       shift.id,
+          employee_id:    shift.employee_id,
+          proposed_start: `${date}T${reqStart}:00`,
+          proposed_end:   `${date}T${reqEnd}:00`,
+          reason:         reqReason || undefined,
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok) { setReqError(json.error ?? 'Erreur.'); return }
+      setReqSuccess(true)
+    } catch {
+      setReqError('Erreur réseau.')
+    } finally {
+      setReqSubmitting(false)
+    }
   }
 
   const hasErrors   = violations.some(v => v.severity === 'error')
@@ -332,6 +366,95 @@ export function ShiftModal({
         <div className="mt-4 flex items-center gap-2 text-sm text-green-700">
           <CheckCircle2 className="w-4 h-4" />
           Aucune violation HCR détectée
+        </div>
+      )}
+
+      {/* ── Proposer un changement (mode édition uniquement) ── */}
+      {isEdit && (
+        <div className="mt-5 border-t border-gray-100 pt-4">
+          {!showRequestForm ? (
+            <button
+              type="button"
+              onClick={() => {
+                setShowRequestForm(true)
+                setReqStart(defaultStart)
+                setReqEnd(defaultEnd)
+              }}
+              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <CalendarClock className="w-4 h-4" />
+              Proposer un changement d&apos;horaire
+            </button>
+          ) : reqSuccess ? (
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              Demande envoyée, en attente de validation.
+            </div>
+          ) : (
+            <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-3">
+              <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                <CalendarClock className="w-4 h-4 text-blue-500" />
+                Proposer de nouveaux horaires
+              </p>
+
+              {reqError && (
+                <div className="flex gap-2 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />{reqError}
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nouveau début *</label>
+                  <input
+                    type="time"
+                    value={reqStart}
+                    onChange={e => setReqStart(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Nouvelle fin *</label>
+                  <input
+                    type="time"
+                    value={reqEnd}
+                    onChange={e => setReqEnd(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Raison (optionnel)</label>
+                <textarea
+                  rows={2}
+                  placeholder="Ex : contrainte personnelle, formation…"
+                  value={reqReason}
+                  onChange={e => setReqReason(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none resize-none"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => { setShowRequestForm(false); setReqError(null) }}
+                  className="flex-1 py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  type="button"
+                  onClick={handleRequestSubmit}
+                  disabled={reqSubmitting || !reqStart || !reqEnd}
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
+                >
+                  {reqSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  Envoyer la demande
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </Modal>

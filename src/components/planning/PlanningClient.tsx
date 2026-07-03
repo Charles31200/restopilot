@@ -3,19 +3,20 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ChevronLeft, ChevronRight, CalendarDays, Users,
-  BarChart2, FileDown, UserPlus, Loader2, RefreshCw,
+  ChevronLeft, ChevronRight, CalendarDays,
+  BarChart2, FileDown, UserPlus, Loader2, RefreshCw, MessageSquareDiff,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import {
   prevWeek, nextWeek, getCurrentWeek,
   formatWeekLabel, getWeekDays,
 } from '@/lib/utils/week-utils'
-import { PlanningGrid }   from '@/components/planning/PlanningGrid'
-import { ShiftModal }     from '@/components/planning/ShiftModal'
-import { EmployeeModal }  from '@/components/planning/EmployeeModal'
-import { WeeklySummary }  from '@/components/planning/WeeklySummary'
-import { MonthlyExport }  from '@/components/planning/MonthlyExport'
+import { PlanningGrid }        from '@/components/planning/PlanningGrid'
+import { ShiftModal }          from '@/components/planning/ShiftModal'
+import { EmployeeModal }       from '@/components/planning/EmployeeModal'
+import { WeeklySummary }       from '@/components/planning/WeeklySummary'
+import { MonthlyExport }       from '@/components/planning/MonthlyExport'
+import { ShiftRequestsPanel }  from '@/components/planning/ShiftRequestsPanel'
 import type { WeekData, ShiftWithEmployee } from '@/types/planning'
 import type { Employee } from '@/types'
 
@@ -28,6 +29,7 @@ type ModalState =
   | { type: 'employee_edit'; employee: Employee }
   | { type: 'summary' }
   | { type: 'export' }
+  | { type: 'shift_requests' }
   | null
 
 // ── Props ─────────────────────────────────────────────────────
@@ -42,10 +44,11 @@ type PlanningClientProps = {
 export function PlanningClient({ initialData, initialWeek }: PlanningClientProps) {
   const router = useRouter()
 
-  const [currentWeek, setCurrentWeek] = useState(initialWeek)
-  const [weekData,    setWeekData]    = useState<WeekData | null>(initialData)
-  const [isLoading,   setIsLoading]   = useState(false)
-  const [modal,       setModal]       = useState<ModalState>(null)
+  const [currentWeek,    setCurrentWeek]    = useState(initialWeek)
+  const [weekData,       setWeekData]       = useState<WeekData | null>(initialData)
+  const [isLoading,      setIsLoading]      = useState(false)
+  const [modal,          setModal]          = useState<ModalState>(null)
+  const [pendingCount,   setPendingCount]   = useState(0)
 
   const weekDays = getWeekDays(currentWeek)
   const isCurrentWeek = currentWeek === getCurrentWeek()
@@ -86,6 +89,18 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
   useEffect(() => {
     if (!initialData) fetchWeek(initialWeek)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Compte des demandes pending
+  const fetchPendingCount = useCallback(async () => {
+    try {
+      const res = await fetch('/api/shift-requests')
+      if (!res.ok) return
+      const json = await res.json()
+      setPendingCount((json.requests ?? []).length)
+    } catch { /* silencieux */ }
+  }, [])
+
+  useEffect(() => { fetchPendingCount() }, [fetchPendingCount])
 
   // ── Callbacks après mutations ────────────────────────────
 
@@ -182,6 +197,23 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         </button>
 
         <div className="flex-1" />
+
+        {/* Demandes de modification */}
+        <button
+          onClick={() => setModal({ type: 'shift_requests' })}
+          className="flex items-center gap-2 h-10 px-4 text-sm font-medium border rounded-[10px] transition-colors hover:bg-gray-50"
+          style={pendingCount > 0
+            ? { background: '#FEF2F2', borderColor: '#FECACA', color: '#991B1B' }
+            : { background: '#FFFFFF', borderColor: '#E5E5E5', color: '#111111' }}
+        >
+          <MessageSquareDiff className="w-4 h-4" />
+          Demandes
+          {pendingCount > 0 && (
+            <span className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ background: '#DC2626' }}>
+              {pendingCount}
+            </span>
+          )}
+        </button>
 
         {/* Récap semaine */}
         <button
@@ -307,6 +339,16 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
 
       {modal?.type === 'export' && (
         <MonthlyExport onClose={() => setModal(null)} />
+      )}
+
+      {modal?.type === 'shift_requests' && (
+        <ShiftRequestsPanel
+          onClose={() => setModal(null)}
+          onApproved={() => {
+            fetchWeek(currentWeek)
+            fetchPendingCount()
+          }}
+        />
       )}
     </div>
   )
