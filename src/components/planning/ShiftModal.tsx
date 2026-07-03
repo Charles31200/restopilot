@@ -206,11 +206,13 @@ export function ShiftModal({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          shift_id:       shift.id,
-          employee_id:    shift.employee_id,
-          proposed_start: `${date}T${reqStart}:00`,
-          proposed_end:   `${date}T${reqEnd}:00`,
-          reason:         reqReason || undefined,
+          shift_id:        shift.id,
+          employee_id:     shift.employee_id,
+          type:            'modify',
+          requested_start: reqStart,
+          requested_end:   reqEnd,
+          requested_date:  date,
+          reason:          reqReason || undefined,
         }),
       })
       const json = await res.json()

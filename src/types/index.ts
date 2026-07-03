@@ -187,17 +187,19 @@ export type Subscription = {
 export type ShiftRequestStatus = 'pending' | 'approved' | 'rejected'
 
 export type ShiftRequest = {
-  id:             string
-  restaurant_id:  string
-  shift_id:       string
-  employee_id:    string
-  proposed_start: string
-  proposed_end:   string
-  reason:         string | null
-  status:         ShiftRequestStatus
-  manager_note:   string | null
-  created_at:     string
-  updated_at:     string
+  id:              string
+  restaurant_id:   string
+  shift_id:        string
+  employee_id:     string
+  type:            string       // 'modify'
+  requested_start: string       // HH:MM
+  requested_end:   string       // HH:MM
+  requested_date:  string       // YYYY-MM-DD
+  reason:          string | null
+  status:          ShiftRequestStatus
+  manager_note:    string | null
+  created_at:      string
+  updated_at:      string
 }
 
 // ── Types étendus (jointures fréquentes) ──────────────────────

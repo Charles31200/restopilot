@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { Loader2, CheckCircle2, XCircle, Clock, ChevronRight } from 'lucide-react'
 import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/utils/cn'
-import { extractTime } from '@/lib/utils/week-utils'
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -12,8 +11,10 @@ type ShiftRequest = {
   id: string
   shift_id: string
   employee_id: string
-  proposed_start: string
-  proposed_end: string
+  type: string
+  requested_start: string   // HH:MM
+  requested_end: string     // HH:MM
+  requested_date: string    // YYYY-MM-DD
   reason: string | null
   status: 'pending' | 'approved' | 'rejected'
   manager_note: string | null
@@ -22,7 +23,6 @@ type ShiftRequest = {
     id: string
     first_name: string
     last_name: string
-    role: string
     color: string
   }
   shift: {
@@ -37,28 +37,31 @@ type ShiftRequest = {
 
 type ShiftRequestsPanelProps = {
   onClose: () => void
-  /** Appelé quand une demande est approuvée (pour refetch la semaine) */
   onApproved: () => void
 }
 
 // ── Helpers ────────────────────────────────────────────────────
 
-function formatTime(iso: string) {
-  return extractTime(iso)
+function extractHHMM(iso: string): string {
+  // Fonctionne sur "2026-07-07T09:00:00" → "09:00" et "09:00" → "09:00"
+  if (iso.includes('T')) return iso.slice(11, 16)
+  return iso.slice(0, 5)
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' })
+function formatDate(dateStr: string): string {
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('fr-FR', {
+    weekday: 'short', day: 'numeric', month: 'short',
+  })
 }
 
 // ── Composant ─────────────────────────────────────────────────
 
 export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelProps) {
-  const [requests,    setRequests]    = useState<ShiftRequest[]>([])
-  const [isLoading,   setIsLoading]   = useState(true)
-  const [error,       setError]       = useState<string | null>(null)
-  const [processing,  setProcessing]  = useState<string | null>(null) // request id en cours
-  const [noteValues,  setNoteValues]  = useState<Record<string, string>>({})
+  const [requests,   setRequests]   = useState<ShiftRequest[]>([])
+  const [isLoading,  setIsLoading]  = useState(true)
+  const [error,      setError]      = useState<string | null>(null)
+  const [processing, setProcessing] = useState<string | null>(null)
+  const [noteValues, setNoteValues] = useState<Record<string, string>>({})
 
   const fetchRequests = useCallback(async () => {
     setIsLoading(true)
@@ -77,15 +80,15 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
 
   useEffect(() => { fetchRequests() }, [fetchRequests])
 
-  const handleAction = async (requestId: string, action: 'approve' | 'reject') => {
+  const handleAction = async (requestId: string, status: 'approved' | 'rejected') => {
     setProcessing(requestId)
     try {
       const res = await fetch('/api/shift-requests', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          request_id:   requestId,
-          action,
+          id:           requestId,
+          status,
           manager_note: noteValues[requestId] ?? undefined,
         }),
       })
@@ -94,9 +97,8 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
         setError(json.error ?? 'Erreur lors du traitement.')
         return
       }
-      // Retirer la demande de la liste
       setRequests(prev => prev.filter(r => r.id !== requestId))
-      if (action === 'approve') onApproved()
+      if (status === 'approved') onApproved()
     } catch {
       setError('Erreur réseau.')
     } finally {
@@ -105,11 +107,7 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
   }
 
   return (
-    <Modal
-      title="Demandes de modification"
-      onClose={onClose}
-      maxWidth="max-w-xl"
-    >
+    <Modal title="Demandes de modification" onClose={onClose} maxWidth="max-w-xl">
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
@@ -126,11 +124,8 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
         <div className="space-y-3">
           {requests.map(req => {
             const isProcessing = processing === req.id
-            const currentStart = formatTime(req.shift.start_time)
-            const currentEnd   = formatTime(req.shift.end_time)
-            const newStart     = formatTime(req.proposed_start)
-            const newEnd       = formatTime(req.proposed_end)
-            const shiftDate    = formatDate(req.shift.start_time)
+            const currentStart = extractHHMM(req.shift.start_time)
+            const currentEnd   = extractHHMM(req.shift.end_time)
 
             return (
               <div key={req.id} className="rounded-xl border border-gray-200 overflow-hidden">
@@ -144,7 +139,7 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
                     <p className="text-sm font-semibold text-gray-900 leading-none">
                       {req.employee.first_name} {req.employee.last_name}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">{shiftDate}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">{formatDate(req.requested_date)}</p>
                   </div>
                   {req.shift.position && (
                     <span className="text-[10px] font-medium text-gray-500 bg-white border border-gray-200 px-2 py-0.5 rounded-full">
@@ -155,7 +150,7 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
 
                 {/* Corps */}
                 <div className="px-4 py-3 space-y-3">
-                  {/* Horaires : actuel → proposé */}
+                  {/* Horaires : actuel → demandé */}
                   <div className="flex items-center gap-3 text-sm">
                     <div className="flex-1 text-center rounded-lg py-2 px-3 bg-gray-50 border border-gray-200">
                       <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-1">Actuel</p>
@@ -165,22 +160,22 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
                     <div className="flex-1 text-center rounded-lg py-2 px-3 bg-blue-50 border border-blue-200">
-                      <p className="text-[10px] text-blue-500 uppercase tracking-wide mb-1">Proposé</p>
+                      <p className="text-[10px] text-blue-500 uppercase tracking-wide mb-1">Demandé</p>
                       <p className="font-semibold text-blue-800 tabular-nums">
-                        {newStart} – {newEnd}
+                        {req.requested_start} – {req.requested_end}
                       </p>
                     </div>
                   </div>
 
                   {/* Raison */}
                   {req.reason && (
-                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                    <div className="flex items-start gap-2">
                       <Clock className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-gray-400" />
-                      <p className="text-xs leading-relaxed">{req.reason}</p>
+                      <p className="text-xs text-gray-600 leading-relaxed">{req.reason}</p>
                     </div>
                   )}
 
-                  {/* Note manager (optionnelle) */}
+                  {/* Note manager */}
                   <input
                     type="text"
                     placeholder="Note optionnelle (visible par l'employé)"
@@ -192,7 +187,7 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
                   {/* Actions */}
                   <div className="flex gap-2">
                     <button
-                      onClick={() => handleAction(req.id, 'reject')}
+                      onClick={() => handleAction(req.id, 'rejected')}
                       disabled={isProcessing}
                       className={cn(
                         'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors',
@@ -203,7 +198,7 @@ export function ShiftRequestsPanel({ onClose, onApproved }: ShiftRequestsPanelPr
                       Refuser
                     </button>
                     <button
-                      onClick={() => handleAction(req.id, 'approve')}
+                      onClick={() => handleAction(req.id, 'approved')}
                       disabled={isProcessing}
                       className={cn(
                         'flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold rounded-lg border transition-colors',
