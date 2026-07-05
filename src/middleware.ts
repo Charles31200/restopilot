@@ -161,7 +161,19 @@ export default async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  // getUser() peut lever (cookie de session corrompu/périmé après un
+  // signOut partiel, hoquet réseau vers Supabase Auth…). Avant que /login
+  // et /register ne sortent de FULLY_PUBLIC, ce chemin n'était jamais
+  // exécuté pour ces routes ; une exception ici plantait désormais le
+  // middleware et rendait la connexion/inscription totalement impossibles.
+  // Fail-open : une erreur = utilisateur non authentifié, jamais un crash.
+  let user: Awaited<ReturnType<typeof supabase.auth.getUser>>['data']['user'] = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch {
+    user = null
+  }
 
   const isAuthRoute         = pathname === '/login' || pathname === '/register'
   const isDashboardRoute    = pathname.startsWith('/dashboard')
