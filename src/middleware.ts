@@ -146,6 +146,13 @@ export default async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // Doit correspondre au storageKey de src/lib/supabase/client.ts (et de
+      // server.ts) : @supabase/ssr l'utilise comme nom de cookie. Sans ça, le
+      // cookie posé par une connexion email/mot de passe (client) n'est
+      // jamais retrouvé ici → redirection systématique vers /login.
+      auth: {
+        storageKey: 'pilotresto-session',
+      },
       cookies: {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
