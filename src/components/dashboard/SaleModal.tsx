@@ -138,11 +138,19 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
     setServerError(null)
     setStockWarnings([])
     try {
-      // 1. Save sale
+      // 1. Save sale (+ lignes de vente pour le top plats / historique)
       const res = await fetch('/api/sales', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify(data),
+        body:    JSON.stringify({
+          ...data,
+          items: ticket.map(l => ({
+            menu_item_id: l.dish.id,
+            dish_name:    l.dish.dish_name,
+            quantity:     l.quantity,
+            unit_price:   l.dish.sell_price,
+          })),
+        }),
       })
       if (!res.ok) {
         const json = await res.json().catch(() => ({}))

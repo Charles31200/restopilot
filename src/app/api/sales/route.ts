@@ -20,6 +20,12 @@ const saleSchema = z.object({
   total_revenue: z.coerce.number().min(0, 'CA ≥ 0'),
   covers:        z.coerce.number().int().min(0, 'Couverts ≥ 0').default(0),
   // source toujours 'manual' via ce formulaire
+  items: z.array(z.object({
+    menu_item_id: z.string().uuid().nullable().optional(),
+    dish_name:    z.string().min(1),
+    quantity:     z.coerce.number().int().min(1),
+    unit_price:   z.coerce.number().min(0),
+  })).optional().default([]),
 })
 
 // ── GET /api/sales ────────────────────────────────────────────
@@ -77,6 +83,21 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Enregistrer les lignes de vente (plats) pour le top plats / historique
+  if (parsed.data.items.length > 0) {
+    const saleItems = parsed.data.items.map(item => ({
+      sale_id:       data.id,
+      restaurant_id: restaurantId,
+      recipe_id:     item.menu_item_id ?? null,
+      dish_name:     item.dish_name,
+      quantity_sold: item.quantity,
+      unit_price:    item.unit_price,
+    }))
+
+    const { error: itemsError } = await supabase.from('sale_items').insert(saleItems)
+    if (itemsError) return NextResponse.json({ error: itemsError.message }, { status: 500 })
+  }
 
   return NextResponse.json({ data }, { status: 201 })
 }
