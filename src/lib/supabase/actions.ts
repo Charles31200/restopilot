@@ -41,10 +41,15 @@ export async function signUpAction(
   lastName: string,
   password: string,
 ): Promise<AuthResult> {
-  const supabase = await createClient()
+  const admin = getAdminClient()
 
-  // OTP natif Supabase — pas de emailRedirectTo, Supabase envoie le code via son template OTP
-  const { data, error: authError } = await supabase.auth.signUp({
+  // generateLink() crée/retrouve l'utilisateur et renvoie le code OTP brut
+  // (data.properties.email_otp) SANS jamais envoyer d'email — contrairement à
+  // auth.signUp(), qui délègue l'envoi au mailer intégré de Supabase (limité
+  // à quelques emails/heure, non fiable en production). On envoie donc le
+  // code nous-mêmes via Resend, dont le domaine restopilot.pro est vérifié.
+  const { data, error: authError } = await admin.auth.admin.generateLink({
+    type: 'signup',
     email,
     password,
     options: {
@@ -57,13 +62,60 @@ export async function signUpAction(
     return { error: translateError(authError.message) }
   }
 
-  // Pas de session → code OTP envoyé par email (cas normal avec email confirm activé)
-  if (!data.session) {
-    return { success: true }
+  const otp = data.properties?.email_otp
+  if (!otp) {
+    console.error('[signUp] pas de email_otp dans la réponse generateLink')
+    return { error: 'Une erreur est survenue. Veuillez réessayer.' }
   }
 
-  // Session immédiate (auto-confirm activé en dev)
-  redirect('/onboarding')
+  const sent = await sendSignupOtpEmail(email, firstName, otp)
+  if (!sent) {
+    return { error: "Impossible d'envoyer l'email de vérification. Réessayez dans quelques instants." }
+  }
+
+  return { success: true }
+}
+
+async function sendSignupOtpEmail(email: string, firstName: string, otp: string): Promise<boolean> {
+  const resendKey = process.env.RESEND_API_KEY
+  if (!resendKey) {
+    console.error('[signUp] RESEND_API_KEY manquant — impossible d\'envoyer le code OTP')
+    return false
+  }
+
+  const html = `
+<div style="text-align:center;margin-bottom:24px">
+  <img src="https://restopilot.pro/favicon.png" alt="PilotResto" height="48" style="height:48px;width:auto" />
+</div>
+<p style="font-family:sans-serif;font-size:15px;color:#111111">Bonjour ${firstName || ''},</p>
+<p style="font-family:sans-serif;font-size:15px;color:#111111">Voici votre code de confirmation PilotResto :</p>
+<p style="font-family:sans-serif;font-size:32px;font-weight:bold;letter-spacing:8px;color:#111111;text-align:center;margin:24px 0">${otp}</p>
+<p style="font-family:sans-serif;font-size:13px;color:#6B7280">Ce code expire dans 1 heure. Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
+`
+
+  try {
+    const res = await fetch('https://api.resend.com/emails', {
+      method:  'POST',
+      headers: {
+        'Authorization': `Bearer ${resendKey}`,
+        'Content-Type':  'application/json',
+      },
+      body: JSON.stringify({
+        from:    'PilotResto <contact@restopilot.pro>',
+        to:      [email],
+        subject: `${otp} — Votre code de confirmation PilotResto`,
+        html,
+      }),
+    })
+    if (!res.ok) {
+      console.error('[signUp] Resend a répondu', res.status, await res.text().catch(() => ''))
+      return false
+    }
+    return true
+  } catch (err) {
+    console.error('[signUp] erreur réseau Resend:', err)
+    return false
+  }
 }
 
 export async function verifyOtpAction(
