@@ -206,19 +206,23 @@ export default function IntegrationsPage() {
     if (!tokenModal) return
     setTokenModal(m => m ? { ...m, saving: true, error: null } : null)
 
-    const res = await fetch('/api/integrations', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ pos_type: tokenModal.pos.id, api_key: tokenModal.value }),
-    })
+    try {
+      const res = await fetch('/api/integrations', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ pos_type: tokenModal.pos.id, api_key: tokenModal.value }),
+      })
 
-    if (!res.ok) {
-      const json = await res.json()
-      setTokenModal(m => m ? { ...m, saving: false, error: json.error ?? 'Erreur' } : null)
-      return
+      if (!res.ok) {
+        const json = await res.json().catch(() => ({}))
+        setTokenModal(m => m ? { ...m, saving: false, error: json.error ?? `Erreur ${res.status}` } : null)
+        return
+      }
+      setTokenModal(null)
+      loadStatus()
+    } catch {
+      setTokenModal(m => m ? { ...m, saving: false, error: 'Erreur réseau. Veuillez réessayer.' } : null)
     }
-    setTokenModal(null)
-    loadStatus()
   }
 
   const activePos = POS_OPTIONS.find(p => p.id === status?.pos_type)

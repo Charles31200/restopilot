@@ -202,6 +202,18 @@ export type ShiftRequest = {
   updated_at:      string
 }
 
+export type CashEntryPeriod = 'day' | 'week'
+
+export type CashEntry = {
+  id:            string
+  restaurant_id: string
+  date:          string
+  amount:        number
+  period:        CashEntryPeriod
+  note:          string | null
+  created_at:    string
+}
+
 // ── Types étendus (jointures fréquentes) ──────────────────────
 
 export type RecipeWithIngredients = Recipe & {
@@ -320,6 +332,11 @@ type ShiftRequestInsert = WithDefaults<
   'status' | 'updated_at'
 >
 
+type CashEntryInsert = WithDefaults<
+  ToInsert<Omit<CashEntry, 'id' | 'created_at'>>,
+  'period' | 'note'
+>
+
 
 export type Database = {
   public: {
@@ -412,6 +429,12 @@ export type Database = {
         Row: ShiftRequest
         Insert: ShiftRequestInsert
         Update: Partial<Omit<ShiftRequest, 'id'>>
+        Relationships: R
+      }
+      cash_entries: {
+        Row: CashEntry
+        Insert: CashEntryInsert
+        Update: Partial<Omit<CashEntry, 'id'>>
         Relationships: R
       }
     }

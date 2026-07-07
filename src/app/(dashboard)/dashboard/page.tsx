@@ -5,6 +5,7 @@ import { getDashboardSummary } from '@/lib/utils/dashboard-data'
 import { RevenueLineChart } from '@/components/dashboard/RevenueLineChart'
 import { RevenueBarChart }  from '@/components/dashboard/RevenueBarChart'
 import { DashboardActions } from '@/components/dashboard/DashboardActions'
+import { CashEntryCard }    from '@/components/dashboard/CashEntryCard'
 import type { Employee, EmployeeRole } from '@/types'
 
 // ── Helpers ───────────────────────────────────────────────────
@@ -99,6 +100,11 @@ export default async function DashboardPage() {
         <KpiCard label="Chiffre d'affaires du jour" value={fmt(summary.revenue.day)} sub={trendText(summary.revenue.dayTrend)} />
         <KpiCard label="Nombre de couverts" value={String(summary.covers.day)} sub={trendText(summary.covers.trend)} />
         <KpiCard label="Ticket moyen" value={fmt(ticketMoyen)} sub={`Food cost ${summary.foodCostPct.toFixed(0)}%`} />
+      </div>
+
+      {/* ── Espèces déclarées (optionnel) ─────────────────── */}
+      <div className="mb-5">
+        <CashEntryCard />
       </div>
 
       {/* ── Graphe CA + Employés ──────────────────────────── */}

@@ -26,11 +26,15 @@ export async function GET() {
   const ctx = await getRestaurantId()
   if (!ctx) return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
 
-  const { data } = await ctx.supabase
+  // maybeSingle() (pas single()) : aucune intégration existante n'est un cas
+  // normal (pas encore connecté), pas une erreur à masquer.
+  const { data, error } = await ctx.supabase
     .from('pos_integrations')
     .select('pos_type, is_active, last_synced_at, sync_error, created_at')
     .eq('restaurant_id', ctx.restaurantId)
-    .single()
+    .maybeSingle()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Masquer les tokens — ne jamais les envoyer au client
   return NextResponse.json(data ?? null)
@@ -58,7 +62,6 @@ export async function POST(request: NextRequest) {
   const now = new Date().toISOString()
 
   const payload = {
-    restaurant_id:    ctx.restaurantId,
     pos_type:         body.pos_type,
     is_active:        true,
     api_key:          body.api_key          ?? null,
@@ -69,12 +72,28 @@ export async function POST(request: NextRequest) {
     updated_at:       now,
   }
 
-  // Upsert — un restaurant n'a qu'une seule intégration (UNIQUE sur restaurant_id)
-  const { data, error } = await ctx.supabase
+  // Un restaurant n'a qu'une seule intégration, mais restaurant_id n'a pas de
+  // contrainte UNIQUE en base — .upsert(..., { onConflict: 'restaurant_id' })
+  // échoue systématiquement côté Postgres (pas de contrainte à cibler).
+  // On fait donc explicitement un select puis update/insert.
+  const { data: existing } = await ctx.supabase
     .from('pos_integrations')
-    .upsert(payload, { onConflict: 'restaurant_id' })
-    .select('pos_type, is_active, last_synced_at, sync_error')
-    .single()
+    .select('id')
+    .eq('restaurant_id', ctx.restaurantId)
+    .maybeSingle()
+
+  const { data, error } = existing
+    ? await ctx.supabase
+        .from('pos_integrations')
+        .update(payload)
+        .eq('id', existing.id)
+        .select('pos_type, is_active, last_synced_at, sync_error')
+        .single()
+    : await ctx.supabase
+        .from('pos_integrations')
+        .insert({ ...payload, restaurant_id: ctx.restaurantId })
+        .select('pos_type, is_active, last_synced_at, sync_error')
+        .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
