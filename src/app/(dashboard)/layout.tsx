@@ -34,7 +34,7 @@ export default async function DashboardLayout({
   const restaurantName = restaurant?.name ?? 'Mon restaurant'
 
   return (
-    <div className="min-h-screen" style={{ background: '#FFFFFF' }}>
+    <div className="min-h-screen" style={{ background: '#0F0F0F' }}>
 
       {/* ── Sidebar + Header ─────────────────────────────── */}
       <TopBar
@@ -57,15 +57,15 @@ export default async function DashboardLayout({
         {/* ── Footer ───────────────────────────────────────── */}
         <footer
           className="flex items-center justify-center flex-wrap gap-x-4 gap-y-1 py-4 text-[11px] border-t"
-          style={{ borderColor: '#E5E5E5', color: '#888888' }}
+          style={{ borderColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.45)' }}
         >
           <span>© 2026 PilotResto</span>
-          <span style={{ color: '#CCCCCC' }}>·</span>
-          <a href="/cgu-cgv"                      className="hover:text-gray-700 transition-colors">CGU / CGV</a>
-          <span style={{ color: '#CCCCCC' }}>·</span>
-          <a href="/politique-de-confidentialite" className="hover:text-gray-700 transition-colors">Politique de confidentialité</a>
-          <span style={{ color: '#CCCCCC' }}>·</span>
-          <a href="mailto:charles.lecussan@gmail.com" className="hover:text-gray-700 transition-colors">Contact</a>
+          <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+          <a href="/cgu-cgv"                      className="hover:text-white transition-colors">CGU / CGV</a>
+          <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+          <a href="/politique-de-confidentialite" className="hover:text-white transition-colors">Politique de confidentialité</a>
+          <span style={{ color: 'rgba(255,255,255,0.2)' }}>·</span>
+          <a href="mailto:charles.lecussan@gmail.com" className="hover:text-white transition-colors">Contact</a>
         </footer>
       </DashboardContentWrapper>
     </div>

@@ -66,12 +66,13 @@ function SidebarNavItem({ item, expanded, active }: { item: NavItemDef; expanded
         gap:         expanded ? '12px' : '0',
         padding:     expanded ? '8px 12px' : '8px',
         justifyContent: expanded ? 'flex-start' : 'center',
-        background:  active ? '#F5F5F5' : 'transparent',
-        color:       active ? '#111111' : '#888888',
+        background:  active ? '#7798AB' : 'transparent',
+        color:       active ? '#FFFFFF' : 'rgba(255,255,255,0.45)',
         fontWeight:  active ? 500 : 400,
+        borderRadius: '12px',
       }}
     >
-      <item.icon size={20} style={{ color: active ? '#111111' : '#888888', flexShrink: 0 }} />
+      <item.icon size={20} style={{ color: active ? '#FFFFFF' : 'rgba(255,255,255,0.45)', flexShrink: 0 }} />
       {expanded && (
         <span className="whitespace-nowrap overflow-hidden text-ellipsis" style={{ fontSize: '14px', fontFamily: 'var(--font-body)' }}>
           {item.label}
@@ -100,23 +101,23 @@ function UserDropdown({
       style={{
         bottom:     'calc(100% + 8px)',
         left:       '0',
-        background: '#FFFFFF',
-        border:     '1px solid #E5E5E5',
-        boxShadow:  '0 8px 32px rgba(0,0,0,0.12)',
+        background: '#1A1A1A',
+        border:     '1px solid rgba(255,255,255,0.06)',
+        boxShadow:  '0 8px 32px rgba(0,0,0,0.5)',
       }}
     >
-      <div className="px-4 py-3 border-b" style={{ borderColor: '#E5E5E5' }}>
-        <p className="text-[13px] font-semibold truncate" style={{ color: '#111111' }}>{userFullName}</p>
-        <p className="text-[11px] mt-0.5 truncate" style={{ color: '#888888' }}>{userEmail}</p>
+      <div className="px-4 py-3 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <p className="text-[13px] font-semibold truncate" style={{ color: '#FFFFFF' }}>{userFullName}</p>
+        <p className="text-[11px] mt-0.5 truncate" style={{ color: 'rgba(255,255,255,0.45)' }}>{userEmail}</p>
       </div>
       <div className="py-1">
         <a
           href="/dashboard/compte"
           onClick={onClose}
-          className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
-          style={{ color: '#111111' }}
+          className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-white/5"
+          style={{ color: '#FFFFFF' }}
         >
-          <User size={14} style={{ color: '#888888' }} />
+          <User size={14} style={{ color: 'rgba(255,255,255,0.45)' }} />
           Mon profil
         </a>
         {MORE_ITEMS.map(item => (
@@ -124,20 +125,20 @@ function UserDropdown({
             key={item.href}
             href={item.href}
             onClick={onClose}
-            className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-gray-50"
-            style={{ color: '#111111' }}
+            className="flex items-center gap-3 px-4 py-2.5 text-[13px] transition-colors hover:bg-white/5"
+            style={{ color: '#FFFFFF' }}
           >
-            <item.icon size={14} style={{ color: '#888888' }} />
+            <item.icon size={14} style={{ color: 'rgba(255,255,255,0.45)' }} />
             {item.label}
           </Link>
         ))}
       </div>
-      <div className="border-t py-1" style={{ borderColor: '#E5E5E5' }}>
+      <div className="border-t py-1" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
         <button
           type="button"
           onClick={onSignOut}
           disabled={signing}
-          className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-red-500 transition-colors hover:bg-red-50 disabled:opacity-60"
+          className="w-full flex items-center gap-3 px-4 py-2.5 text-[13px] text-red-400 transition-colors hover:bg-red-500/10 disabled:opacity-60"
         >
           <LogOut size={14} />
           {signing ? 'Déconnexion…' : 'Se déconnecter'}
@@ -207,9 +208,9 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         className="hidden md:flex fixed left-0 top-0 bottom-0 z-50 flex-col transition-[width] duration-150 ease-out"
         style={{
           width:      expanded ? `${SIDEBAR_EXPANDED}px` : `${SIDEBAR_COLLAPSED}px`,
-          background: '#FFFFFF',
-          borderRight: '1px solid #E5E5E5',
-          boxShadow:  expanded ? '4px 0 24px rgba(0,0,0,0.08)' : 'none',
+          background: '#161616',
+          borderRight: '1px solid rgba(255,255,255,0.06)',
+          boxShadow:  expanded ? '4px 0 24px rgba(0,0,0,0.4)' : 'none',
           overflow:   'hidden',
         }}
         onMouseEnter={() => setExpanded(true)}
@@ -237,7 +238,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/favicon.png" alt="PilotResto" style={{ height: '26px', width: '26px', objectFit: 'contain', flexShrink: 0 }} />
           {expanded && (
-            <span className="font-bold text-[15px] whitespace-nowrap" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+            <span className="font-bold text-[15px] whitespace-nowrap" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
               PilotResto
             </span>
           )}
@@ -247,7 +248,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3 space-y-5">
           <div>
             {expanded && (
-              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#BBBBBB' }}>
+              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
                 Principal
               </p>
             )}
@@ -260,7 +261,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
 
           <div>
             {expanded && (
-              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: '#BBBBBB' }}>
+              <p className="px-3 mb-1.5 text-[11px] font-bold uppercase tracking-wider whitespace-nowrap" style={{ color: 'rgba(255,255,255,0.3)' }}>
                 Paramètres
               </p>
             )}
@@ -273,12 +274,12 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         </nav>
 
         {/* Avatar utilisateur en bas */}
-        <div className="relative flex-shrink-0 border-t" style={{ borderColor: '#E5E5E5', padding: '12px' }}>
+        <div className="relative flex-shrink-0 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)', padding: '12px' }}>
           <button
             ref={avatarBtnRef}
             type="button"
             onClick={() => setUserMenuOpen(v => !v)}
-            className="w-full flex items-center rounded-[8px] transition-colors hover:bg-[#F5F5F5]"
+            className="w-full flex items-center rounded-[8px] transition-colors hover:bg-white/5"
             style={{ gap: expanded ? '10px' : '0', padding: '8px', justifyContent: expanded ? 'flex-start' : 'center' }}
             aria-expanded={userMenuOpen}
           >
@@ -289,7 +290,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
               {userInitials}
             </div>
             {expanded && (
-              <span className="text-[13px] truncate text-left whitespace-nowrap" style={{ color: '#111111', fontFamily: 'var(--font-body)' }}>
+              <span className="text-[13px] truncate text-left whitespace-nowrap" style={{ color: '#FFFFFF', fontFamily: 'var(--font-body)' }}>
                 {userFullName}
               </span>
             )}
@@ -310,7 +311,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
       {/* ══ HEADER TOP ════════════════════════════════════════ */}
       <header
         className="fixed top-0 left-0 right-0 z-40 flex flex-col"
-        style={{ height: isElectron ? '80px' : '52px', background: '#FFFFFF', borderBottom: '1px solid #E5E5E5' }}
+        style={{ height: isElectron ? '80px' : '52px', background: '#161616', borderBottom: '1px solid rgba(255,255,255,0.06)' }}
       >
         {/* Zone de déplacement de la fenêtre (boutons macOS natifs) — Electron uniquement */}
         {isElectron && (
@@ -325,8 +326,8 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           <button
             type="button"
             onClick={() => setMobileMenuOpen(v => !v)}
-            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-gray-100"
-            style={{ color: '#111111', flexShrink: 0, WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+            className="md:hidden w-8 h-8 flex items-center justify-center rounded-full transition-colors hover:bg-white/5"
+            style={{ color: '#FFFFFF', flexShrink: 0, WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             aria-label={mobileMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
           >
             {mobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -335,7 +336,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           {/* Titre de la page */}
           <span
             className="flex-1 truncate text-[16px]"
-            style={{ color: '#111111', fontWeight: 600, fontFamily: 'var(--font-display)' }}
+            style={{ color: '#FFFFFF', fontWeight: 600, fontFamily: 'var(--font-display)' }}
           >
             {pageTitle}
           </span>
@@ -343,8 +344,8 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           {/* Cloche */}
           <button
             type="button"
-            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-gray-100"
-            style={{ color: '#888888', WebkitAppRegion: 'no-drag' } as React.CSSProperties}
+            className="w-8 h-8 rounded-full flex items-center justify-center transition-colors hover:bg-white/5"
+            style={{ color: 'rgba(255,255,255,0.45)', WebkitAppRegion: 'no-drag' } as React.CSSProperties}
             aria-label="Notifications"
           >
             <Bell size={16} />
@@ -374,9 +375,9 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
           className="fixed left-0 right-0 z-30 md:hidden"
           style={{
             top:          isElectron ? '80px' : '52px',
-            background:   '#FFFFFF',
-            borderBottom: '1px solid #E5E5E5',
-            boxShadow:    '0 8px 32px rgba(0,0,0,0.08)',
+            background:   '#161616',
+            borderBottom: '1px solid rgba(255,255,255,0.06)',
+            boxShadow:    '0 8px 32px rgba(0,0,0,0.4)',
           }}
         >
           <nav className="px-3 py-2 space-y-0.5">
@@ -388,10 +389,10 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
                 <Link
                   key={item.href}
                   href={item.href}
-                  className="flex items-center gap-3 px-3 py-3 rounded-[8px] transition-all"
+                  className="flex items-center gap-3 px-3 py-3 rounded-[12px] transition-all"
                   style={{
-                    color:      active ? '#111111' : '#888888',
-                    background: active ? '#F5F5F5' : 'transparent',
+                    color:      active ? '#FFFFFF' : 'rgba(255,255,255,0.45)',
+                    background: active ? '#7798AB' : 'transparent',
                     fontFamily: 'var(--font-body)',
                     fontSize:   '14px',
                     fontWeight: active ? 500 : 400,
@@ -403,12 +404,12 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
               )
             })}
           </nav>
-          <div className="px-3 pb-3 border-t" style={{ borderColor: '#E5E5E5' }}>
+          <div className="px-3 pb-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
             <button
               type="button"
               onClick={handleSignOut}
               disabled={signing}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-[8px] text-[14px] transition-colors text-red-500 hover:bg-red-50 disabled:opacity-60"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-[8px] text-[14px] transition-colors text-red-400 hover:bg-red-500/10 disabled:opacity-60"
               style={{ fontFamily: 'var(--font-body)' }}
             >
               <LogOut size={17} />
@@ -423,8 +424,8 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
         className="md:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center"
         style={{
           height:        '64px',
-          background:    '#FFFFFF',
-          borderTop:     '1px solid #E5E5E5',
+          background:    '#161616',
+          borderTop:     '1px solid rgba(255,255,255,0.06)',
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
@@ -435,7 +436,7 @@ export function TopBar({ restaurantName, userInitials, userFullName, userEmail }
               key={item.href}
               href={item.href}
               className="flex flex-col items-center justify-center gap-0.5 flex-1 py-2 transition-colors"
-              style={{ color: active ? '#111111' : '#BBBBBB' }}
+              style={{ color: active ? '#FFFFFF' : 'rgba(255,255,255,0.45)' }}
             >
               <item.icon size={20} strokeWidth={active ? 2.5 : 1.75} />
               <span style={{ fontSize: '11px', fontWeight: active ? 600 : 400, fontFamily: 'var(--font-body)' }}>

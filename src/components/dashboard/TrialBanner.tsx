@@ -46,13 +46,13 @@ export function TrialBanner() {
       role="alert"
       className={`flex items-center gap-3 px-4 py-2.5 text-sm font-medium border-b ${
         isUrgent
-          ? 'bg-red-50 border-red-200 text-red-800'
-          : 'bg-amber-50 border-amber-200 text-amber-900'
+          ? 'bg-red-500/10 border-red-500/20 text-red-400'
+          : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
       }`}
     >
       {isUrgent
-        ? <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-        : <Clock         className="w-4 h-4 text-amber-500 flex-shrink-0" />
+        ? <AlertTriangle className="w-4 h-4 text-red-400 flex-shrink-0" />
+        : <Clock         className="w-4 h-4 text-amber-400 flex-shrink-0" />
       }
 
       <span className="flex-1 min-w-0 truncate">
@@ -76,7 +76,7 @@ export function TrialBanner() {
         onClick={() => setDismissed(true)}
         aria-label="Fermer la bannière"
         className={`p-1 rounded transition-colors flex-shrink-0 ${
-          isUrgent ? 'hover:bg-red-100' : 'hover:bg-amber-100'
+          isUrgent ? 'hover:bg-red-500/15' : 'hover:bg-amber-500/15'
         }`}
       >
         <X className="w-3.5 h-3.5" />
