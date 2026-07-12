@@ -26,8 +26,8 @@ const inputCls = (hasError?: boolean) =>
   cn(
     'w-full px-3.5 py-2.5 border rounded-xl text-sm transition-all outline-none',
     hasError
-      ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-      : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+      ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+      : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
   )
 
 // ── Props ─────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ export function DeliveryModal({
     <div className="flex items-center justify-end gap-3">
       <button
         type="button" onClick={onClose}
-        className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+        className="px-4 py-2 text-sm font-medium text-white/70 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
       >
         Annuler
       </button>
@@ -135,7 +135,7 @@ export function DeliveryModal({
   return (
     <Modal title="Recevoir une livraison" onClose={onClose} footer={footer}>
       {serverError && (
-        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" /> {serverError}
         </div>
       )}
@@ -143,11 +143,11 @@ export function DeliveryModal({
       <form id="delivery-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Sélecteur de produit */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Produit <span className="text-red-500">*</span>
           </label>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30 pointer-events-none" />
             <input
               type="text"
               placeholder="Rechercher un produit…"
@@ -157,8 +157,8 @@ export function DeliveryModal({
               className={cn(
                 'w-full pl-9 pr-3.5 py-2.5 border rounded-xl text-sm transition-all outline-none',
                 errors.product_id
-                  ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-                  : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                  ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+                  : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
               )}
             />
             {selectedProduct && (
@@ -168,21 +168,21 @@ export function DeliveryModal({
 
           {/* Dropdown résultats */}
           {showDropdown && filtered.length > 0 && (
-            <div className="absolute z-10 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto w-full max-w-[calc(100%-2.5rem)]">
+            <div className="absolute z-10 mt-1 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-48 overflow-y-auto w-full max-w-[calc(100%-2.5rem)]">
               {filtered.map(p => (
                 <button
                   key={p.id}
                   type="button"
                   onClick={() => selectProduct(p)}
-                  className="w-full flex items-center justify-between px-3.5 py-2.5 hover:bg-blue-50 transition-colors text-left"
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 hover:bg-[#7798AB]/10 transition-colors text-left"
                 >
                   <div>
-                    <span className="text-sm font-medium text-gray-900">{p.name}</span>
+                    <span className="text-sm font-medium text-white">{p.name}</span>
                     {p.category && (
-                      <span className="ml-2 text-xs text-gray-400">{p.category}</span>
+                      <span className="ml-2 text-xs text-white/30">{p.category}</span>
                     )}
                   </div>
-                  <span className="text-xs text-gray-500 tabular-nums">
+                  <span className="text-xs text-white/45 tabular-nums">
                     {p.stock_qty} {p.unit}
                   </span>
                 </button>
@@ -199,14 +199,14 @@ export function DeliveryModal({
 
           {/* Affichage stock actuel */}
           {selectedProduct && (
-            <div className="mt-2 flex items-center gap-2 text-xs text-gray-500 bg-gray-50 rounded-lg px-3 py-2">
+            <div className="mt-2 flex items-center gap-2 text-xs text-white/45 bg-white/5 rounded-lg px-3 py-2">
               <span>Stock actuel :</span>
-              <span className="font-semibold text-gray-700">
+              <span className="font-semibold text-white/70">
                 {selectedProduct.stock_qty} {selectedProduct.unit}
               </span>
               {selectedProduct.min_threshold > 0 && (
                 <>
-                  <span className="text-gray-300">·</span>
+                  <span className="text-white/30">·</span>
                   <span>Seuil min : {selectedProduct.min_threshold} {selectedProduct.unit}</span>
                 </>
               )}
@@ -217,7 +217,7 @@ export function DeliveryModal({
         {/* Quantité + Date */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Quantité reçue <span className="text-red-500">*</span>
             </label>
             <div className="relative">
@@ -230,7 +230,7 @@ export function DeliveryModal({
                 className={inputCls(!!errors.quantity)}
               />
               {selectedProduct && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30 pointer-events-none">
                   {selectedProduct.unit}
                 </span>
               )}
@@ -242,7 +242,7 @@ export function DeliveryModal({
             )}
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Date de livraison
             </label>
             <input
@@ -255,7 +255,7 @@ export function DeliveryModal({
 
         {/* Note */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Note (optionnel)
           </label>
           <input

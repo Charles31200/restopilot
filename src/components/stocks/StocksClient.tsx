@@ -28,21 +28,24 @@ type ModalType = 'product' | 'delivery' | 'inventory' | 'history' | null
 // ── Helpers visuels ───────────────────────────────────────────
 
 const STATUS_CONFIG: Record<StockStatus, {
-  label: string; color: string; icon: React.ReactNode
+  label: string; color: string; bg: string; icon: React.ReactNode
 }> = {
   critical: {
     label: 'Critique',
-    color: '#DC2626',
+    color: '#F87171',
+    bg:    'rgba(248,113,113,0.15)',
     icon:  <AlertTriangle className="w-3 h-3" />,
   },
   low: {
     label: 'Faible',
-    color: '#D97706',
+    color: '#FBBF24',
+    bg:    'rgba(251,191,36,0.15)',
     icon:  <MinusCircle className="w-3 h-3" />,
   },
   ok: {
     label: 'OK',
-    color: '#16A34A',
+    color: '#4ADE80',
+    bg:    'rgba(74,222,128,0.15)',
     icon:  <CheckCircle2 className="w-3 h-3" />,
   },
 }
@@ -51,8 +54,8 @@ function StatusBadge({ status }: { status: StockStatus }) {
   const cfg = STATUS_CONFIG[status]
   return (
     <span
-      className="inline-flex items-center gap-1 rounded-[6px] border px-2.5 py-1 text-[12px] font-medium whitespace-nowrap"
-      style={{ borderColor: '#E5E5E5', color: cfg.color }}
+      className="inline-flex items-center gap-1 rounded-[6px] px-2.5 py-1 text-[12px] font-medium whitespace-nowrap"
+      style={{ background: cfg.bg, color: cfg.color }}
     >
       {cfg.icon}
       {cfg.label}
@@ -61,10 +64,10 @@ function StatusBadge({ status }: { status: StockStatus }) {
 }
 
 function SortIcon({ col, active, dir }: { col: string; active: boolean; dir: SortDir }) {
-  if (!active) return <ChevronsUpDown className="w-3 h-3" style={{ color: '#CCCCCC' }} />
+  if (!active) return <ChevronsUpDown className="w-3 h-3" style={{ color: 'rgba(255,255,255,0.25)' }} />
   return dir === 'asc'
-    ? <ChevronUp   className="w-3 h-3" style={{ color: '#111111' }} />
-    : <ChevronDown className="w-3 h-3" style={{ color: '#111111' }} />
+    ? <ChevronUp   className="w-3 h-3" style={{ color: '#FFFFFF' }} />
+    : <ChevronDown className="w-3 h-3" style={{ color: '#FFFFFF' }} />
 }
 
 // ── Props ─────────────────────────────────────────────────────
@@ -249,7 +252,7 @@ export function StocksClient({
   return (
     <div className="space-y-4">
       {/* ── Onglets ── */}
-      <div className="flex items-center gap-1 border-b" style={{ borderColor: '#E5E5E5' }}>
+      <div className="flex items-center gap-1 border-b" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
         {[
           { id: 'products', label: `Ingrédients${total > 0 ? ` (${total})` : ''}` },
           { id: 'recipes',  label: 'Fiches techniques' },
@@ -259,12 +262,12 @@ export function StocksClient({
             onClick={() => setActiveTab(tab.id as typeof activeTab)}
             className="px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors"
             style={activeTab === tab.id
-              ? { borderColor: '#111111', color: '#111111' }
-              : { borderColor: 'transparent', color: '#888888' }}
+              ? { borderColor: '#7798AB', color: '#FFFFFF' }
+              : { borderColor: 'transparent', color: 'rgba(255,255,255,0.45)' }}
           >
             {tab.label}
             {tab.id === 'products' && criticalCount > 0 && (
-              <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{ background: '#FEE2E2', color: '#DC2626' }}>
+              <span className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded-full" style={{ background: 'rgba(248,113,113,0.15)', color: '#F87171' }}>
                 {criticalCount}
               </span>
             )}
@@ -279,14 +282,14 @@ export function StocksClient({
           <div className="flex flex-wrap items-center gap-3">
             {/* Recherche */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#BBBBBB' }} />
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
               <input
                 type="text"
                 placeholder="Rechercher un produit…"
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="w-full h-10 pl-10 pr-4 rounded-[10px] border text-sm outline-none transition-all"
-                style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
+                style={{ borderColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', background: '#1A1A1A' }}
               />
             </div>
 
@@ -295,7 +298,7 @@ export function StocksClient({
               value={category}
               onChange={e => setCategory(e.target.value)}
               className="h-10 px-3 rounded-[10px] border text-sm outline-none min-w-[160px]"
-              style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
+              style={{ borderColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', background: '#1A1A1A' }}
             >
               <option value="">Toutes catégories</option>
               {categories.map(c => <option key={c} value={c}>{c}</option>)}
@@ -306,7 +309,7 @@ export function StocksClient({
               value={status}
               onChange={e => setStatus(e.target.value)}
               className="h-10 px-3 rounded-[10px] border text-sm outline-none min-w-[140px]"
-              style={{ borderColor: '#E5E5E5', color: '#111111', background: '#FFFFFF' }}
+              style={{ borderColor: 'rgba(255,255,255,0.1)', color: '#FFFFFF', background: '#1A1A1A' }}
             >
               <option value="">Tous statuts</option>
               <option value="critical">Critique</option>
@@ -319,8 +322,8 @@ export function StocksClient({
             {/* Boutons action */}
             <button
               onClick={handleExportCSV}
-              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+              style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.1)', background: '#1A1A1A' }}
               title="Exporter en CSV"
             >
               <Download className="w-4 h-4" />
@@ -328,32 +331,32 @@ export function StocksClient({
             </button>
             <button
               onClick={() => { setSelectedProduct(null); setOpenModal('history') }}
-              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+              style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.1)', background: '#1A1A1A' }}
             >
               <History className="w-4 h-4" />
               Historique
             </button>
             <button
               onClick={() => setOpenModal('inventory')}
-              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+              style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.1)', background: '#1A1A1A' }}
             >
               <ClipboardList className="w-4 h-4" />
               Inventaire
             </button>
             <button
               onClick={() => { setDeliveryProduct(null); setOpenModal('delivery') }}
-              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-              style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+              style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.1)', background: '#1A1A1A' }}
             >
               <Truck className="w-4 h-4" />
               Livraison
             </button>
             <button
               onClick={() => { setSelectedProduct(null); setOpenModal('product') }}
-              className="flex items-center gap-2 h-10 px-4 text-sm font-medium text-white rounded-[10px] transition-colors"
-              style={{ background: '#000000' }}
+              className="flex items-center gap-2 h-10 px-4 text-sm font-medium text-white rounded-[10px] transition-colors hover:opacity-90"
+              style={{ background: '#7798AB' }}
             >
               <Plus className="w-4 h-4" />
               Ajouter
@@ -361,11 +364,11 @@ export function StocksClient({
           </div>
 
           {/* Tableau */}
-          <div className="rounded-[12px] overflow-hidden" style={{ border: '1px solid #E5E5E5', background: '#FFFFFF' }}>
+          <div className="rounded-[12px] overflow-hidden" style={{ border: '1px solid rgba(255,255,255,0.06)', background: '#1A1A1A' }}>
             <div className="overflow-x-auto">
               <table className="w-full text-sm border-collapse">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #E5E5E5' }}>
+                  <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                     {([
                       { key: 'name',          label: 'Nom'          },
                       { key: 'category',      label: 'Catégorie'    },
@@ -381,7 +384,7 @@ export function StocksClient({
                           'px-4 py-3 text-left text-[12px] font-medium whitespace-nowrap',
                           col.key && 'cursor-pointer select-none'
                         )}
-                        style={{ color: '#888888' }}
+                        style={{ color: 'rgba(255,255,255,0.45)' }}
                         onClick={() => col.key && handleSort(col.key)}
                       >
                         <span className="flex items-center gap-1.5">
@@ -399,13 +402,13 @@ export function StocksClient({
                   {isLoading ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-12 text-center">
-                        <Loader2 className="w-5 h-5 animate-spin mx-auto" style={{ color: '#BBBBBB' }} />
+                        <Loader2 className="w-5 h-5 animate-spin mx-auto" style={{ color: 'rgba(255,255,255,0.3)' }} />
                       </td>
                     </tr>
                   ) : products.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-16 text-center">
-                        <p className="text-sm" style={{ color: '#BBBBBB' }}>Aucun produit trouvé.</p>
+                        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.3)' }}>Aucun produit trouvé.</p>
                       </td>
                     </tr>
                   ) : products.map(product => (
@@ -413,24 +416,24 @@ export function StocksClient({
                       key={product.id}
                       className="group transition-colors"
                       style={{
-                        borderBottom: '1px solid #F0F0F0',
-                        background: product.status === 'critical' ? '#FEF2F2' : 'transparent',
+                        borderBottom: '1px solid rgba(255,255,255,0.04)',
+                        background: product.status === 'critical' ? 'rgba(248,113,113,0.06)' : 'transparent',
                       }}
-                      onMouseEnter={e => { if (product.status !== 'critical') e.currentTarget.style.background = '#F7F7F7' }}
+                      onMouseEnter={e => { if (product.status !== 'critical') e.currentTarget.style.background = 'rgba(255,255,255,0.04)' }}
                       onMouseLeave={e => { if (product.status !== 'critical') e.currentTarget.style.background = 'transparent' }}
                     >
-                      <td className="px-4 py-3 font-medium" style={{ color: '#111111' }}>
+                      <td className="px-4 py-3 font-medium" style={{ color: '#FFFFFF' }}>
                         {product.name}
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded-[6px] border px-2.5 py-1 text-[12px] font-medium whitespace-nowrap" style={{ borderColor: '#E5E5E5', color: '#333333' }}>
+                        <span className="inline-flex items-center rounded-[6px] px-2.5 py-1 text-[12px] font-medium whitespace-nowrap" style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}>
                           {product.category ?? 'Sans catégorie'}
                         </span>
                       </td>
-                      <td className="px-4 py-3 tabular-nums font-semibold" style={{ color: '#111111' }}>
+                      <td className="px-4 py-3 tabular-nums font-semibold" style={{ color: '#FFFFFF' }}>
                         {formatQty(product.stock_qty)} {product.unit}
                       </td>
-                      <td className="px-4 py-3 tabular-nums" style={{ color: '#888888' }}>
+                      <td className="px-4 py-3 tabular-nums" style={{ color: 'rgba(255,255,255,0.45)' }}>
                         {product.min_threshold > 0
                           ? `${formatQty(product.min_threshold)} ${product.unit}`
                           : '—'
@@ -439,7 +442,7 @@ export function StocksClient({
                       <td className="px-4 py-3">
                         <StatusBadge status={product.status} />
                       </td>
-                      <td className="px-4 py-3" style={{ color: '#888888' }}>
+                      <td className="px-4 py-3" style={{ color: 'rgba(255,255,255,0.45)' }}>
                         {product.supplier_name ?? '—'}
                       </td>
                       <td className="px-4 py-3">
@@ -457,7 +460,7 @@ export function StocksClient({
                           ) : (
                             <button
                               onClick={() => { setDeliveryProduct(product); setOpenModal('delivery') }}
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors opacity-0 group-hover:opacity-100"
+                              className="p-1.5 rounded-lg text-white/30 hover:text-green-400 hover:bg-green-500/10 transition-colors opacity-0 group-hover:opacity-100"
                               title="Recevoir une livraison"
                             >
                               <PackagePlus className="w-4 h-4" />
@@ -466,7 +469,7 @@ export function StocksClient({
                           {/* Historique */}
                           <button
                             onClick={() => { setSelectedProduct(product); setOpenModal('history') }}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-colors opacity-0 group-hover:opacity-100"
                             title="Historique des mouvements"
                           >
                             <History className="w-4 h-4" />
@@ -474,7 +477,7 @@ export function StocksClient({
                           {/* Modifier */}
                           <button
                             onClick={() => { setSelectedProduct(product); setOpenModal('product') }}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-900 hover:bg-gray-100 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-colors opacity-0 group-hover:opacity-100"
                             title="Modifier"
                           >
                             <Pencil className="w-4 h-4" />
@@ -482,7 +485,7 @@ export function StocksClient({
                           {/* Supprimer */}
                           <button
                             onClick={() => setDeleteTarget(product)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100"
+                            className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
                             title="Supprimer"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -497,27 +500,27 @@ export function StocksClient({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid #F0F0F0', background: '#FAFAFA' }}>
-                <p className="text-xs" style={{ color: '#888888' }}>
+              <div className="flex items-center justify-between px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#161616' }}>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.45)' }}>
                   {(page - 1) * LIMIT + 1}–{Math.min(page * LIMIT, total)} sur {total} produits
                 </p>
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setPage(p => Math.max(1, p - 1))}
                     disabled={page === 1}
-                    className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    style={{ color: '#888888' }}
+                    className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.45)' }}
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
-                  <span className="text-xs px-2" style={{ color: '#888888' }}>
+                  <span className="text-xs px-2" style={{ color: 'rgba(255,255,255,0.45)' }}>
                     {page} / {totalPages}
                   </span>
                   <button
                     onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                     disabled={page === totalPages}
-                    className="p-1.5 rounded-lg hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                    style={{ color: '#888888' }}
+                    className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    style={{ color: 'rgba(255,255,255,0.45)' }}
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>
@@ -566,19 +569,20 @@ export function StocksClient({
       {/* ── Confirmation suppression ── */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
-          <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full">
-            <h3 className="text-base font-semibold text-gray-900 mb-2">
+          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setDeleteTarget(null)} />
+          <div className="relative rounded-2xl shadow-2xl p-6 max-w-sm w-full" style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}>
+            <h3 className="text-base font-semibold mb-2" style={{ color: '#FFFFFF' }}>
               Supprimer ce produit ?
             </h3>
-            <p className="text-sm text-gray-500 mb-4">
-              <span className="font-semibold">{deleteTarget.name}</span> sera définitivement supprimé.
+            <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+              <span className="font-semibold" style={{ color: '#FFFFFF' }}>{deleteTarget.name}</span> sera définitivement supprimé.
               Cette action est irréversible.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteTarget(null)}
-                className="flex-1 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50"
+                className="flex-1 py-2 text-sm font-medium rounded-xl hover:bg-white/5 transition-colors"
+                style={{ color: 'rgba(255,255,255,0.7)', border: '1px solid rgba(255,255,255,0.1)' }}
               >
                 Annuler
               </button>

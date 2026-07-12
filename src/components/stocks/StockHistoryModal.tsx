@@ -87,12 +87,12 @@ export function StockHistoryModal({ product, onClose }: StockHistoryModalProps) 
     <Modal title={title} onClose={onClose} maxWidth="max-w-xl">
       {isLoading ? (
         <div className="py-12 flex items-center justify-center">
-          <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
+          <Loader2 className="w-5 h-5 animate-spin text-white/30" />
         </div>
       ) : error ? (
         <div className="py-8 text-center text-sm text-red-500">{error}</div>
       ) : movements.length === 0 ? (
-        <div className="py-12 flex flex-col items-center gap-2 text-gray-400">
+        <div className="py-12 flex flex-col items-center gap-2 text-white/30">
           <History className="w-8 h-8" />
           <p className="text-sm">Aucun mouvement enregistré.</p>
         </div>
@@ -124,12 +124,12 @@ export function StockHistoryModal({ product, onClose }: StockHistoryModalProps) 
                 {/* Infos */}
                 <div className="flex-1 min-w-0">
                   {productName && (
-                    <p className="text-sm font-medium text-gray-800 truncate">{productName}</p>
+                    <p className="text-sm font-medium text-white truncate">{productName}</p>
                   )}
                   {m.note && (
-                    <p className="text-xs text-gray-500 truncate">{m.note}</p>
+                    <p className="text-xs text-white/45 truncate">{m.note}</p>
                   )}
-                  <p className="text-xs text-gray-400 mt-0.5">{date} à {time}</p>
+                  <p className="text-xs text-white/30 mt-0.5">{date} à {time}</p>
                 </div>
 
                 {/* Quantité */}

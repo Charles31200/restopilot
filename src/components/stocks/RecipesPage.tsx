@@ -165,14 +165,14 @@ const inputCls = (hasError?: boolean) =>
   cn(
     'w-full px-3 py-2 border rounded-lg text-sm transition-all outline-none',
     hasError
-      ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-      : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+      ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+      : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
   )
 
 function FoodCostBadge({ pct }: { pct: number }) {
   const color = pct < 30 ? 'bg-green-50 text-green-700' :
                 pct < 40 ? 'bg-amber-50 text-amber-700' :
-                           'bg-red-50 text-red-700'
+                           'bg-red-500/10 text-red-400'
   return (
     <span className={cn('px-2 py-0.5 rounded-full text-xs font-semibold tabular-nums', color)}>
       {pct.toFixed(1).replace('.', ',')} %
@@ -275,7 +275,7 @@ function IngredientCombobox({
     <div ref={ref} className="relative">
       {/* Input recherche */}
       <div className="relative">
-        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" />
+        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30 pointer-events-none" />
         <input
           type="text"
           value={search}
@@ -285,10 +285,10 @@ function IngredientCombobox({
           className={cn(
             'w-full pl-8 pr-3 py-2 border rounded-lg text-sm transition-all outline-none',
             hasError
-              ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
+              ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
               : selectedProduct
                 ? 'border-green-400 bg-green-50 focus:ring-2 focus:ring-green-100'
-                : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+                : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
           )}
           disabled={creating}
         />
@@ -302,11 +302,11 @@ function IngredientCombobox({
 
       {/* Dropdown */}
       {isOpen && !creating && (
-        <div className="absolute z-50 mt-1 left-0 right-0 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
+        <div className="absolute z-50 mt-1 left-0 right-0 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-lg overflow-hidden max-h-64 overflow-y-auto">
           {/* Produits existants */}
           {matchingProducts.length > 0 && (
             <>
-              <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 sticky top-0">
+              <div className="px-3 py-1.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider bg-white/5 sticky top-0">
                 Vos produits
               </div>
               {matchingProducts.map(p => (
@@ -314,10 +314,10 @@ function IngredientCombobox({
                   key={p.id}
                   type="button"
                   onMouseDown={e => { e.preventDefault(); handleSelectProduct(p) }}
-                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-blue-50 text-left gap-2"
+                  className="w-full flex items-center justify-between px-3 py-2 hover:bg-[#7798AB]/10 text-left gap-2"
                 >
-                  <span className="text-sm text-gray-900 font-medium truncate">{p.name}</span>
-                  <span className="text-xs text-gray-400 flex-shrink-0 tabular-nums">
+                  <span className="text-sm text-white font-medium truncate">{p.name}</span>
+                  <span className="text-xs text-white/30 flex-shrink-0 tabular-nums">
                     {p.buy_price > 0 ? `${p.buy_price.toFixed(2)} €/${p.unit}` : p.unit}
                   </span>
                 </button>
@@ -328,7 +328,7 @@ function IngredientCombobox({
           {/* Suggestions communes */}
           {matchingSuggestions.length > 0 && (
             <>
-              <div className="px-3 py-1.5 text-[10px] font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 sticky top-0">
+              <div className="px-3 py-1.5 text-[10px] font-semibold text-white/30 uppercase tracking-wider bg-white/5 sticky top-0">
                 Suggestions
               </div>
               {matchingSuggestions.map(sug => (
@@ -338,24 +338,24 @@ function IngredientCombobox({
                   onMouseDown={e => { e.preventDefault(); handleSelectSuggestion(sug) }}
                   className="w-full flex items-center justify-between px-3 py-2 hover:bg-amber-50 text-left gap-2 group"
                 >
-                  <span className="text-sm text-gray-700 truncate">{sug.name}</span>
+                  <span className="text-sm text-white/70 truncate">{sug.name}</span>
                   <span className="text-xs text-amber-600 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
                     + Ajouter au stock
                   </span>
-                  <span className="text-xs text-gray-400 flex-shrink-0">{sug.unit}</span>
+                  <span className="text-xs text-white/30 flex-shrink-0">{sug.unit}</span>
                 </button>
               ))}
             </>
           )}
 
           {!hasResults && term.length > 0 && (
-            <div className="px-3 py-4 text-sm text-gray-400 text-center">
+            <div className="px-3 py-4 text-sm text-white/30 text-center">
               Aucun ingrédient trouvé pour « {search} »
             </div>
           )}
 
           {!hasResults && term.length === 0 && (
-            <div className="px-3 py-3 text-xs text-gray-400 text-center">
+            <div className="px-3 py-3 text-xs text-white/30 text-center">
               Tapez pour rechercher parmi {products.length + COMMON_INGREDIENTS.length} ingrédients
             </div>
           )}
@@ -445,7 +445,7 @@ function RecipeFormModal({
   const footer = (
     <div className="flex items-center justify-end gap-3">
       <button type="button" onClick={onClose}
-        className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50"
+        className="px-4 py-2 text-sm font-medium text-white/70 border border-white/10 rounded-xl hover:bg-white/5"
       >Annuler</button>
       <button type="submit" form="recipe-form" disabled={isSubmitting}
         className="px-5 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-60 flex items-center gap-2"
@@ -464,7 +464,7 @@ function RecipeFormModal({
       footer={footer}
     >
       {serverError && (
-        <div className="mb-4 flex gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 flex gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" /> {serverError}
         </div>
       )}
@@ -472,8 +472,8 @@ function RecipeFormModal({
       {/* Résumé food cost live */}
       <div className="mb-4 grid grid-cols-4 gap-2">
         {[
-          { label: 'Vente',        value: `${watchedSellPrice.toFixed(2)} €`,  color: 'text-gray-900' },
-          { label: 'Coût ingréd.', value: `${ingredientCost.toFixed(2)} €`,    color: 'text-gray-700' },
+          { label: 'Vente',        value: `${watchedSellPrice.toFixed(2)} €`,  color: 'text-white' },
+          { label: 'Coût ingréd.', value: `${ingredientCost.toFixed(2)} €`,    color: 'text-white/70' },
           { label: 'Food cost',    value: `${foodCostPct.toFixed(1)} %`,
             color: foodCostPct < 30 ? 'text-green-600' : foodCostPct < 40 ? 'text-amber-600' : 'text-red-600'
           },
@@ -481,8 +481,8 @@ function RecipeFormModal({
             color: marginEur >= 0 ? 'text-green-600' : 'text-red-600'
           },
         ].map(stat => (
-          <div key={stat.label} className="bg-gray-50 rounded-xl p-2.5 text-center">
-            <p className="text-[10px] text-gray-400 uppercase tracking-wide mb-0.5">{stat.label}</p>
+          <div key={stat.label} className="bg-white/5 rounded-xl p-2.5 text-center">
+            <p className="text-[10px] text-white/30 uppercase tracking-wide mb-0.5">{stat.label}</p>
             <p className={cn('text-sm font-bold tabular-nums', stat.color)}>{stat.value}</p>
           </div>
         ))}
@@ -492,7 +492,7 @@ function RecipeFormModal({
         {/* Infos de base */}
         <div className="grid grid-cols-[1fr_auto_auto] gap-3">
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-white/70 mb-1">
               Nom du plat *
             </label>
             <input type="text" {...register('dish_name')} placeholder="Ex : Entrecôte frites"
@@ -502,14 +502,14 @@ function RecipeFormModal({
             )}
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-white/70 mb-1">
               Prix de vente (€) *
             </label>
             <input type="number" step="0.01" min="0" {...register('sell_price', { valueAsNumber: true })}
               placeholder="0.00" className={cn(inputCls(!!errors.sell_price), 'w-28')} />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-700 mb-1">
+            <label className="block text-xs font-medium text-white/70 mb-1">
               Catégorie
             </label>
             <input type="text" {...register('category')} placeholder="Entrée, Plat…"
@@ -520,7 +520,7 @@ function RecipeFormModal({
         {/* Ingrédients */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="text-xs font-semibold text-gray-700 uppercase tracking-wide">
+            <label className="text-xs font-semibold text-white/70 uppercase tracking-wide">
               Ingrédients
             </label>
             <button type="button"
@@ -567,20 +567,20 @@ function RecipeFormModal({
                       className={cn(inputCls(!!errors.ingredients?.[idx]?.quantity), 'w-24 pr-8')}
                     />
                     {selectedProduct && (
-                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none">
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-white/30 pointer-events-none">
                         {selectedProduct.unit}
                       </span>
                     )}
                   </div>
 
                   {/* Coût de la ligne */}
-                  <span className="text-xs text-gray-500 tabular-nums py-2 min-w-[52px] text-right">
+                  <span className="text-xs text-white/45 tabular-nums py-2 min-w-[52px] text-right">
                     {lineCost !== null && lineCost > 0 ? `${lineCost.toFixed(2)} €` : '—'}
                   </span>
 
                   {/* Supprimer */}
                   <button type="button" onClick={() => remove(idx)}
-                    className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                    className="p-2 text-white/30 hover:text-red-500 transition-colors"
                     disabled={fields.length === 1}
                   >
                     <X className="w-4 h-4" />
@@ -590,7 +590,7 @@ function RecipeFormModal({
             })}
           </div>
 
-          <p className="mt-2 text-[11px] text-gray-400">
+          <p className="mt-2 text-[11px] text-white/30">
             Les ingrédients sélectionnés depuis les suggestions seront automatiquement ajoutés à votre stock (prix à 0 €, à mettre à jour).
           </p>
         </div>
@@ -642,8 +642,8 @@ export function RecipesPage({ products }: RecipesPageProps) {
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
-          <h3 className="text-base font-semibold text-gray-900">Fiches techniques</h3>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <h3 className="text-base font-semibold text-white">Fiches techniques</h3>
+          <p className="text-sm text-white/30 mt-0.5">
             Food cost calculé automatiquement selon les prix d'achat.
           </p>
         </div>
@@ -659,14 +659,14 @@ export function RecipesPage({ products }: RecipesPageProps) {
       {/* Table */}
       {isLoading ? (
         <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+          <Loader2 className="w-6 h-6 animate-spin text-white/30" />
         </div>
       ) : recipes.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16 gap-3">
-          <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center">
-            <ChefHat className="w-7 h-7 text-gray-400" />
+          <div className="w-14 h-14 rounded-2xl bg-white/8 flex items-center justify-center">
+            <ChefHat className="w-7 h-7 text-white/30" />
           </div>
-          <p className="text-sm text-gray-500">Aucune fiche technique créée.</p>
+          <p className="text-sm text-white/45">Aucune fiche technique créée.</p>
           <button
             onClick={() => setShowForm(true)}
             className="text-sm text-blue-600 font-medium hover:underline"
@@ -675,12 +675,12 @@ export function RecipesPage({ products }: RecipesPageProps) {
           </button>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-gray-200">
+        <div className="overflow-x-auto rounded-xl border border-white/10">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
+              <tr className="bg-white/5 border-b border-white/10">
                 {['Plat', 'Catégorie', 'Prix de vente', 'Coût ingrédients', 'Food cost', 'Marge brute', ''].map(h => (
-                  <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                  <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-white/45 uppercase tracking-wider whitespace-nowrap">
                     {h}
                   </th>
                 ))}
@@ -688,13 +688,13 @@ export function RecipesPage({ products }: RecipesPageProps) {
             </thead>
             <tbody className="divide-y divide-gray-100">
               {recipes.map(r => (
-                <tr key={r.id} className="hover:bg-gray-50/50 group">
-                  <td className="px-4 py-3 font-medium text-gray-900">{r.dish_name}</td>
-                  <td className="px-4 py-3 text-gray-500">{r.category ?? '—'}</td>
+                <tr key={r.id} className="hover:bg-white/5 group">
+                  <td className="px-4 py-3 font-medium text-white">{r.dish_name}</td>
+                  <td className="px-4 py-3 text-white/45">{r.category ?? '—'}</td>
                   <td className="px-4 py-3 tabular-nums font-semibold">
                     {r.sell_price.toFixed(2)} €
                   </td>
-                  <td className="px-4 py-3 text-gray-500 tabular-nums">
+                  <td className="px-4 py-3 text-white/45 tabular-nums">
                     {r.ingredient_cost.toFixed(2)} €
                   </td>
                   <td className="px-4 py-3">
@@ -706,7 +706,7 @@ export function RecipesPage({ products }: RecipesPageProps) {
                       r.margin_eur >= 0 ? 'text-green-600' : 'text-red-600'
                     )}>
                       {r.margin_eur.toFixed(2)} €
-                      <span className="font-normal text-xs ml-1 text-gray-400">
+                      <span className="font-normal text-xs ml-1 text-white/30">
                         ({r.margin_pct.toFixed(0)} %)
                       </span>
                     </span>
@@ -714,7 +714,7 @@ export function RecipesPage({ products }: RecipesPageProps) {
                   <td className="px-4 py-3">
                     <button
                       onClick={() => { setEditRecipe(r); setShowForm(true) }}
-                      className="text-xs text-gray-400 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-all"
+                      className="text-xs text-white/30 hover:text-[#7798AB] opacity-0 group-hover:opacity-100 transition-all"
                     >
                       Modifier
                     </button>

@@ -21,7 +21,7 @@ function formatQty(qty: number, decimals = 3): string {
 
 function VarianceBadge({ variance }: { variance: number }) {
   if (variance === 0) {
-    return <span className="text-xs text-gray-400 flex items-center gap-0.5"><Minus className="w-3 h-3" />0</span>
+    return <span className="text-xs text-white/30 flex items-center gap-0.5"><Minus className="w-3 h-3" />0</span>
   }
   const abs = Math.abs(variance)
   const positive = variance > 0
@@ -136,7 +136,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
 
   const footer = step === 'count' ? (
     <div className="flex items-center justify-between">
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-white/45">
         {totalChanges > 0
           ? `${totalChanges} produit(s) modifié(s)`
           : 'Saisissez les quantités comptées'
@@ -144,7 +144,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
       </p>
       <div className="flex gap-3">
         <button type="button" onClick={onClose}
-          className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50"
+          className="px-4 py-2 text-sm font-medium text-white/70 border border-white/10 rounded-xl hover:bg-white/5"
         >
           Annuler
         </button>
@@ -162,7 +162,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
   ) : (
     <div className="flex items-center justify-between">
       <button type="button" onClick={() => setStep('count')}
-        className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900"
+        className="px-4 py-2 text-sm font-medium text-white/60 hover:text-white"
       >
         ← Retour
       </button>
@@ -189,7 +189,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
       footer={footer}
     >
       {serverError && (
-        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" /> {serverError}
         </div>
       )}
@@ -199,18 +199,18 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
         <>
           {/* Barre de recherche */}
           <div className="relative mb-4">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
             <input
               type="text"
               placeholder="Filtrer les produits…"
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-3.5 py-2.5 border border-gray-300 rounded-xl text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full pl-9 pr-3.5 py-2.5 border border-white/10 rounded-xl text-sm outline-none focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20"
             />
           </div>
 
           {/* En-tête colonnes */}
-          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-2 pb-2 border-b border-gray-100 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+          <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 px-2 pb-2 border-b border-white/6 text-[11px] font-semibold text-white/30 uppercase tracking-wider">
             <span>Produit</span>
             <span className="text-right w-24">Théorique</span>
             <span className="text-right w-28">Compté</span>
@@ -230,14 +230,14 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
                 >
                   {/* Nom + catégorie */}
                   <div>
-                    <p className="text-sm font-medium text-gray-800">{product.name}</p>
+                    <p className="text-sm font-medium text-white">{product.name}</p>
                     {product.category && (
-                      <p className="text-xs text-gray-400">{product.category}</p>
+                      <p className="text-xs text-white/30">{product.category}</p>
                     )}
                   </div>
 
                   {/* Stock théorique */}
-                  <span className="text-sm text-gray-500 tabular-nums w-24 text-right">
+                  <span className="text-sm text-white/45 tabular-nums w-24 text-right">
                     {formatQty(product.stock_qty)} {product.unit}
                   </span>
 
@@ -254,10 +254,10 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
                         'w-full px-2.5 py-1.5 border rounded-lg text-sm text-right tabular-nums transition-all outline-none',
                         counted !== ''
                           ? 'border-blue-400 bg-blue-50 focus:ring-2 focus:ring-blue-200'
-                          : 'border-gray-300 focus:border-blue-400'
+                          : 'border-white/10 focus:border-blue-400'
                       )}
                     />
-                    <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-gray-400 pointer-events-none">
+                    <span className="absolute right-1 top-1/2 -translate-y-1/2 text-[10px] text-white/30 pointer-events-none">
                       {product.unit}
                     </span>
                   </div>
@@ -266,7 +266,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
                   <div className="w-16 flex justify-end">
                     {variance !== null
                       ? <VarianceBadge variance={variance} />
-                      : <span className="text-xs text-gray-300">—</span>
+                      : <span className="text-xs text-white/30">—</span>
                     }
                   </div>
                 </div>
@@ -291,7 +291,7 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
 
           <div className="divide-y divide-gray-100">
             {/* En-tête */}
-            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 pb-2 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+            <div className="grid grid-cols-[1fr_auto_auto_auto] gap-3 pb-2 text-[11px] font-semibold text-white/30 uppercase tracking-wider">
               <span>Produit</span>
               <span className="text-right w-24">Avant</span>
               <span className="text-right w-24">Après</span>
@@ -303,11 +303,11 @@ export function InventoryModal({ products, onClose, onSaved }: InventoryModalPro
               const variance = newQty - product.stock_qty
               return (
                 <div key={product.id} className="grid grid-cols-[1fr_auto_auto_auto] gap-3 items-center py-2.5">
-                  <span className="text-sm font-medium text-gray-800">{product.name}</span>
-                  <span className="text-sm text-gray-500 tabular-nums w-24 text-right">
+                  <span className="text-sm font-medium text-white">{product.name}</span>
+                  <span className="text-sm text-white/45 tabular-nums w-24 text-right">
                     {formatQty(product.stock_qty)} {product.unit}
                   </span>
-                  <span className="text-sm font-semibold text-gray-800 tabular-nums w-24 text-right">
+                  <span className="text-sm font-semibold text-white tabular-nums w-24 text-right">
                     {formatQty(newQty)} {product.unit}
                   </span>
                   <div className="w-16 flex justify-end">

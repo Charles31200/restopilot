@@ -48,8 +48,8 @@ const inputCls = (hasError?: boolean) =>
   cn(
     'w-full px-3.5 py-2.5 border rounded-xl text-sm transition-all outline-none',
     hasError
-      ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-      : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+      ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+      : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
   )
 
 function FieldError({ msg }: { msg?: string }) {
@@ -116,7 +116,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
       <button
         type="button"
         onClick={onClose}
-        className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors"
+        className="px-4 py-2 text-sm font-medium text-white/70 border border-white/10 rounded-xl hover:bg-white/5 transition-colors"
       >
         Annuler
       </button>
@@ -139,7 +139,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
       footer={footer}
     >
       {serverError && (
-        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 flex items-start gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           {serverError}
         </div>
@@ -148,7 +148,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
       <form id="product-form" onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Nom */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Nom du produit <span className="text-red-500">*</span>
           </label>
           <input
@@ -163,7 +163,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
         {/* Catégorie + Unité */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Catégorie
             </label>
             <select {...register('category')} className={inputCls()} defaultValue="">
@@ -174,7 +174,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Unité <span className="text-red-500">*</span>
             </label>
             <select {...register('unit')} className={inputCls(!!errors.unit)}>
@@ -189,7 +189,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
         {/* Prix d'achat + Stock actuel */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Prix d'achat HT (€)
             </label>
             <input
@@ -203,7 +203,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
             <FieldError msg={errors.buy_price?.message} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">
+            <label className="block text-sm font-medium text-white/70 mb-1.5">
               Stock actuel
             </label>
             <input
@@ -220,7 +220,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
 
         {/* Seuil minimum */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Seuil minimum d'alerte
           </label>
           <input
@@ -231,7 +231,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
             {...register('min_threshold', { valueAsNumber: true })}
             className={inputCls(!!errors.min_threshold)}
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-white/30 mt-1">
             Une alerte s'affichera quand le stock descend sous ce seuil.
           </p>
           <FieldError msg={errors.min_threshold?.message} />
@@ -239,7 +239,7 @@ export function ProductModal({ product, onClose, onSaved }: ProductModalProps) {
 
         {/* Fournisseur */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          <label className="block text-sm font-medium text-white/70 mb-1.5">
             Fournisseur
           </label>
           <input
