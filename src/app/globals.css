@@ -1,31 +1,33 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   PILOTRESTO — Nouvelle palette Apple-inspired 2026
+   PILOTRESTO — Thème sombre "Unicorn Apple Dashboard" (2026)
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
   /* ── Palette principale ──────────────────────────────────────  */
-  --color-dark:        #0D1B1E;
+  --color-bg:             #0F0F0F;
+  --color-sidebar:        #161616;
+  --color-card:           #1A1A1A;
+  --color-border:         rgba(255,255,255,0.06);
+  --color-text-primary:   #FFFFFF;
+  --color-text-secondary: rgba(255,255,255,0.45);
+  --color-text-muted:     rgba(255,255,255,0.3);
+  --color-accent:         #7798AB;
+  --color-success:        #4ADE80;
+  --color-danger:         #F87171;
+  --color-btn-primary:    #7798AB;
+
+  --color-dark:        #0F0F0F;
   --color-blue:        #7798AB;
   --color-green:       #C3DBC5;
   --color-cream:       #E8DCB9;
   --color-pink:        #F2CEE6;
 
   /* ── Dérivés ─────────────────────────────────────────────────  */
-  --color-dark-80:     rgba(13,27,30,0.8);
-  --color-dark-10:     rgba(13,27,30,0.05);
+  --color-dark-80:     rgba(0,0,0,0.7);
+  --color-dark-10:     rgba(255,255,255,0.05);
   --color-blue-20:     rgba(119,152,171,0.2);
-  --color-text-primary:   #111111;
-  --color-text-secondary: #888888;
-  --color-text-muted:     rgba(17,17,17,0.4);
-  --color-bg:          #FFFFFF;
-  --color-card:        #FFFFFF;
-  --color-border:      #E5E5E5;
-  --color-sidebar:        #F7F7F5;
-  --color-sidebar-active: #EBEBEA;
-  --color-accent:         #7798AB;
-  --color-btn-primary:    #000000;
 
   /* ── Typographie Apple-like ──────────────────────────────────  */
   --font-sans:   -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
@@ -44,50 +46,51 @@
   --radius-xl:  20px;
   --radius-2xl: 24px;
 
-  /* ── Ombres Apple ────────────────────────────────────────────  */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  /* ── Ombres — teintées noir (fond sombre) ──────────────────────  */
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.4);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
 
   /* ────────────────────────────────────────────────────────────  */
-  /* Rétrocompatibilité — tous les composants référencent --rp-*  */
-  /* On repointe vers la nouvelle palette sans les casser.        */
+  /* Rétrocompatibilité — tous les composants référencent --rp-*   */
+  /* On repointe vers la palette sombre sans toucher chaque fichier. */
   /* ────────────────────────────────────────────────────────────  */
 
-  /* Amber → blue-gray accent */
+  /* Amber → accent bleu-gris (inchangé, c'est déjà la couleur de marque) */
   --rp-amber:        #7798AB;
-  --rp-amber-light:  rgba(119,152,171,0.12);
-  --rp-amber-dark:   #5B7A8D;
+  --rp-amber-light:  rgba(119,152,171,0.15);
+  --rp-amber-dark:   #8FADC0;
 
-  /* Navy → dark principal */
-  --rp-navy:         #0D1B1E;
-  --rp-navy-light:   #1E3135;
-  --rp-navy-muted:   #7798AB;
+  /* Navy → utilisé comme COULEUR DE TEXTE partout (pas de fond) :
+     bascule vers blanc pour rester lisible sur fond sombre. */
+  --rp-navy:         #FFFFFF;
+  --rp-navy-light:   #242424;
+  --rp-navy-muted:   rgba(255,255,255,0.45);
 
-  /* Lavender → border/subtle */
-  --rp-lavender:       rgba(119,152,171,0.25);
-  --rp-lavender-light: rgba(119,152,171,0.08);
+  /* Lavender → bordures / fonds subtils */
+  --rp-lavender:       rgba(255,255,255,0.08);
+  --rp-lavender-light: rgba(255,255,255,0.04);
 
-  /* Khaki → green accent */
+  /* Khaki → accent vert secondaire (rare, inchangé) */
   --rp-khaki:        #C3DBC5;
-  --rp-khaki-light:  rgba(195,219,197,0.2);
+  --rp-khaki-light:  rgba(195,219,197,0.15);
 
-  /* Fond & blanc */
-  --rp-white:        #FFFFFF;
-  --rp-bg-page:      #FFFFFF;
+  /* Fond & cartes */
+  --rp-white:        #1A1A1A;
+  --rp-bg-page:      #0F0F0F;
 
-  /* Sémantiques (conservés) */
-  --rp-success:      #16A34A;
-  --rp-success-bg:   #DCFCE7;
-  --rp-warning:      #D97706;
-  --rp-warning-bg:   #FEF3C7;
-  --rp-danger:       #DC2626;
-  --rp-danger-bg:    #FEE2E2;
+  /* Sémantiques */
+  --rp-success:      #4ADE80;
+  --rp-success-bg:   rgba(74,222,128,0.15);
+  --rp-warning:      #FBBF24;
+  --rp-warning-bg:   rgba(251,191,36,0.15);
+  --rp-danger:       #F87171;
+  --rp-danger-bg:    rgba(248,113,113,0.15);
 
   /* Ombres */
-  --rp-shadow-card:       0 1px 4px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04);
-  --rp-shadow-modal:      0 20px 60px rgba(0,0,0,0.15);
-  --rp-shadow-bottom-nav: 0 -2px 16px rgba(0,0,0,0.06);
+  --rp-shadow-card:       0 4px 24px rgba(0,0,0,0.4);
+  --rp-shadow-modal:      0 20px 60px rgba(0,0,0,0.6);
+  --rp-shadow-bottom-nav: 0 -4px 24px rgba(0,0,0,0.4);
 
   /* Rayons (alias) */
   --rp-radius-sm:   8px;
@@ -97,12 +100,12 @@
   --rp-radius-full: 9999px;
 
   /* Rétrocompat brand-* */
-  --color-brand-50:  #EFF6FF;
-  --color-brand-100: #DBEAFE;
-  --color-brand-500: #3B82F6;
-  --color-brand-600: #2563EB;
-  --color-brand-700: #1D4ED8;
-  --color-brand-900: #1E3A5F;
+  --color-brand-50:  #1A2733;
+  --color-brand-100: #223244;
+  --color-brand-500: #7798AB;
+  --color-brand-600: #8FADC0;
+  --color-brand-700: #A7C1D2;
+  --color-brand-900: #E8F0F5;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -110,8 +113,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 @theme inline {
-  /* Palette nouvelle */
-  --color-dark:        #0D1B1E;
+  /* Palette */
+  --color-dark:        #0F0F0F;
   --color-blue:        #7798AB;
   --color-green:       #C3DBC5;
   --color-cream:       #E8DCB9;
@@ -119,46 +122,46 @@
 
   /* Rétrocompat rp-* */
   --color-rp-amber:          #7798AB;
-  --color-rp-amber-light:    rgba(119,152,171,0.12);
-  --color-rp-amber-dark:     #5B7A8D;
+  --color-rp-amber-light:    rgba(119,152,171,0.15);
+  --color-rp-amber-dark:     #8FADC0;
 
-  --color-rp-navy:           #0D1B1E;
-  --color-rp-navy-light:     #1E3135;
-  --color-rp-navy-muted:     #7798AB;
+  --color-rp-navy:           #FFFFFF;
+  --color-rp-navy-light:     #242424;
+  --color-rp-navy-muted:     rgba(255,255,255,0.45);
 
-  --color-rp-lavender:       rgba(119,152,171,0.25);
-  --color-rp-lavender-light: rgba(119,152,171,0.08);
+  --color-rp-lavender:       rgba(255,255,255,0.08);
+  --color-rp-lavender-light: rgba(255,255,255,0.04);
 
   --color-rp-khaki:          #C3DBC5;
-  --color-rp-khaki-light:    rgba(195,219,197,0.2);
+  --color-rp-khaki-light:    rgba(195,219,197,0.15);
 
-  --color-rp-page:           #F8F9FA;
+  --color-rp-page:           #0F0F0F;
 
-  --color-rp-success:        #16A34A;
-  --color-rp-success-bg:     #DCFCE7;
-  --color-rp-warning:        #D97706;
-  --color-rp-warning-bg:     #FEF3C7;
-  --color-rp-danger:         #DC2626;
-  --color-rp-danger-bg:      #FEE2E2;
+  --color-rp-success:        #4ADE80;
+  --color-rp-success-bg:     rgba(74,222,128,0.15);
+  --color-rp-warning:        #FBBF24;
+  --color-rp-warning-bg:     rgba(251,191,36,0.15);
+  --color-rp-danger:         #F87171;
+  --color-rp-danger-bg:      rgba(248,113,113,0.15);
 
   /* Rétrocompat brand-* */
-  --color-brand-50:   #EFF6FF;
-  --color-brand-100:  #DBEAFE;
-  --color-brand-500:  #3B82F6;
-  --color-brand-600:  #2563EB;
-  --color-brand-700:  #1D4ED8;
+  --color-brand-50:   #1A2733;
+  --color-brand-100:  #223244;
+  --color-brand-500:  #7798AB;
+  --color-brand-600:  #8FADC0;
+  --color-brand-700:  #A7C1D2;
 
-  --color-success-50:  #F0FDF4;
-  --color-success-500: #22C55E;
-  --color-success-700: #15803D;
+  --color-success-50:  #12291C;
+  --color-success-500: #4ADE80;
+  --color-success-700: #86EFAC;
 
-  --color-warning-50:  #FFFBEB;
-  --color-warning-500: #F59E0B;
-  --color-warning-700: #B45309;
+  --color-warning-50:  #2B2210;
+  --color-warning-500: #FBBF24;
+  --color-warning-700: #FDE68A;
 
-  --color-danger-50:   #FEF2F2;
-  --color-danger-500:  #EF4444;
-  --color-danger-700:  #B91C1C;
+  --color-danger-50:   #2B1414;
+  --color-danger-500:  #F87171;
+  --color-danger-700:  #FCA5A5;
 
   /* Polices */
   --font-display: var(--font-jakarta);
@@ -182,6 +185,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  color-scheme: dark;
 }
 
 body {
@@ -199,8 +203,8 @@ h1, h2, h3, h4, h5, h6 {
    COMPOSANTS UTILITAIRES
    ═══════════════════════════════════════════════════════════════ */
 
-/* Card Apple-style */
-.card {
+/* Card sombre générique */
+.card, .dark-card {
   background:    var(--color-card);
   border-radius: var(--radius-xl);
   box-shadow:    var(--shadow-md);
@@ -208,22 +212,38 @@ h1, h2, h3, h4, h5, h6 {
   padding:       24px;
 }
 
+/* Input sombre générique */
+.dark-input {
+  background:    #111111;
+  border:        1px solid rgba(255,255,255,0.1);
+  color:         #FFFFFF;
+  border-radius: var(--radius-md);
+  padding:       12px 16px;
+}
+.dark-input::placeholder { color: rgba(255,255,255,0.3); }
+.dark-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(119,152,171,0.2);
+}
+
 /* Bouton primaire */
-.btn-primary {
-  background:    #000000;
+.btn-primary, .dark-btn-primary {
+  background:    var(--color-btn-primary);
   color:         white;
   border:        none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   padding:       12px 24px;
   font-size:     var(--font-size-md);
-  font-weight:   500;
+  font-weight:   600;
   cursor:        pointer;
-  transition:    background 0.15s;
+  transition:    background 0.15s, transform 0.1s;
   display:       inline-flex;
   align-items:   center;
   gap:           8px;
 }
-.btn-primary:hover { background: #222222; opacity: 1; }
+.btn-primary:hover, .dark-btn-primary:hover { background: #8FADC0; opacity: 1; }
+.btn-primary:active, .dark-btn-primary:active { transform: scale(0.98); }
 
 /* Bouton secondaire */
 .btn-secondary {
@@ -254,9 +274,9 @@ h1, h2, h3, h4, h5, h6 {
 .rp-btn-primary {
   min-height:     48px;
   padding:        0 24px;
-  background:     #000000;
+  background:     var(--color-btn-primary);
   color:          white;
-  border-radius:  8px;
+  border-radius:  var(--radius-md);
   font-weight:    600;
   font-size:      var(--font-size-md);
   transition:     background 0.15s, transform 0.1s;
@@ -269,14 +289,14 @@ h1, h2, h3, h4, h5, h6 {
   outline:        none;
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-primary:hover  { background: #222222; opacity: 1; }
+.rp-btn-primary:hover  { background: #8FADC0; opacity: 1; }
 .rp-btn-primary:active { transform: scale(0.98); }
 
 /* Bouton secondaire rp (rétrocompat) */
 .rp-btn-secondary {
   min-height:     48px;
   padding:        0 20px;
-  background:     var(--color-blue-20);
+  background:     rgba(119,152,171,0.15);
   color:          var(--color-blue);
   border-radius:  var(--radius-md);
   font-weight:    500;
@@ -290,13 +310,13 @@ h1, h2, h3, h4, h5, h6 {
   border:         1px solid var(--color-border);
   -webkit-tap-highlight-color: transparent;
 }
-.rp-btn-secondary:hover { background: rgba(119,152,171,0.3); }
+.rp-btn-secondary:hover { background: rgba(119,152,171,0.25); }
 
 /* Bottom sheet handle */
 .rp-sheet-handle {
   width: 40px;
   height: 4px;
-  background: var(--color-border);
+  background: rgba(255,255,255,0.15);
   border-radius: 9999px;
   margin: 12px auto 0;
   flex-shrink: 0;
@@ -324,12 +344,12 @@ h1, h2, h3, h4, h5, h6 {
   width:    56px;
   height:   56px;
   border-radius: 9999px;
-  background: var(--color-dark);
+  background: var(--color-accent);
   color:    white;
   display:  flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 16px rgba(13,27,30,0.25);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5);
   cursor:   pointer;
   border:   none;
   z-index:  40;
@@ -341,24 +361,24 @@ h1, h2, h3, h4, h5, h6 {
 
 /* KPI cards */
 .kpi-card {
-  background:    #FFFFFF;
-  border-radius: 12px;
+  background:    var(--color-card);
+  border-radius: var(--radius-xl);
   padding:       24px;
   box-shadow:    none;
-  border:        1px solid #E5E5E5;
+  border:        1px solid var(--color-border);
   position:      relative;
   overflow:      hidden;
 }
 .kpi-card .kpi-value {
   font-size:   32px;
   font-weight: 700;
-  color:       #111111;
+  color:       #FFFFFF;
   line-height: 1.1;
   font-family: var(--font-display);
 }
 .kpi-card .kpi-label {
   font-size:  13px;
-  color:      #888888;
+  color:      rgba(255,255,255,0.45);
   margin-top: 4px;
 }
 
@@ -366,7 +386,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-accent {
   background:    #7798AB;
   color:         white;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding:       10px 20px;
   font-weight:   600;
   border:        none;
@@ -376,14 +396,14 @@ h1, h2, h3, h4, h5, h6 {
   align-items:   center;
   gap:           8px;
 }
-.btn-accent:hover { background: #5B7A8D; }
+.btn-accent:hover { background: #8FADC0; }
 
 /* Tag (style liste/tableau) */
 .rp-tag {
   display:        inline-flex;
   align-items:    center;
-  background:     #F0F0F0;
-  color:          #333333;
+  background:     rgba(255,255,255,0.08);
+  color:          rgba(255,255,255,0.7);
   border-radius:  6px;
   padding:        3px 10px;
   font-size:      12px;
@@ -394,11 +414,11 @@ h1, h2, h3, h4, h5, h6 {
 /* Scrollbar fine */
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 9999px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 9999px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--color-blue); }
 
 /* Sélection de texte */
-::selection { background: rgba(119,152,171,0.2); color: var(--color-dark); }
+::selection { background: rgba(119,152,171,0.35); color: #FFFFFF; }
 
 /* Feedback universel */
 button, [role="button"] { cursor: pointer; }
