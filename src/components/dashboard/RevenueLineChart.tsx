@@ -17,8 +17,8 @@ function makeLastDot(lastIndex: number) {
     if (cx === undefined || cy === undefined || index !== lastIndex) return null
     return (
       <g>
-        <circle cx={cx} cy={cy} r={14} fill="#F0F0F0" />
-        <circle cx={cx} cy={cy} r={4.5} fill="#111111" />
+        <circle cx={cx} cy={cy} r={14} fill="rgba(119,152,171,0.2)" />
+        <circle cx={cx} cy={cy} r={4.5} fill="#7798AB" />
       </g>
     )
   }
@@ -29,39 +29,39 @@ export function RevenueLineChart({ data: initialData }: { data: WeeklyDataPoint[
   return (
     <ResponsiveContainer width="100%" height={280}>
       <LineChart data={data} margin={{ top: 10, right: 16, left: 0, bottom: 0 }}>
-        <CartesianGrid vertical={false} stroke="#F0F0F0" />
+        <CartesianGrid vertical={false} stroke="rgba(255,255,255,0.06)" />
         <XAxis
           dataKey="label"
-          tick={{ fontSize: 11, fill: '#BBBBBB', fontFamily: 'var(--font-body)' }}
+          tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}
           axisLine={false}
           tickLine={false}
         />
         <YAxis
-          tick={{ fontSize: 11, fill: '#BBBBBB', fontFamily: 'var(--font-body)' }}
+          tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}
           axisLine={false}
           tickLine={false}
           tickFormatter={v => `${(v / 1000).toFixed(0)}k €`}
           width={56}
         />
         <Tooltip
-          cursor={{ stroke: '#E5E5E5' }}
+          cursor={{ stroke: 'rgba(255,255,255,0.15)' }}
           contentStyle={{
-            background:   '#FFFFFF',
-            border:       '1px solid #E5E5E5',
+            background:   '#1A1A1A',
+            border:       '1px solid rgba(255,255,255,0.1)',
             borderRadius: '8px',
             fontFamily:   'var(--font-body)',
             fontSize:     13,
           }}
           formatter={(value: unknown) => [fmt(Number(value)), 'CA']}
-          labelStyle={{ color: '#111111', fontFamily: 'var(--font-display)', fontWeight: 600 }}
+          labelStyle={{ color: '#FFFFFF', fontFamily: 'var(--font-display)', fontWeight: 600 }}
         />
         <Line
           type="monotone"
           dataKey="revenue"
-          stroke="#111111"
+          stroke="#7798AB"
           strokeWidth={2}
           dot={makeLastDot(data.length - 1)}
-          activeDot={{ r: 4, fill: '#111111' }}
+          activeDot={{ r: 4, fill: '#7798AB' }}
         />
       </LineChart>
     </ResponsiveContainer>

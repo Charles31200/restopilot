@@ -44,8 +44,8 @@ const inputCls = (hasError?: boolean) =>
     'w-full h-[52px] rounded-[14px] border px-4 text-[15px] outline-none transition-all',
     'focus:ring-2',
     hasError
-      ? 'border-red-400 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-100'
-      : 'border-[var(--rp-lavender)] bg-white text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
+      ? 'border-red-400/40 bg-red-500/10 text-red-400 focus:border-red-400 focus:ring-red-400/20'
+      : 'border-[var(--rp-lavender)] bg-[#111111] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
   )
 
 function FieldError({ msg }: { msg?: string }) {
@@ -196,7 +196,7 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
       <button
         type="button"
         onClick={onClose}
-        className="flex-1 h-[48px] rounded-full border text-[14px] font-medium transition hover:bg-gray-50"
+        className="flex-1 h-[48px] rounded-full border text-[14px] font-medium transition hover:bg-white/5"
         style={{ borderColor: 'var(--rp-lavender)', color: 'var(--rp-navy-muted)' }}
       >
         Annuler
@@ -236,9 +236,9 @@ export function SaleModal({ onClose, onSaved }: SaleModalProps) {
       )}
 
       {stockWarnings.length > 0 && (
-        <div className="mb-5 rounded-xl px-4 py-3 text-[13px] bg-amber-50 border border-amber-200">
+        <div className="mb-5 rounded-xl px-4 py-3 text-[13px] bg-amber-500/10 border border-amber-500/20">
           {stockWarnings.map((w, i) => (
-            <p key={i} className="flex items-center gap-2 text-amber-700">
+            <p key={i} className="flex items-center gap-2 text-amber-400">
               <AlertTriangle className="w-4 h-4 flex-shrink-0" />
               {w}
             </p>

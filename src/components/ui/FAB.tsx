@@ -33,7 +33,7 @@ export function FAB({ onClick, icon, label = 'Ajouter', bottom = 88, className }
       style={{
         bottom:     `calc(${bottom}px + env(safe-area-inset-bottom, 0px))`,
         background: 'var(--rp-amber)',
-        boxShadow:  '0 4px 16px rgba(212,149,42,.45)',
+        boxShadow:  '0 4px 24px rgba(0,0,0,.5)',
         WebkitTapHighlightColor: 'transparent',
       }}
     >

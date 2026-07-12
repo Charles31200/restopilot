@@ -37,7 +37,7 @@ export function Modal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Overlay sombre */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -45,26 +45,29 @@ export function Modal({
       {/* Carte modale */}
       <div
         className={cn(
-          'relative bg-white rounded-2xl shadow-2xl w-full flex flex-col',
+          'relative rounded-2xl shadow-2xl w-full flex flex-col',
           'max-h-[90vh]',
           maxWidth
         )}
+        style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
           <h2
             id="modal-title"
-            className="text-base font-semibold text-gray-900"
+            className="text-base font-semibold"
+            style={{ color: '#FFFFFF' }}
           >
             {title}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-lg transition-colors hover:bg-white/5"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
             aria-label="Fermer"
           >
             <X className="w-4 h-4" />
@@ -76,7 +79,7 @@ export function Modal({
 
         {/* Footer persistant */}
         {footer && (
-          <div className="flex-shrink-0 px-5 py-4 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">
+          <div className="flex-shrink-0 px-5 py-4 border-t rounded-b-2xl" style={{ borderColor: 'rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
             {footer}
           </div>
         )}
