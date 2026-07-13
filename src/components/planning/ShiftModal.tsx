@@ -37,8 +37,8 @@ type FormData = z.infer<typeof schema>
 
 const inputCls = (e?: boolean) => cn(
   'w-full px-3.5 py-2.5 border rounded-xl text-sm transition-all outline-none',
-  e ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-    : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+  e ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+    : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
 )
 
 function formatCurrency(v: number) {
@@ -232,20 +232,20 @@ export function ShiftModal({
     <div className="flex items-center gap-3">
       {isEdit && (
         <button type="button" onClick={handleDelete} disabled={isDeleting}
-          className="px-4 py-2 text-sm font-medium text-red-600 border border-red-200 rounded-xl hover:bg-red-50 disabled:opacity-60 flex items-center gap-2">
+          className="px-4 py-2 text-sm font-medium text-red-600 border border-red-500/20 rounded-xl hover:bg-red-500/10 disabled:opacity-60 flex items-center gap-2">
           {isDeleting && <Loader2 className="w-4 h-4 animate-spin" />}
           Supprimer
         </button>
       )}
       <div className="flex-1" />
       <button type="button" onClick={onClose}
-        className="px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-xl hover:bg-gray-50">
+        className="px-4 py-2 text-sm font-medium text-white/70 border border-white/10 rounded-xl hover:bg-white/5">
         Annuler
       </button>
       <button type="submit" form="shift-form" disabled={isSubmitting}
         className={cn(
           'px-5 py-2 text-sm font-medium text-white rounded-xl disabled:opacity-60 flex items-center gap-2',
-          hasErrors ? 'bg-amber-600 hover:bg-amber-700' : 'bg-blue-600 hover:bg-blue-700'
+          hasErrors ? 'bg-amber-600 hover:bg-amber-700' : 'bg-[#7798AB] hover:bg-[#8FADC0]'
         )}>
         {isSubmitting && <Loader2 className="w-4 h-4 animate-spin" />}
         {isEdit ? 'Modifier' : 'Créer'}
@@ -257,7 +257,7 @@ export function ShiftModal({
   return (
     <Modal title={isEdit ? 'Modifier le créneau' : 'Nouveau créneau'} onClose={onClose} footer={footer}>
       {serverError && (
-        <div className="mb-4 flex gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="mb-4 flex gap-2 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />{serverError}
         </div>
       )}
@@ -266,7 +266,7 @@ export function ShiftModal({
         {/* Employé (uniquement en création sans présélection) */}
         {!isEdit && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Employé *</label>
+            <label className="block text-sm font-medium text-white/70 mb-1.5">Employé *</label>
             <select {...register('employee_id')} className={inputCls(!!errors.employee_id)}>
               <option value="">— Sélectionner —</option>
               {employees.map(e => (
@@ -281,32 +281,32 @@ export function ShiftModal({
 
         {/* Date */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Date *</label>
+          <label className="block text-sm font-medium text-white/70 mb-1.5">Date *</label>
           <input type="date" {...register('date')} className={inputCls(!!errors.date)} />
         </div>
 
         {/* Heures */}
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Début *</label>
+            <label className="block text-sm font-medium text-white/70 mb-1.5">Début *</label>
             <input type="time" {...register('start_time')} className={inputCls(!!errors.start_time)} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1.5">Fin *</label>
+            <label className="block text-sm font-medium text-white/70 mb-1.5">Fin *</label>
             <input type="time" {...register('end_time')} className={inputCls(!!errors.end_time)} />
           </div>
         </div>
 
         {/* Durée affichée */}
         {watchedStart && watchedEnd && (
-          <p className="text-xs text-gray-500 -mt-2">
+          <p className="text-xs text-white/45 -mt-2">
             Durée : <span className="font-semibold">{calcHours(watchedStart, watchedEnd).toFixed(1)} h</span>
           </p>
         )}
 
         {/* Poste */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Poste</label>
+          <label className="block text-sm font-medium text-white/70 mb-1.5">Poste</label>
           <select {...register('position')} className={inputCls()}>
             <option value="">— Aucun —</option>
             {SHIFT_POSITIONS.map(p => <option key={p} value={p}>{p}</option>)}
@@ -315,7 +315,7 @@ export function ShiftModal({
 
         {/* Note */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">Note (optionnel)</label>
+          <label className="block text-sm font-medium text-white/70 mb-1.5">Note (optionnel)</label>
           <input type="text" placeholder="Ex : Remplacement, formation…"
             {...register('note')} className={inputCls()} />
         </div>
@@ -328,8 +328,8 @@ export function ShiftModal({
             <div key={i} className={cn(
               'flex items-start gap-2 p-3 rounded-xl text-sm border',
               v.severity === 'error'
-                ? 'bg-red-50 border-red-200 text-red-700'
-                : 'bg-amber-50 border-amber-200 text-amber-700'
+                ? 'bg-red-500/10 border-red-500/20 text-red-400'
+                : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
             )}>
               <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
               <p>{v.message}</p>
@@ -342,20 +342,20 @@ export function ShiftModal({
       {costBreakdown && costBreakdown.hours > 0 && (
         <div className={cn(
           'mt-4 rounded-xl p-3 border',
-          hasErrors   ? 'bg-red-50 border-red-200'
-          : hasWarnings ? 'bg-amber-50 border-amber-200'
-          : 'bg-green-50 border-green-200'
+          hasErrors   ? 'bg-red-500/10 border-red-500/20'
+          : hasWarnings ? 'bg-amber-500/10 border-amber-500/20'
+          : 'bg-green-500/10 border-green-500/20'
         )}>
           <div className="flex items-center justify-between mb-1.5">
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-gray-700">
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-white/70">
               <Euro className="w-4 h-4" />
               Coût estimé de ce créneau
             </span>
-            <span className="text-base font-bold text-gray-900 tabular-nums">
+            <span className="text-base font-bold text-white tabular-nums">
               {formatCurrency(costBreakdown.totalCost)}
             </span>
           </div>
-          <div className="grid grid-cols-3 gap-1 text-[11px] text-gray-500">
+          <div className="grid grid-cols-3 gap-1 text-[11px] text-white/45">
             <span>Base : {formatCurrency(costBreakdown.baseCost)}</span>
             {costBreakdown.nightSurcharge  > 0 && <span>Nuit : +{formatCurrency(costBreakdown.nightSurcharge)}</span>}
             {costBreakdown.sundaySurcharge > 0 && <span>Dim : +{formatCurrency(costBreakdown.sundaySurcharge)}</span>}
@@ -365,7 +365,7 @@ export function ShiftModal({
 
       {/* ── Aucune alerte ── */}
       {violations.length === 0 && costBreakdown && (
-        <div className="mt-4 flex items-center gap-2 text-sm text-green-700">
+        <div className="mt-4 flex items-center gap-2 text-sm text-green-400">
           <CheckCircle2 className="w-4 h-4" />
           Aucune violation HCR détectée
         </div>
@@ -373,7 +373,7 @@ export function ShiftModal({
 
       {/* ── Proposer un changement (mode édition uniquement) ── */}
       {isEdit && (
-        <div className="mt-5 border-t border-gray-100 pt-4">
+        <div className="mt-5 border-t border-white/6 pt-4">
           {!showRequestForm ? (
             <button
               type="button"
@@ -382,58 +382,58 @@ export function ShiftModal({
                 setReqStart(defaultStart)
                 setReqEnd(defaultEnd)
               }}
-              className="flex items-center gap-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              className="flex items-center gap-2 text-sm font-medium text-[#7798AB] hover:text-[#8FADC0] transition-colors"
             >
               <CalendarClock className="w-4 h-4" />
               Proposer un changement d&apos;horaire
             </button>
           ) : reqSuccess ? (
-            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-50 border border-green-200 text-green-700 text-sm">
+            <div className="flex items-center gap-2 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-400 text-sm">
               <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
               Demande envoyée, en attente de validation.
             </div>
           ) : (
-            <div className="rounded-xl border border-blue-100 bg-blue-50/40 p-4 space-y-3">
-              <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-                <CalendarClock className="w-4 h-4 text-blue-500" />
+            <div className="rounded-xl border border-[#7798AB]/20 bg-[#7798AB]/10 p-4 space-y-3">
+              <p className="text-sm font-semibold text-white flex items-center gap-2">
+                <CalendarClock className="w-4 h-4 text-[#7798AB]" />
                 Proposer de nouveaux horaires
               </p>
 
               {reqError && (
-                <div className="flex gap-2 p-2.5 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs">
+                <div className="flex gap-2 p-2.5 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-xs">
                   <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />{reqError}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Nouveau début *</label>
+                  <label className="block text-xs font-medium text-white/60 mb-1">Nouveau début *</label>
                   <input
                     type="time"
                     value={reqStart}
                     onChange={e => setReqStart(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-[#7798AB]/20 focus:border-[#7798AB] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Nouvelle fin *</label>
+                  <label className="block text-xs font-medium text-white/60 mb-1">Nouvelle fin *</label>
                   <input
                     type="time"
                     value={reqEnd}
                     onChange={e => setReqEnd(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none"
+                    className="w-full px-3 py-2 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-[#7798AB]/20 focus:border-[#7798AB] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Raison (optionnel)</label>
+                <label className="block text-xs font-medium text-white/60 mb-1">Raison (optionnel)</label>
                 <textarea
                   rows={2}
                   placeholder="Ex : contrainte personnelle, formation…"
                   value={reqReason}
                   onChange={e => setReqReason(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none resize-none"
+                  className="w-full px-3 py-2 border border-white/10 rounded-lg text-sm focus:ring-2 focus:ring-[#7798AB]/20 focus:border-[#7798AB] outline-none resize-none"
                 />
               </div>
 
@@ -441,7 +441,7 @@ export function ShiftModal({
                 <button
                   type="button"
                   onClick={() => { setShowRequestForm(false); setReqError(null) }}
-                  className="flex-1 py-2 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50"
+                  className="flex-1 py-2 text-xs font-medium text-white/60 border border-white/8 rounded-lg hover:bg-white/5"
                 >
                   Annuler
                 </button>
@@ -449,7 +449,7 @@ export function ShiftModal({
                   type="button"
                   onClick={handleRequestSubmit}
                   disabled={reqSubmitting || !reqStart || !reqEnd}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-white bg-[#7798AB] rounded-lg hover:bg-[#8FADC0] disabled:opacity-60"
                 >
                   {reqSubmitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   Envoyer la demande

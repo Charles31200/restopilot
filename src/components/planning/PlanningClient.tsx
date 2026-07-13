@@ -149,24 +149,24 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
       {/* ── Barre d'outils ── */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Navigation semaine */}
-        <div className="flex items-center gap-2 rounded-[10px] px-1 py-1" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
+        <div className="flex items-center gap-2 rounded-[10px] px-1 py-1" style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}>
           <button
             onClick={() => navigate('prev')}
-            className="p-1.5 rounded-[8px] hover:bg-gray-100 transition-colors"
-            style={{ color: '#888888' }}
+            className="p-1.5 rounded-[8px] hover:bg-white/5 transition-colors"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
             aria-label="Semaine précédente"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
 
-          <span className="text-sm font-medium px-1 min-w-0 text-center whitespace-nowrap" style={{ color: '#111111' }}>
+          <span className="text-sm font-medium px-1 min-w-0 text-center whitespace-nowrap" style={{ color: '#FFFFFF' }}>
             {formatWeekLabel(currentWeek)}
           </span>
 
           <button
             onClick={() => navigate('next')}
-            className="p-1.5 rounded-[8px] hover:bg-gray-100 transition-colors"
-            style={{ color: '#888888' }}
+            className="p-1.5 rounded-[8px] hover:bg-white/5 transition-colors"
+            style={{ color: 'rgba(255,255,255,0.45)' }}
             aria-label="Semaine suivante"
           >
             <ChevronRight className="w-4 h-4" />
@@ -177,8 +177,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         {!isCurrentWeek && (
           <button
             onClick={goToCurrentWeek}
-            className="flex items-center gap-1.5 h-10 px-3.5 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-            style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+            className="flex items-center gap-1.5 h-10 px-3.5 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+            style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.06)', background: '#1A1A1A' }}
           >
             <CalendarDays className="w-4 h-4" />
             Aujourd'hui
@@ -189,8 +189,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         <button
           onClick={() => fetchWeek(currentWeek)}
           disabled={isLoading}
-          className="h-10 w-10 flex items-center justify-center rounded-[10px] border disabled:opacity-50 transition-colors hover:bg-gray-50"
-          style={{ borderColor: '#E5E5E5', color: '#888888', background: '#FFFFFF' }}
+          className="h-10 w-10 flex items-center justify-center rounded-[10px] border disabled:opacity-50 transition-colors hover:bg-white/5"
+          style={{ borderColor: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.45)', background: '#1A1A1A' }}
           aria-label="Rafraîchir"
         >
           <RefreshCw className={cn('w-4 h-4', isLoading && 'animate-spin')} />
@@ -201,15 +201,15 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         {/* Demandes de modification */}
         <button
           onClick={() => setModal({ type: 'shift_requests' })}
-          className="flex items-center gap-2 h-10 px-4 text-sm font-medium border rounded-[10px] transition-colors hover:bg-gray-50"
+          className="flex items-center gap-2 h-10 px-4 text-sm font-medium border rounded-[10px] transition-colors hover:bg-white/5"
           style={pendingCount > 0
-            ? { background: '#FEF2F2', borderColor: '#FECACA', color: '#991B1B' }
-            : { background: '#FFFFFF', borderColor: '#E5E5E5', color: '#111111' }}
+            ? { background: 'rgba(248,113,113,0.1)', borderColor: 'rgba(248,113,113,0.25)', color: '#F87171' }
+            : { background: '#1A1A1A', borderColor: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }}
         >
           <MessageSquareDiff className="w-4 h-4" />
           Demandes
           {pendingCount > 0 && (
-            <span className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ background: '#DC2626' }}>
+            <span className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ background: '#F87171' }}>
               {pendingCount}
             </span>
           )}
@@ -220,13 +220,13 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
           onClick={() => setModal({ type: 'summary' })}
           className="flex items-center gap-2 h-10 px-4 text-sm font-medium border rounded-[10px] transition-colors"
           style={criticalCount > 0
-            ? { background: '#FEF3C7', borderColor: '#FDE68A', color: '#92400E' }
-            : { background: '#FFFFFF', borderColor: '#E5E5E5', color: '#111111' }}
+            ? { background: 'rgba(251,191,36,0.1)', borderColor: 'rgba(251,191,36,0.25)', color: '#FBBF24' }
+            : { background: '#1A1A1A', borderColor: 'rgba(255,255,255,0.06)', color: '#FFFFFF' }}
         >
           <BarChart2 className="w-4 h-4" />
           Récap
           {criticalCount > 0 && (
-            <span className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ background: '#D97706' }}>
+            <span className="w-5 h-5 rounded-full text-white text-[10px] font-bold flex items-center justify-center" style={{ background: '#FBBF24' }}>
               {criticalCount}
             </span>
           )}
@@ -235,8 +235,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         {/* Export mensuel */}
         <button
           onClick={() => setModal({ type: 'export' })}
-          className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-gray-50"
-          style={{ color: '#111111', borderColor: '#E5E5E5', background: '#FFFFFF' }}
+          className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5"
+          style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.06)', background: '#1A1A1A' }}
         >
           <FileDown className="w-4 h-4" />
           Export PDF
@@ -245,8 +245,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
         {/* Nouvel employé */}
         <button
           onClick={() => setModal({ type: 'employee_create' })}
-          className="flex items-center gap-2 h-10 px-4 text-sm font-medium text-white rounded-[10px] transition-colors"
-          style={{ background: '#000000' }}
+          className="flex items-center gap-2 h-10 px-4 text-sm font-medium text-white rounded-[10px] transition-colors hover:opacity-90"
+          style={{ background: '#7798AB' }}
         >
           <UserPlus className="w-4 h-4" />
           Employé
@@ -255,8 +255,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
 
       {/* ── Grille planning ── */}
       {isLoading && !weekData ? (
-        <div className="rounded-[12px] p-16 flex items-center justify-center" style={{ background: '#FFFFFF', border: '1px solid #E5E5E5' }}>
-          <Loader2 className="w-7 h-7 animate-spin" style={{ color: '#BBBBBB' }} />
+        <div className="rounded-[12px] p-16 flex items-center justify-center" style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}>
+          <Loader2 className="w-7 h-7 animate-spin" style={{ color: 'rgba(255,255,255,0.3)' }} />
         </div>
       ) : (
         <PlanningGrid
@@ -277,8 +277,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
             <button
               key={emp.id}
               onClick={() => setModal({ type: 'employee_edit', employee: emp })}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors hover:bg-gray-50"
-              style={{ background: '#FFFFFF', border: '1px solid #E5E5E5', color: '#333333' }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors hover:bg-white/5"
+              style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)' }}
             >
               <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: emp.color }} />
               {emp.first_name} {emp.last_name}
@@ -286,8 +286,8 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
           ))}
           <button
             onClick={() => setModal({ type: 'employee_create' })}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors hover:bg-gray-100"
-            style={{ background: '#F5F5F5', border: '1px solid #E5E5E5', color: '#111111' }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors hover:bg-white/5"
+            style={{ background: '#111111', border: '1px solid rgba(255,255,255,0.06)', color: '#FFFFFF' }}
           >
             <UserPlus className="w-3 h-3" />
             Ajouter

@@ -58,15 +58,15 @@ function ShiftBadge({
       onKeyDown={e => e.key === 'Enter' && onClick()}
       className="rounded-lg border-l-[3px] px-2 py-1.5 cursor-pointer hover:opacity-80 transition-opacity text-left"
       style={{
-        backgroundColor: hexToRgba(color, 0.12),
+        backgroundColor: hexToRgba(color, 0.22),
         borderLeftColor: color,
       }}
     >
-      <p className="text-xs font-semibold text-gray-800 leading-tight whitespace-nowrap">
+      <p className="text-xs font-semibold text-white leading-tight whitespace-nowrap">
         {startT}–{endT}
       </p>
       {shift.position && (
-        <p className="text-[10px] text-gray-500 truncate mt-0.5">{shift.position}</p>
+        <p className="text-[10px] text-white/45 truncate mt-0.5">{shift.position}</p>
       )}
     </div>
   )
@@ -81,9 +81,9 @@ function EmptyCell({ onClick }: { onClick: () => void }) {
       role="button"
       tabIndex={0}
       onKeyDown={e => e.key === 'Enter' && onClick()}
-      className="h-full min-h-[60px] flex items-center justify-center rounded-lg border border-dashed border-transparent hover:border-gray-300 hover:bg-gray-50 cursor-pointer group transition-all"
+      className="h-full min-h-[60px] flex items-center justify-center rounded-lg border border-dashed border-transparent hover:border-white/10 hover:bg-white/5 cursor-pointer group transition-all"
     >
-      <Plus className="w-4 h-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+      <Plus className="w-4 h-4 text-white/20 group-hover:text-white/45 transition-colors" />
     </div>
   )
 }
@@ -139,8 +139,8 @@ export function PlanningGrid({
 
   if (employees.length === 0) {
     return (
-      <div className="bg-white rounded-2xl border border-gray-200 p-12 flex flex-col items-center gap-3">
-        <p className="text-gray-400 text-sm">Aucun employé. Commencez par en ajouter un.</p>
+      <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-12 flex flex-col items-center gap-3">
+        <p className="text-white/30 text-sm">Aucun employé. Commencez par en ajouter un.</p>
       </div>
     )
   }
@@ -149,7 +149,7 @@ export function PlanningGrid({
     <div className={cn(isLoading && 'opacity-60 pointer-events-none')}>
 
       {/* ── Vue liste mobile (< md) ── */}
-      <div className="md:hidden bg-white rounded-2xl border border-gray-200 divide-y divide-gray-100 overflow-hidden">
+      <div className="md:hidden bg-[#1A1A1A] rounded-2xl border border-white/8 divide-y divide-white/6 overflow-hidden">
         {employees.map(emp => {
           const empShifts = shifts.filter(s => s.employee_id === emp.id)
           const stats     = weeklyStats?.find(s => s.employee.id === emp.id)
@@ -163,13 +163,13 @@ export function PlanningGrid({
                 style={{ borderLeft: `3px solid ${roleColor}` }}
               >
                 <div>
-                  <p className="text-sm font-semibold text-gray-800">
+                  <p className="text-sm font-semibold text-white">
                     {emp.first_name} {emp.last_name}
                   </p>
-                  <p className="text-[10px] text-gray-400">{emp.role}</p>
+                  <p className="text-[10px] text-white/30">{emp.role}</p>
                 </div>
                 {stats && stats.plannedHours > 0 && (
-                  <span className="ml-auto flex items-center gap-1 text-xs text-gray-500 tabular-nums">
+                  <span className="ml-auto flex items-center gap-1 text-xs text-white/45 tabular-nums">
                     <Clock className="w-3 h-3" />
                     {fmtH(stats.plannedHours)}
                   </span>
@@ -192,7 +192,7 @@ export function PlanningGrid({
                     <div key={dateStr} className="flex items-start gap-2 py-1">
                       <span className={cn(
                         'text-[11px] font-medium w-20 flex-shrink-0 pt-0.5',
-                        isToday ? 'text-blue-600' : 'text-gray-400'
+                        isToday ? 'text-[#7798AB]' : 'text-white/30'
                       )}>
                         {dayLabel.split(' ').slice(0, 2).join(' ')}
                       </span>
@@ -205,15 +205,15 @@ export function PlanningGrid({
                               onClick={() => onShiftClick(s)}
                               className="w-full text-left rounded-lg px-2 py-1.5 text-xs border-l-[2px]"
                               style={{
-                                backgroundColor: hexToRgba(color, 0.1),
+                                backgroundColor: hexToRgba(color, 0.18),
                                 borderLeftColor: color,
                               }}
                             >
-                              <span className="font-semibold text-gray-800">
+                              <span className="font-semibold text-white">
                                 {formatTime(extractTime(s.start_time))}–{formatTime(extractTime(s.end_time))}
                               </span>
                               {s.position && (
-                                <span className="text-gray-400 ml-1.5">{s.position}</span>
+                                <span className="text-white/30 ml-1.5">{s.position}</span>
                               )}
                             </button>
                           )
@@ -226,7 +226,7 @@ export function PlanningGrid({
                 {/* Bouton ajouter un créneau */}
                 <button
                   onClick={() => onCellClick(emp, new Date())}
-                  className="w-full flex items-center justify-center gap-1 py-2 text-xs text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors mt-1"
+                  className="w-full flex items-center justify-center gap-1 py-2 text-xs text-white/30 hover:text-white/60 hover:bg-white/5 rounded-lg transition-colors mt-1"
                 >
                   <Plus className="w-3 h-3" />
                   Ajouter un créneau
@@ -238,14 +238,14 @@ export function PlanningGrid({
       </div>
 
       {/* ── Grille desktop (≥ md) ── */}
-      <div className="hidden md:block bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="hidden md:block bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden">
         <div className="overflow-x-auto">
           <div style={{ minWidth: '720px' }}>
             {/* En-tête colonnes */}
-            <div className="grid border-b border-gray-200"
+            <div className="grid border-b border-white/8"
               style={{ gridTemplateColumns: '190px repeat(7, 1fr)' }}>
-              <div className="px-4 py-3 bg-gray-50 border-r border-gray-200">
-                <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Équipe</span>
+              <div className="px-4 py-3 bg-[#161616] border-r border-white/8">
+                <span className="text-[11px] font-semibold text-white/30 uppercase tracking-wider">Équipe</span>
               </div>
               {weekDays.map((day, idx) => {
                 const dateStr  = toISODate(day)
@@ -256,26 +256,26 @@ export function PlanningGrid({
                   <div
                     key={idx}
                     className={cn(
-                      'px-2 py-3 text-center border-r border-gray-200 last:border-r-0',
-                      isToday   ? 'bg-blue-50'
-                      : isSunday ? 'bg-amber-50/50'
-                      : 'bg-gray-50'
+                      'px-2 py-3 text-center border-r border-white/8 last:border-r-0',
+                      isToday   ? 'bg-[#7798AB]/20'
+                      : isSunday ? 'bg-amber-500/10'
+                      : 'bg-[#161616]'
                     )}
                   >
                     <p className={cn(
                       'text-xs font-semibold uppercase tracking-wide',
-                      isToday ? 'text-blue-600' : isSunday ? 'text-amber-600' : 'text-gray-500'
+                      isToday ? 'text-[#7798AB]' : isSunday ? 'text-amber-400' : 'text-white/45'
                     )}>
                       {formatDayLabel(day, true).split(' ')[0]}
                     </p>
                     <p className={cn(
                       'text-base font-bold leading-tight',
-                      isToday ? 'text-blue-700' : 'text-gray-800'
+                      isToday ? 'text-[#7798AB]' : 'text-white'
                     )}>
                       {day.getDate()}
                     </p>
                     {headcountByDay[idx] > 0 && (
-                      <p className="text-[10px] text-gray-400 mt-0.5">{headcountByDay[idx]} pers.</p>
+                      <p className="text-[10px] text-white/30 mt-0.5">{headcountByDay[idx]} pers.</p>
                     )}
                   </div>
                 )
@@ -291,25 +291,25 @@ export function PlanningGrid({
                 <div
                   key={emp.id}
                   className={cn(
-                    'grid border-b border-gray-100 last:border-b-0',
-                    empIdx % 2 === 1 ? 'bg-gray-50/30' : 'bg-white'
+                    'grid border-b border-white/6 last:border-b-0',
+                    empIdx % 2 === 1 ? 'bg-white/[0.02]' : 'bg-[#1A1A1A]'
                   )}
                   style={{ gridTemplateColumns: '190px repeat(7, 1fr)' }}
                 >
                   {/* Colonne employé */}
-                  <div className="px-4 py-3 flex items-center gap-2.5 border-r border-gray-200 sticky left-0 z-10 bg-inherit">
+                  <div className="px-4 py-3 flex items-center gap-2.5 border-r border-white/8 sticky left-0 z-10 bg-inherit">
                     <div
                       className="w-3 h-3 rounded-full flex-shrink-0"
                       style={{ backgroundColor: roleColor }}
                     />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-semibold text-gray-800 leading-tight truncate">
+                      <p className="text-sm font-semibold text-white leading-tight truncate">
                         {emp.first_name} {emp.last_name}
                       </p>
                       <div className="flex items-center gap-1.5">
-                        <p className="text-[10px] text-gray-400 truncate">{emp.role}</p>
+                        <p className="text-[10px] text-white/30 truncate">{emp.role}</p>
                         {stats && stats.plannedHours > 0 && (
-                          <span className="text-[10px] text-gray-500 tabular-nums font-medium">
+                          <span className="text-[10px] text-white/45 tabular-nums font-medium">
                             · {fmtH(stats.plannedHours)}
                           </span>
                         )}
@@ -328,9 +328,9 @@ export function PlanningGrid({
                       <div
                         key={dayIdx}
                         className={cn(
-                          'p-1.5 border-r border-gray-100 last:border-r-0 min-h-[72px]',
-                          isToday   ? 'bg-blue-50/30'
-                          : isSunday ? 'bg-amber-50/20'
+                          'p-1.5 border-r border-white/6 last:border-r-0 min-h-[72px]',
+                          isToday   ? 'bg-[#7798AB]/10'
+                          : isSunday ? 'bg-amber-500/5'
                           : ''
                         )}
                       >
@@ -345,9 +345,9 @@ export function PlanningGrid({
                             ))}
                             <div
                               onClick={() => onCellClick(emp, day)}
-                              className="flex items-center justify-center h-5 rounded opacity-0 hover:opacity-100 transition-opacity cursor-pointer hover:bg-gray-100"
+                              className="flex items-center justify-center h-5 rounded opacity-0 hover:opacity-100 transition-opacity cursor-pointer hover:bg-white/5"
                             >
-                              <Plus className="w-3 h-3 text-gray-400" />
+                              <Plus className="w-3 h-3 text-white/30" />
                             </div>
                           </div>
                         ) : (

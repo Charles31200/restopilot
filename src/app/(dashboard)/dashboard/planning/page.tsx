@@ -33,7 +33,7 @@ export default async function PlanningPage({
   if (!profile?.restaurant_id) {
     return (
       <div className="space-y-6 max-w-screen-2xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-900">Planning</h1>
+        <h1 className="text-2xl font-bold text-white">Planning</h1>
         <PlanningClient initialData={null} initialWeek={week} />
       </div>
     )
@@ -131,10 +131,10 @@ export default async function PlanningPage({
       {/* ── Header de page ──────────────────────────── */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#111111', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: 700, color: '#FFFFFF', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
             Planning du personnel
           </h1>
-          <p className="text-[13px] mt-1" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+          <p className="text-[13px] mt-1" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
             {employees.length} employé{employees.length > 1 ? 's' : ''} actif{employees.length > 1 ? 's' : ''}
             {shifts.length > 0 && ` · ${shifts.length} créneau${shifts.length > 1 ? 'x' : ''} cette semaine`}
           </p>
