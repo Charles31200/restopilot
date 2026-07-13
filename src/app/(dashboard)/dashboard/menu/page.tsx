@@ -54,7 +54,7 @@ export default async function MenuPage() {
     <div className="flex flex-col h-full">
       {/* ── Header de page ──────────────────────────── */}
       <div className="mb-6">
-        <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#0D1B1E', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
+        <h1 style={{ fontSize: '28px', fontWeight: 600, color: '#FFFFFF', fontFamily: 'var(--font-display)', lineHeight: '1.2' }}>
           Menu &amp; Recettes
         </h1>
         <p className="text-[14px] mt-1" style={{ color: '#7798AB', fontFamily: 'var(--font-body)' }}>

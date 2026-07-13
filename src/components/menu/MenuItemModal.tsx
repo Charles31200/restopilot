@@ -25,8 +25,8 @@ const inputCls = (hasError?: boolean) =>
   cn(
     'w-full h-[52px] rounded-[14px] border px-4 text-[15px] outline-none transition-all focus:ring-2',
     hasError
-      ? 'border-red-400 bg-red-50 text-red-700 focus:border-red-400 focus:ring-red-100'
-      : 'border-[var(--rp-lavender)] bg-white text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
+      ? 'border-red-400 bg-red-500/10 text-red-700 focus:border-red-400 focus:ring-red-100'
+      : 'border-[var(--rp-lavender)] bg-[#111111] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
   )
 
 function FieldError({ msg }: { msg?: string }) {
@@ -110,7 +110,7 @@ export function MenuItemModal({ item, onClose, onSaved, onDeleted }: Props) {
       <button
         type="button"
         onClick={onClose}
-        className="px-5 h-[48px] rounded-full border text-[14px] font-medium transition hover:bg-gray-50"
+        className="px-5 h-[48px] rounded-full border text-[14px] font-medium transition hover:bg-white/5"
         style={{ borderColor: 'var(--rp-lavender)', color: 'var(--rp-navy-muted)' }}
       >
         Annuler

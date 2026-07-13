@@ -17,8 +17,8 @@ const inputCls = (hasError?: boolean) =>
   cn(
     'w-full h-[44px] rounded-[12px] border px-3 text-[14px] outline-none transition-all focus:ring-2',
     hasError
-      ? 'border-red-400 bg-red-50 focus:border-red-400 focus:ring-red-100'
-      : 'border-[var(--rp-lavender)] bg-white text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
+      ? 'border-red-400 bg-red-500/10 focus:border-red-400 focus:ring-red-100'
+      : 'border-[var(--rp-lavender)] bg-[#111111] text-[var(--rp-navy)] focus:border-[var(--rp-amber)] focus:ring-[var(--rp-amber)]/20',
   )
 
 export function RecipeSheetModal({ item, products, onClose, onUpdated }: Props) {
