@@ -31,9 +31,9 @@ function currentMonth() {
 
 type StatusConfig = { label: string; cls: string }
 const STATUS_MAP: Record<string, StatusConfig> = {
-  pending:   { label: 'En attente', cls: 'bg-amber-100 text-amber-700' },
-  validated: { label: 'Validée',    cls: 'bg-blue-100   text-blue-700'  },
-  paid:      { label: 'Payée',      cls: 'bg-green-100  text-green-700' },
+  pending:   { label: 'En attente', cls: 'bg-amber-100 text-amber-400' },
+  validated: { label: 'Validée',    cls: 'bg-[#7798AB]/15 text-[#8FADC0]'  },
+  paid:      { label: 'Payée',      cls: 'bg-green-100  text-green-400' },
 }
 
 // ── Props ─────────────────────────────────────────────────────
@@ -98,26 +98,26 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
       {/* Filtres */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Sélecteur mois */}
-        <div className="flex items-center gap-1 bg-white border border-gray-200 rounded-xl px-1 py-1">
-          <button onClick={() => setMonth(prevMonth(month))} className="p-1.5 rounded-lg hover:bg-gray-100">
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
+        <div className="flex items-center gap-1 bg-[#1A1A1A] border border-white/8 rounded-xl px-1 py-1">
+          <button onClick={() => setMonth(prevMonth(month))} className="p-1.5 rounded-lg hover:bg-white/5">
+            <ChevronLeft className="w-4 h-4 text-white/45" />
           </button>
-          <span className="text-sm font-medium text-gray-700 px-2 min-w-[120px] text-center capitalize">
+          <span className="text-sm font-medium text-white/70 px-2 min-w-[120px] text-center capitalize">
             {formatMonthLabel(month)}
           </span>
           <button
             onClick={() => setMonth(nextMonth(month))}
             disabled={month >= currentMonth()}
-            className="p-1.5 rounded-lg hover:bg-gray-100 disabled:opacity-40"
+            className="p-1.5 rounded-lg hover:bg-white/5 disabled:opacity-40"
           >
-            <ChevronRight className="w-4 h-4 text-gray-500" />
+            <ChevronRight className="w-4 h-4 text-white/45" />
           </button>
         </div>
 
         {/* Filtre statut */}
         <select
           value={status} onChange={e => setStatus(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-xl text-sm outline-none focus:border-blue-500"
+          className="px-3 py-2 border border-white/10 rounded-xl text-sm outline-none focus:border-[#7798AB]"
         >
           <option value="">Tous statuts</option>
           <option value="pending">En attente</option>
@@ -125,45 +125,45 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
           <option value="paid">Payées</option>
         </select>
 
-        {isLoading && <Loader2 className="w-4 h-4 animate-spin text-gray-400" />}
+        {isLoading && <Loader2 className="w-4 h-4 animate-spin text-white/30" />}
       </div>
 
       {/* Tableau */}
-      <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+      <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 overflow-hidden">
         {invoices.length === 0 && !isLoading ? (
           <div className="flex flex-col items-center justify-center py-16 gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gray-100 flex items-center justify-center">
-              <FileText className="w-6 h-6 text-gray-400" />
+            <div className="w-12 h-12 rounded-2xl bg-white/8 flex items-center justify-center">
+              <FileText className="w-6 h-6 text-white/30" />
             </div>
-            <p className="text-sm text-gray-400">Aucune facture pour cette période.</p>
+            <p className="text-sm text-white/30">Aucune facture pour cette période.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
+                <tr className="bg-white/5 border-b border-white/8">
                   {['Fournisseur', 'Date', 'Montant HT', 'TVA', 'Total TTC', 'Statut', 'Actions'].map(h => (
-                    <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-gray-500 uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="px-4 py-3 text-left text-[11px] font-semibold text-white/45 uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-white/6">
                 {invoices.map(inv => {
                   const cfg = STATUS_MAP[inv.status] ?? STATUS_MAP.pending
                   return (
-                    <tr key={inv.id} className="group hover:bg-gray-50/50">
-                      <td className="px-4 py-3 font-medium text-gray-900">
-                        {inv.supplier_name ?? <span className="text-gray-400 italic">Non renseigné</span>}
+                    <tr key={inv.id} className="group hover:bg-white/5">
+                      <td className="px-4 py-3 font-medium text-white">
+                        {inv.supplier_name ?? <span className="text-white/30 italic">Non renseigné</span>}
                       </td>
-                      <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                      <td className="px-4 py-3 text-white/45 whitespace-nowrap">
                         {inv.invoice_date
                           ? new Date(inv.invoice_date).toLocaleDateString('fr-FR')
                           : '—'
                         }
                       </td>
                       <td className="px-4 py-3 tabular-nums font-semibold">{fmt(inv.amount)}</td>
-                      <td className="px-4 py-3 tabular-nums text-gray-500">{fmt(inv.vat_amount)}</td>
-                      <td className="px-4 py-3 tabular-nums font-semibold text-gray-900">{fmt(inv.total_ttc)}</td>
+                      <td className="px-4 py-3 tabular-nums text-white/45">{fmt(inv.vat_amount)}</td>
+                      <td className="px-4 py-3 tabular-nums font-semibold text-white">{fmt(inv.total_ttc)}</td>
                       <td className="px-4 py-3">
                         <span className={cn('px-2 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wide', cfg.cls)}>
                           {cfg.label}
@@ -174,7 +174,7 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
                           {/* Voir fichier */}
                           {inv.file_url && (
                             <a href={inv.file_url} target="_blank" rel="noopener noreferrer"
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
+                              className="p-1.5 rounded-lg text-white/30 hover:text-[#7798AB] hover:bg-[#7798AB]/10 transition-colors">
                               <ExternalLink className="w-4 h-4" />
                             </a>
                           )}
@@ -183,7 +183,7 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
                             <button
                               onClick={() => updateStatus(inv.id, 'paid')}
                               title="Marquer comme payée"
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors">
+                              className="p-1.5 rounded-lg text-white/30 hover:text-green-600 hover:bg-green-500/10 transition-colors">
                               <Check className="w-4 h-4" />
                             </button>
                           )}
@@ -192,14 +192,14 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
                             <button
                               onClick={() => updateStatus(inv.id, 'validated')}
                               title="Valider"
-                              className="px-2 py-1 text-[11px] font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                              className="px-2 py-1 text-[11px] font-medium text-[#7798AB] hover:bg-[#7798AB]/10 rounded-lg transition-colors">
                               Valider
                             </button>
                           )}
                           {/* Supprimer */}
                           <button
                             onClick={() => deleteInvoice(inv.id)}
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                            className="p-1.5 rounded-lg text-white/30 hover:text-red-600 hover:bg-red-500/10 transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -210,13 +210,13 @@ export function InvoicesList({ newInvoice }: InvoicesListProps) {
               </tbody>
               {/* Totaux */}
               <tfoot>
-                <tr className="bg-gray-50 border-t border-gray-200">
-                  <td colSpan={2} className="px-4 py-3 text-sm font-semibold text-gray-700">
+                <tr className="bg-white/5 border-t border-white/8">
+                  <td colSpan={2} className="px-4 py-3 text-sm font-semibold text-white/70">
                     Total — {invoices.length} facture{invoices.length > 1 ? 's' : ''}
                   </td>
                   <td className="px-4 py-3 tabular-nums font-bold">{fmt(totalHT)}</td>
-                  <td className="px-4 py-3 tabular-nums font-semibold text-gray-600">{fmt(totalVAT)}</td>
-                  <td className="px-4 py-3 tabular-nums font-bold text-gray-900">{fmt(totalHT + totalVAT)}</td>
+                  <td className="px-4 py-3 tabular-nums font-semibold text-white/60">{fmt(totalVAT)}</td>
+                  <td className="px-4 py-3 tabular-nums font-bold text-white">{fmt(totalHT + totalVAT)}</td>
                   <td colSpan={2} />
                 </tr>
               </tfoot>

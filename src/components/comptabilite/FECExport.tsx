@@ -94,37 +94,37 @@ export function FECExport() {
   const canSend = hasAccountant && !isSending
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-5">
+    <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-5 space-y-5">
       {/* Titre */}
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-xl bg-purple-100 flex items-center justify-center flex-shrink-0">
           <FileCode className="w-5 h-5 text-purple-600" />
         </div>
         <div>
-          <h2 className="text-sm font-semibold text-gray-900">Export pour l&apos;expert-comptable</h2>
-          <p className="text-xs text-gray-400 mt-0.5">Fichier FEC au format officiel DGFiP</p>
+          <h2 className="text-sm font-semibold text-white">Export pour l&apos;expert-comptable</h2>
+          <p className="text-xs text-white/30 mt-0.5">Fichier FEC au format officiel DGFiP</p>
         </div>
       </div>
 
       {/* Sélecteur de mois */}
       <div className="space-y-1.5">
-        <p className="text-xs font-medium text-gray-600">Période</p>
-        <div className="flex items-center gap-1 bg-gray-50 border border-gray-200 rounded-xl px-1 py-1 w-fit">
+        <p className="text-xs font-medium text-white/60">Période</p>
+        <div className="flex items-center gap-1 bg-white/5 border border-white/8 rounded-xl px-1 py-1 w-fit">
           <button
             onClick={() => { setMonth(prevMonth(month)); setEmailSent(false) }}
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all"
+            className="p-1.5 rounded-lg hover:bg-white/10 transition-all"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
+            <ChevronLeft className="w-4 h-4 text-white/45" />
           </button>
-          <span className="text-sm font-medium text-gray-700 px-3 min-w-[140px] text-center capitalize">
+          <span className="text-sm font-medium text-white/70 px-3 min-w-[140px] text-center capitalize">
             {formatMonthLabel(month)}
           </span>
           <button
             onClick={() => { setMonth(nextMonth(month)); setEmailSent(false) }}
             disabled={month >= current}
-            className="p-1.5 rounded-lg hover:bg-white hover:shadow-sm disabled:opacity-40 transition-all"
+            className="p-1.5 rounded-lg hover:bg-white/10 disabled:opacity-40 transition-all"
           >
-            <ChevronRight className="w-4 h-4 text-gray-500" />
+            <ChevronRight className="w-4 h-4 text-white/45" />
           </button>
         </div>
       </div>
@@ -142,14 +142,14 @@ export function FECExport() {
 
       {/* Avertissement email comptable manquant */}
       {!loadingEmail && !hasAccountant && (
-        <div className="flex items-start gap-2.5 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
+        <div className="flex items-start gap-2.5 p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800 text-xs">
           <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
           <div className="space-y-1.5">
             <p className="font-medium">Email comptable non configuré</p>
             <p>Renseignez l&apos;email de votre expert-comptable dans les paramètres pour activer cet envoi.</p>
             <Link
               href="/dashboard/parametres/restaurant"
-              className="inline-flex items-center gap-1 font-semibold text-amber-700 underline underline-offset-2 hover:text-amber-900 transition-colors"
+              className="inline-flex items-center gap-1 font-semibold text-amber-400 underline underline-offset-2 hover:text-amber-900 transition-colors"
             >
               <Settings className="w-3.5 h-3.5" />
               Aller dans les paramètres du restaurant
@@ -160,15 +160,15 @@ export function FECExport() {
 
       {/* Email comptable configuré */}
       {!loadingEmail && hasAccountant && (
-        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">
-          <Send className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
-          <span>Envoi vers <span className="font-semibold text-gray-800">{accountantEmail}</span></span>
+        <div className="flex items-center gap-2 px-3.5 py-2.5 bg-white/5 border border-white/8 rounded-xl text-xs text-white/60">
+          <Send className="w-3.5 h-3.5 flex-shrink-0 text-white/30" />
+          <span>Envoi vers <span className="font-semibold text-white">{accountantEmail}</span></span>
         </div>
       )}
 
       {/* Erreur envoi */}
       {error && (
-        <div className="flex items-start gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
           <AlertTriangle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <p>{error}</p>
         </div>
@@ -176,7 +176,7 @@ export function FECExport() {
 
       {/* Succès email */}
       {emailSent && (
-        <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm">
           <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
           <p>Fichier FEC envoyé à <span className="font-semibold">{sentTo ?? 'votre comptable'}</span>.</p>
         </div>
@@ -187,7 +187,7 @@ export function FECExport() {
         <a
           href={downloadUrl}
           download
-          className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-purple-600 rounded-xl hover:bg-purple-700 transition-colors"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#7798AB] rounded-xl hover:bg-[#8FADC0] transition-colors"
         >
           <Download className="w-4 h-4" />
           Télécharger le fichier FEC
@@ -198,10 +198,10 @@ export function FECExport() {
           disabled={!canSend}
           title={!hasAccountant ? "Configurez d'abord l'email de votre expert-comptable dans les paramètres" : undefined}
           className={cn(
-            'flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl border transition-colors',
+            'flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl transition-colors',
             canSend
-              ? 'text-gray-700 border-gray-300 hover:bg-gray-50 cursor-pointer'
-              : 'text-gray-400 border-gray-200 bg-gray-50 cursor-not-allowed opacity-60'
+              ? 'text-white bg-[#7798AB] hover:bg-[#8FADC0] cursor-pointer'
+              : 'text-white/30 border border-white/8 bg-white/5 cursor-not-allowed opacity-60'
           )}
         >
           {isSending

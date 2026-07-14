@@ -125,7 +125,7 @@ export function BottomSheet({
         className={cn(
           // Mobile : slide depuis le bas
           'relative w-full max-h-[85vh] flex flex-col',
-          'bg-white',
+          'bg-[#1A1A1A]',
           // Coins arrondis en haut sur mobile, tout autour sur desktop
           'rounded-t-[20px] lg:rounded-2xl',
           // Desktop : largeur max + ombre modale
@@ -184,7 +184,7 @@ export function BottomSheet({
           <>
             <div className="h-px bg-rp-lavender-light mx-5 flex-shrink-0" />
             <div
-              className="px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] flex-shrink-0 bg-white"
+              className="px-5 pt-3 pb-[calc(env(safe-area-inset-bottom,0px)+16px)] flex-shrink-0 bg-[#1A1A1A]"
             >
               {footer}
             </div>

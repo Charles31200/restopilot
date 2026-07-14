@@ -27,8 +27,8 @@ type FormData = z.infer<typeof schema>
 
 const inputCls = (e?: boolean) => cn(
   'w-full px-3.5 py-2.5 border rounded-xl text-sm transition-all outline-none',
-  e ? 'border-red-400 bg-red-50 focus:ring-2 focus:ring-red-200'
-    : 'border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100'
+  e ? 'border-red-400 bg-red-500/10 focus:ring-2 focus:ring-red-400/20'
+    : 'border-white/10 focus:border-[#7798AB] focus:ring-2 focus:ring-[#7798AB]/20'
 )
 
 function formatFileSize(bytes: number): string {
@@ -141,7 +141,7 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
           <CheckCircle2 className="w-7 h-7 text-green-600" />
         </div>
-        <p className="text-sm font-semibold text-green-700">Facture enregistrée !</p>
+        <p className="text-sm font-semibold text-green-400">Facture enregistrée !</p>
       </div>
     )
   }
@@ -162,22 +162,22 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
           className={cn(
             'border-2 border-dashed rounded-2xl p-12 flex flex-col items-center gap-3 cursor-pointer transition-all',
             isDragging
-              ? 'border-blue-400 bg-blue-50'
-              : 'border-gray-300 hover:border-blue-400 hover:bg-blue-50/30'
+              ? 'border-[#7798AB] bg-[#7798AB]/15'
+              : 'border-white/10 hover:border-[#7798AB] hover:bg-[#7798AB]/5'
           )}
         >
-          <div className="w-12 h-12 rounded-2xl bg-blue-100 flex items-center justify-center">
-            <Upload className="w-6 h-6 text-blue-600" />
+          <div className="w-12 h-12 rounded-2xl bg-[#7798AB]/15 flex items-center justify-center">
+            <Upload className="w-6 h-6 text-[#7798AB]" />
           </div>
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-white/70">
               Déposez votre facture ici
             </p>
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-white/30 mt-1">
               JPEG, PNG, WEBP ou PDF · Max 10 Mo
             </p>
           </div>
-          <span className="px-4 py-2 text-sm font-medium text-blue-600 border border-blue-300 rounded-xl hover:bg-blue-50 transition-colors">
+          <span className="px-4 py-2 text-sm font-medium text-[#7798AB] border border-[#7798AB]/40 rounded-xl hover:bg-[#7798AB]/10 transition-colors">
             Parcourir les fichiers
           </span>
           <input
@@ -188,20 +188,20 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
           />
         </div>
       ) : (
-        <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-          <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center flex-shrink-0">
-            <FileText className="w-5 h-5 text-blue-600" />
+        <div className="flex items-center gap-3 p-4 bg-white/5 rounded-xl border border-white/8">
+          <div className="w-10 h-10 rounded-xl bg-[#7798AB]/15 flex items-center justify-center flex-shrink-0">
+            <FileText className="w-5 h-5 text-[#7798AB]" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-gray-900 truncate">{file.name}</p>
-            <p className="text-xs text-gray-400">{formatFileSize(file.size)}</p>
+            <p className="text-sm font-medium text-white truncate">{file.name}</p>
+            <p className="text-xs text-white/30">{formatFileSize(file.size)}</p>
           </div>
           <div className="flex items-center gap-2">
             {!ocrResult && (
               <button
                 onClick={handleScan}
                 disabled={isScanning}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-60 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-[#7798AB] rounded-xl hover:bg-[#8FADC0] disabled:opacity-60 transition-colors"
               >
                 {isScanning
                   ? <><Loader2 className="w-4 h-4 animate-spin" />Analyse…</>
@@ -211,7 +211,7 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
             )}
             {ocrResult && <span className="text-xs text-green-600 font-medium flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" />Analysé</span>}
             <button onClick={() => { setFile(null); setOCR(null); setScanErr(null) }}
-              className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-lg transition-colors">
+              className="p-1.5 text-white/30 hover:text-white/70 hover:bg-white/10 rounded-lg transition-colors">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -220,7 +220,7 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
 
       {/* Alerte OCR */}
       {scanError && (
-        <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-sm">
+        <div className="flex items-start gap-2 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800 text-sm">
           <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
           <p>{scanError}</p>
         </div>
@@ -230,37 +230,37 @@ export function InvoiceScanner({ onSaved }: InvoiceScannerProps) {
       {file && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="flex items-center gap-2 mb-2">
-            <div className="h-px flex-1 bg-gray-200" />
-            <span className="text-xs text-gray-400 font-medium uppercase tracking-wide px-2">
+            <div className="h-px flex-1 bg-white/10" />
+            <span className="text-xs text-white/30 font-medium uppercase tracking-wide px-2">
               {ocrResult ? 'Champs détectés — vérifiez et corrigez si besoin' : 'Saisie manuelle'}
             </span>
-            <div className="h-px flex-1 bg-gray-200" />
+            <div className="h-px flex-1 bg-white/10" />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Fournisseur</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Fournisseur</label>
               <input {...register('supplier_name')} placeholder="Métro, Pomona…" className={inputCls()} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Date de facture *</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Date de facture *</label>
               <input type="date" {...register('invoice_date')} className={inputCls(!!errors.invoice_date)} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Date d'échéance</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Date d'échéance</label>
               <input type="date" {...register('due_date')} className={inputCls()} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Montant HT (€) *</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Montant HT (€) *</label>
               <input type="number" step="0.01" min="0" {...register('amount', { valueAsNumber: true })} className={inputCls(!!errors.amount)} />
               {errors.amount && <p className="mt-1 text-xs text-red-600">{errors.amount.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">TVA (€)</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">TVA (€)</label>
               <input type="number" step="0.01" min="0" {...register('vat_amount', { valueAsNumber: true })} className={inputCls()} />
             </div>
             <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">Statut</label>
+              <label className="block text-sm font-medium text-white/70 mb-1.5">Statut</label>
               <select {...register('status')} className={inputCls()}>
                 <option value="pending">En attente</option>
                 <option value="validated">Validée</option>

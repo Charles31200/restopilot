@@ -89,35 +89,35 @@ export function WeeklyReport() {
   }
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-200 p-5 space-y-4">
+    <div className="bg-[#1A1A1A] rounded-2xl border border-white/8 p-5 space-y-4">
       {/* Titre + navigation */}
       <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-gray-900">Rapport hebdomadaire</h2>
+        <h2 className="text-sm font-semibold text-white">Rapport hebdomadaire</h2>
 
         <div className="flex items-center gap-1">
           <button
             onClick={() => setWeek(prevWeek(week))}
-            className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            className="p-1.5 rounded-lg border border-white/8 hover:bg-white/5 transition-colors"
           >
-            <ChevronLeft className="w-4 h-4 text-gray-500" />
+            <ChevronLeft className="w-4 h-4 text-white/45" />
           </button>
-          <span className="text-xs font-medium text-gray-700 px-2 min-w-[160px] text-center">
+          <span className="text-xs font-medium text-white/70 px-2 min-w-[160px] text-center">
             {formatWeekLabel(week)}
           </span>
           <button
             onClick={() => setWeek(nextWeek(week))}
             disabled={week >= currentWeek}
-            className="p-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-40 transition-colors"
+            className="p-1.5 rounded-lg border border-white/8 hover:bg-white/5 disabled:opacity-40 transition-colors"
           >
-            <ChevronRight className="w-4 h-4 text-gray-500" />
+            <ChevronRight className="w-4 h-4 text-white/45" />
           </button>
-          {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-gray-400 ml-1" />}
+          {isLoading && <Loader2 className="w-3.5 h-3.5 animate-spin text-white/30 ml-1" />}
         </div>
       </div>
 
       {/* Erreur */}
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+        <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
           <AlertTriangle className="w-4 h-4 flex-shrink-0" />
           <p>{error}</p>
         </div>
@@ -131,7 +131,7 @@ export function WeeklyReport() {
               label="CA semaine"
               value={fmt(data.revenue)}
               icon={TrendingUp}
-              color="bg-blue-50 text-blue-800 border-blue-200"
+              color="bg-[#7798AB]/15 text-[#8FADC0] border-[#7798AB]/25"
             />
             <Metric
               label="Marge brute"
@@ -139,21 +139,21 @@ export function WeeklyReport() {
               icon={data.grossMarginPct > 20 ? TrendingUp : TrendingDown}
               color={cn(
                 data.grossMargin >= 0
-                  ? 'bg-green-50 text-green-800 border-green-200'
-                  : 'bg-red-50 text-red-800 border-red-200'
+                  ? 'bg-green-500/10 text-green-800 border-green-500/20'
+                  : 'bg-red-500/10 text-red-800 border-red-500/20'
               )}
             />
             <Metric
               label="Achats"
               value={fmt(data.purchases)}
               icon={ShoppingCart}
-              color="bg-red-50 text-red-800 border-red-200"
+              color="bg-red-500/10 text-red-800 border-red-500/20"
             />
             <Metric
               label="Masse salariale"
               value={fmt(data.laborCost)}
               icon={Users}
-              color="bg-amber-50 text-amber-800 border-amber-200"
+              color="bg-amber-500/10 text-amber-800 border-amber-500/20"
             />
           </div>
 
@@ -161,14 +161,14 @@ export function WeeklyReport() {
           {data.alerts.length > 0 ? (
             <div className="space-y-1.5">
               {data.alerts.map((alert, i) => (
-                <div key={i} className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-amber-800 text-xs">
+                <div key={i} className="flex items-start gap-2 p-2.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-800 text-xs">
                   <AlertTriangle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
                   <p>{alert}</p>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="flex items-center gap-2 p-2.5 bg-green-50 border border-green-200 rounded-xl text-green-700 text-xs">
+            <div className="flex items-center gap-2 p-2.5 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-xs">
               <CheckCircle2 className="w-3.5 h-3.5 flex-shrink-0" />
               <p>Aucune alerte cette semaine.</p>
             </div>
@@ -185,7 +185,7 @@ export function WeeklyReport() {
               <button
                 onClick={sendEmail}
                 disabled={isSending}
-                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:opacity-60 transition-colors w-full justify-center"
+                className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-[#7798AB] rounded-xl hover:bg-[#8FADC0] disabled:opacity-60 transition-colors w-full justify-center"
               >
                 {isSending
                   ? <><Loader2 className="w-4 h-4 animate-spin" />Envoi en cours…</>
@@ -198,7 +198,7 @@ export function WeeklyReport() {
       )}
 
       {!data && !isLoading && !error && (
-        <div className="py-8 text-center text-gray-400 text-sm">
+        <div className="py-8 text-center text-white/30 text-sm">
           Aucune donnée pour cette semaine.
         </div>
       )}
