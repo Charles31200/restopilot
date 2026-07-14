@@ -32,21 +32,21 @@ function RPInput({
   return (
     <div className="relative">
       <input
-        className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150"
+        className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150 placeholder:text-[rgba(255,255,255,0.3)]"
         style={{
-          background:  '#FFFFFF',
-          border:      '1px solid #E5E5E5',
+          background:  '#111111',
+          border:      '1px solid rgba(255,255,255,0.1)',
           padding:     icon ? '12px 44px 12px 16px' : '12px 16px',
-          color:       '#111111',
+          color:       '#FFFFFF',
           fontFamily:  'var(--font-body)',
           ...style,
         }}
-        onFocus={e  => (e.target.style.borderColor = '#111111')}
-        onBlur={e   => (e.target.style.borderColor = '#E5E5E5')}
+        onFocus={e  => (e.target.style.borderColor = '#7798AB')}
+        onBlur={e   => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
         {...props}
       />
       {icon && (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: '#9CA3AF' }}>
+        <span className="absolute right-3 top-1/2 -translate-y-1/2" style={{ color: 'rgba(255,255,255,0.4)' }}>
           {icon}
         </span>
       )}
@@ -62,8 +62,8 @@ function SubmitBtn({
   return (
     <button
       type="submit"
-      className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
-      style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
+      className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1 hover:opacity-90"
+      style={{ background: '#7798AB', color: '#fff', fontFamily: 'var(--font-display)' }}
       {...props}
     >
       {loading && <Loader2 size={16} className="animate-spin" />}
@@ -74,7 +74,7 @@ function SubmitBtn({
 
 function ErrBox({ msg }: { msg: string }) {
   return (
-    <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+    <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: 'rgba(248,113,113,0.1)', color: '#F87171', fontFamily: 'var(--font-body)' }}>
       {msg}
     </div>
   )
@@ -173,14 +173,14 @@ export default function LoginPage() {
   if (mode === 'forgot-sent') {
     return (
       <div className="text-center py-2">
-        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
-          <CheckCircle2 className="w-6 h-6" style={{ color: '#166534' }} />
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(74,222,128,0.15)' }}>
+          <CheckCircle2 className="w-6 h-6" style={{ color: '#4ADE80' }} />
         </div>
-        <h2 className="text-[18px] font-bold mb-2" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+        <h2 className="text-[18px] font-bold mb-2" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
           Email envoyé
         </h2>
-        <p className="text-[14px] leading-relaxed mb-6" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
-          Un lien de réinitialisation a été envoyé à <strong style={{ color: '#111111' }}>{forgotEmail}</strong>.
+        <p className="text-[14px] leading-relaxed mb-6" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
+          Un lien de réinitialisation a été envoyé à <strong style={{ color: '#FFFFFF' }}>{forgotEmail}</strong>.
           Vérifiez votre boîte mail.
         </p>
         <button
@@ -203,15 +203,15 @@ export default function LoginPage() {
           type="button"
           onClick={() => { setMode('login'); setError(null) }}
           className="flex items-center gap-1.5 mb-5 text-[13px] transition-opacity hover:opacity-70"
-          style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}
+          style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}
         >
           <ArrowLeft size={14} /> Retour
         </button>
 
-        <h2 className="text-[19px] font-bold mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+        <h2 className="text-[19px] font-bold mb-1" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
           Mot de passe oublié ?
         </h2>
-        <p className="text-[13px] mb-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+        <p className="text-[13px] mb-5" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
           Entrez votre email pour recevoir un lien de réinitialisation.
         </p>
 
@@ -238,10 +238,10 @@ export default function LoginPage() {
   // ── État principal : connexion ─────────────────────────────────
   return (
     <>
-      <h2 className="text-[24px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+      <h2 className="text-[24px] font-bold text-center mb-1" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
         Connexion
       </h2>
-      <p className="text-[13px] text-center mb-5" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+      <p className="text-[13px] text-center mb-5" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
         Accédez à votre espace PilotResto
       </p>
 
@@ -250,8 +250,8 @@ export default function LoginPage() {
         type="button"
         onClick={handleGoogle}
         disabled={disabled}
-        className="w-full h-[44px] flex items-center justify-center gap-2.5 rounded-[8px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
-        style={{ background: '#F5F5F5', color: '#111111', border: '1px solid #E5E5E5', fontFamily: 'var(--font-body)' }}
+        className="w-full h-[44px] flex items-center justify-center gap-2.5 rounded-[8px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50 hover:opacity-90"
+        style={{ background: '#1A1A1A', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'var(--font-body)' }}
       >
         {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
         Continuer avec Google
@@ -259,9 +259,9 @@ export default function LoginPage() {
 
       {/* Séparateur */}
       <div className="relative flex items-center mb-4">
-        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
-        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: '#9CA3AF' }}>ou</span>
-        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
+        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.3)' }}>ou</span>
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
       </div>
 
       {error && <ErrBox msg={error} />}
@@ -295,12 +295,12 @@ export default function LoginPage() {
 
         {/* Se souvenir de moi + Mot de passe oublié */}
         <div className="flex items-center justify-between">
-          <label className="flex items-center gap-2 cursor-pointer select-none text-[13px]" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+          <label className="flex items-center gap-2 cursor-pointer select-none text-[13px]" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={e => setRememberMe(e.target.checked)}
-              style={{ accentColor: '#111111', width: 15, height: 15, flexShrink: 0 }}
+              style={{ accentColor: '#7798AB', width: 15, height: 15, flexShrink: 0 }}
             />
             Se souvenir de moi
           </label>
@@ -319,7 +319,7 @@ export default function LoginPage() {
         </SubmitBtn>
       </form>
 
-      <p className="text-center text-[13px] mt-5" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+      <p className="text-center text-[13px] mt-5" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
         Pas encore de compte ?{' '}
         <Link href="/register" className="font-semibold" style={{ color: '#7798AB', fontFamily: 'var(--font-display)' }}>
           S&apos;inscrire gratuitement

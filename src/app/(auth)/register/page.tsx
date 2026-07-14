@@ -13,14 +13,14 @@ function RPInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       className="w-full rounded-[8px] text-[15px] outline-none transition-colors duration-150"
       style={{
-        background: '#FFFFFF',
-        border:     '1px solid #E5E5E5',
+        background: '#111111',
+        border:     '1px solid rgba(255,255,255,0.1)',
         padding:    '12px 16px',
-        color:      '#111111',
+        color:      '#FFFFFF',
         fontFamily: 'var(--font-body)',
       }}
-      onFocus={e => (e.target.style.borderColor = '#111111')}
-      onBlur={e  => (e.target.style.borderColor = '#E5E5E5')}
+      onFocus={e => (e.target.style.borderColor = '#7798AB')}
+      onBlur={e  => (e.target.style.borderColor = 'rgba(255,255,255,0.1)')}
       {...props}
     />
   )
@@ -35,7 +35,7 @@ function SubmitBtn({
     <button
       type="submit"
       className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-50 mt-1"
-      style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
+      style={{ background: '#7798AB', color: '#fff', fontFamily: 'var(--font-display)' }}
       {...props}
     >
       {loading && <Loader2 size={16} className="animate-spin" />}
@@ -169,16 +169,16 @@ export default function RegisterPage() {
     return (
       <div className="py-2">
         {/* Icône */}
-        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#C3DBC5' }}>
-          <Mail className="w-6 h-6" style={{ color: '#166534' }} />
+        <div className="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(74,222,128,0.15)' }}>
+          <Mail className="w-6 h-6" style={{ color: '#4ADE80' }} />
         </div>
 
-        <h2 className="text-[18px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+        <h2 className="text-[18px] font-bold text-center mb-1" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
           Code de confirmation
         </h2>
-        <p className="text-[13px] text-center mb-6" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+        <p className="text-[13px] text-center mb-6" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
           Entrez le code à 6 chiffres envoyé à{' '}
-          <strong style={{ color: '#111111' }}>{email}</strong>
+          <strong style={{ color: '#FFFFFF' }}>{email}</strong>
         </p>
 
         {/* 6 cases OTP */}
@@ -199,14 +199,14 @@ export default function RegisterPage() {
               style={{
                 width:       '44px',
                 height:      '56px',
-                background:  '#FFFFFF',
-                border:      digit ? '2px solid #111111' : '1px solid #E5E5E5',
-                color:       '#111111',
+                background:  '#111111',
+                border:      digit ? '2px solid #7798AB' : '1px solid rgba(255,255,255,0.1)',
+                color:       '#FFFFFF',
                 fontFamily:  'var(--font-display)',
-                caretColor:  '#111111',
+                caretColor:  '#7798AB',
               }}
-              onFocusCapture={e => (e.target.style.borderColor = '#111111')}
-              onBlurCapture={e => { if (!digit) e.target.style.borderColor = '#E5E5E5' }}
+              onFocusCapture={e => (e.target.style.borderColor = '#7798AB')}
+              onBlurCapture={e => { if (!digit) e.target.style.borderColor = 'rgba(255,255,255,0.1)' }}
               autoFocus={i === 0}
               autoComplete={i === 0 ? 'one-time-code' : 'off'}
             />
@@ -215,7 +215,7 @@ export default function RegisterPage() {
 
         {/* Erreur OTP */}
         {otpError && (
-          <div className="mb-3 p-3 rounded-[10px] text-[13px] text-center" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+          <div className="mb-3 p-3 rounded-[10px] text-[13px] text-center" style={{ background: 'rgba(248,113,113,0.1)', color: '#F87171', fontFamily: 'var(--font-body)' }}>
             {otpError}
           </div>
         )}
@@ -227,7 +227,7 @@ export default function RegisterPage() {
             onClick={() => handleOtpSubmit(otpCode)}
             disabled={!otpComplete || otpLoading}
             className="w-full h-[44px] rounded-[8px] font-semibold text-[15px] flex items-center justify-center gap-2 transition-opacity disabled:opacity-40 mb-3"
-            style={{ background: '#000000', color: '#fff', fontFamily: 'var(--font-display)' }}
+            style={{ background: '#7798AB', color: '#fff', fontFamily: 'var(--font-display)' }}
           >
             {otpLoading ? <><Loader2 size={16} className="animate-spin" />Vérification…</> : 'Confirmer'}
           </button>
@@ -236,7 +236,7 @@ export default function RegisterPage() {
         {/* Renvoyer le code */}
         <div className="text-center mt-2">
           {resendSent ? (
-            <p className="text-[13px] flex items-center justify-center gap-1.5" style={{ color: '#166534', fontFamily: 'var(--font-body)' }}>
+            <p className="text-[13px] flex items-center justify-center gap-1.5" style={{ color: '#4ADE80', fontFamily: 'var(--font-body)' }}>
               <CheckCircle2 size={14} /> Nouveau code envoyé
             </p>
           ) : (
@@ -253,7 +253,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Retour */}
-        <p className="text-center text-[12px] mt-4" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+        <p className="text-center text-[12px] mt-4" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)' }}>
           <button type="button" onClick={() => { setStep('form'); setOtpDigits(['', '', '', '', '', '']); setOtpError(null) }}
             className="underline transition-opacity hover:opacity-70">
             Modifier mes informations
@@ -266,10 +266,10 @@ export default function RegisterPage() {
   // ── Formulaire d'inscription ──────────────────────────────────
   return (
     <>
-      <h2 className="text-[24px] font-bold text-center mb-1" style={{ color: '#111111', fontFamily: 'var(--font-display)' }}>
+      <h2 className="text-[24px] font-bold text-center mb-1" style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}>
         Créer un compte
       </h2>
-      <p className="text-[13px] text-center mb-5" style={{ color: '#888888', fontFamily: 'var(--font-body)' }}>
+      <p className="text-[13px] text-center mb-5" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
         14 jours gratuits · Sans engagement
       </p>
 
@@ -279,7 +279,7 @@ export default function RegisterPage() {
         onClick={handleGoogle}
         disabled={disabled}
         className="w-full h-[44px] flex items-center justify-center gap-2.5 rounded-[8px] text-[15px] font-medium mb-4 transition-opacity disabled:opacity-50"
-        style={{ background: '#F5F5F5', color: '#111111', border: '1px solid #E5E5E5', fontFamily: 'var(--font-body)' }}
+        style={{ background: '#1A1A1A', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.1)', fontFamily: 'var(--font-body)' }}
       >
         {googleLoading ? <Loader2 size={18} className="animate-spin" /> : <GoogleIcon />}
         Continuer avec Google
@@ -287,13 +287,13 @@ export default function RegisterPage() {
 
       {/* Séparateur */}
       <div className="relative flex items-center mb-4">
-        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
-        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: '#9CA3AF' }}>ou</span>
-        <div className="flex-1 h-px" style={{ background: '#E5E7EB' }} />
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
+        <span className="px-3 text-[11px] uppercase tracking-widest" style={{ color: 'rgba(255,255,255,0.4)' }}>ou</span>
+        <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.1)' }} />
       </div>
 
       {error && (
-        <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: '#FEF2F2', color: '#DC2626', fontFamily: 'var(--font-body)' }}>
+        <div className="mb-3 p-3 rounded-[10px] text-[13px]" style={{ background: 'rgba(248,113,113,0.1)', color: '#F87171', fontFamily: 'var(--font-body)' }}>
           {error}
         </div>
       )}
@@ -347,7 +347,7 @@ export default function RegisterPage() {
             tabIndex={-1}
             onClick={() => setShowPwd(v => !v)}
             className="absolute right-3 top-1/2 -translate-y-1/2"
-            style={{ color: '#9CA3AF' }}
+            style={{ color: 'rgba(255,255,255,0.4)' }}
           >
             {showPwd ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -370,7 +370,7 @@ export default function RegisterPage() {
             tabIndex={-1}
             onClick={() => setShowConfirm(v => !v)}
             className="absolute right-3 top-1/2 -translate-y-1/2"
-            style={{ color: '#9CA3AF' }}
+            style={{ color: 'rgba(255,255,255,0.4)' }}
           >
             {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
@@ -381,13 +381,13 @@ export default function RegisterPage() {
         </SubmitBtn>
       </form>
 
-      <p className="text-[11px] text-center mt-4 leading-relaxed" style={{ color: '#9CA3AF', fontFamily: 'var(--font-body)' }}>
+      <p className="text-[11px] text-center mt-4 leading-relaxed" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)' }}>
         En créant un compte vous acceptez nos{' '}
         <a href="/cgu-cgv" className="underline">CGU</a>{' '}et notre{' '}
         <a href="/politique-de-confidentialite" className="underline">politique de confidentialité</a>.
       </p>
 
-      <p className="text-center text-[13px] mt-3" style={{ color: '#6B7280', fontFamily: 'var(--font-body)' }}>
+      <p className="text-center text-[13px] mt-3" style={{ color: 'rgba(255,255,255,0.45)', fontFamily: 'var(--font-body)' }}>
         Déjà un compte ?{' '}
         <Link href="/login" className="font-semibold" style={{ color: '#7798AB', fontFamily: 'var(--font-display)' }}>
           Se connecter

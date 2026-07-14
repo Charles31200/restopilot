@@ -9,7 +9,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center px-5 py-10"
-      style={{ background: '#FFFFFF' }}
+      style={{ background: '#0F0F0F' }}
     >
       {/* Contenu centré */}
       <div className="relative w-full max-w-[400px]">
@@ -19,16 +19,21 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto', marginBottom: '10px' }} />
           <span
             className="font-extrabold text-[20px]"
-            style={{ color: '#111111', fontFamily: 'var(--font-display)' }}
+            style={{ color: '#FFFFFF', fontFamily: 'var(--font-display)' }}
           >
             PilotResto
           </span>
         </div>
 
-        {children}
+        <div
+          className="rounded-[24px] p-6 sm:p-8"
+          style={{ background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          {children}
+        </div>
       </div>
 
-      <p className="mt-8 text-[11px]" style={{ color: '#BBBBBB', fontFamily: 'var(--font-body)' }}>
+      <p className="mt-8 text-[11px]" style={{ color: 'rgba(255,255,255,0.3)', fontFamily: 'var(--font-body)' }}>
         © 2026 PilotResto · Essai gratuit 14 jours
       </p>
     </div>
