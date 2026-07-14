@@ -39,6 +39,8 @@ export type Profile = {
   first_name: string | null
   last_name: string | null
   avatar_url: string | null
+  /** Rempli uniquement pour les profils role='staff' créés via une invitation employé. */
+  employee_id: string | null
   created_at: string
 }
 
@@ -202,6 +204,19 @@ export type ShiftRequest = {
   updated_at:      string
 }
 
+export type InvitationStatus = 'pending' | 'accepted' | 'expired'
+
+export type EmployeeInvitation = {
+  id:            string
+  restaurant_id: string
+  employee_id:   string
+  email:         string
+  token:         string
+  status:        InvitationStatus
+  expires_at:    string
+  created_at:    string
+}
+
 export type CashEntryPeriod = 'day' | 'week'
 
 export type CashEntry = {
@@ -337,6 +352,11 @@ type CashEntryInsert = WithDefaults<
   'period' | 'note'
 >
 
+type EmployeeInvitationInsert = WithDefaults<
+  ToInsert<Omit<EmployeeInvitation, 'id' | 'created_at'>>,
+  'token' | 'status' | 'expires_at'
+>
+
 
 export type Database = {
   public: {
@@ -435,6 +455,12 @@ export type Database = {
         Row: CashEntry
         Insert: CashEntryInsert
         Update: Partial<Omit<CashEntry, 'id'>>
+        Relationships: R
+      }
+      employee_invitations: {
+        Row: EmployeeInvitation
+        Insert: EmployeeInvitationInsert
+        Update: Partial<Omit<EmployeeInvitation, 'id'>>
         Relationships: R
       }
     }

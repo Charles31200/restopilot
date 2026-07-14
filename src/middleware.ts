@@ -31,6 +31,7 @@ const FULLY_PUBLIC = [
   '/politique-de-confidentialite',
   '/auth',
   '/downloads',
+  '/invite',
 ]
 
 // Routes dashboard accessibles sans abonnement actif (évite les boucles)
@@ -57,6 +58,7 @@ type DashboardCache = {
   uid:              string
   firstName:        string | null
   restaurantId:     string | null
+  role:             string | null
   subStatus:        string | null
   hasPaymentMethod: boolean | null
   exp:              number
@@ -184,10 +186,11 @@ export default async function middleware(request: NextRequest) {
 
   const isAuthRoute         = pathname === '/login' || pathname === '/register'
   const isDashboardRoute    = pathname.startsWith('/dashboard')
+  const isEmployeeRoute     = pathname.startsWith('/employee')
   const isOnboarding        = pathname === '/onboarding'
   const isOnboardingPayment = pathname === '/onboarding-payment'
   const isAddCard           = pathname === '/add-card'
-  const needsAuth           = isDashboardRoute || isOnboarding || isOnboardingPayment || isAddCard
+  const needsAuth           = isDashboardRoute || isOnboarding || isOnboardingPayment || isAddCard || isEmployeeRoute
 
   // ── 1. Homepage ───────────────────────────────────────────────
   if (pathname === '/') {
@@ -220,8 +223,8 @@ export default async function middleware(request: NextRequest) {
     }
   }
 
-  // ── 5-6. Vérifications dashboard (profil + abonnement) ────────
-  if (isDashboardRoute) {
+  // ── 5-6. Vérifications dashboard (profil + rôle + abonnement) ──
+  if (isDashboardRoute || isEmployeeRoute) {
     const isExempt = SUBSCRIPTION_EXEMPT.some(p => pathname.startsWith(p))
 
     // Cache valide (≤ 60s, signé, même utilisateur) → on saute Supabase
@@ -229,12 +232,14 @@ export default async function middleware(request: NextRequest) {
 
     let firstName:        string | null
     let restaurantId:     string | null
+    let role:              string | null
     let subStatus:        string | null
     let hasPaymentMethod: boolean | null
 
     if (cached) {
       firstName        = cached.firstName
       restaurantId     = cached.restaurantId
+      role              = cached.role
       subStatus        = cached.subStatus
       hasPaymentMethod = cached.hasPaymentMethod
     } else {
@@ -245,7 +250,7 @@ export default async function middleware(request: NextRequest) {
         // allers-retours séquentiels.
         const { data: profile } = await supabase
           .from('profiles')
-          .select('restaurant_id, first_name, restaurants(subscriptions(status, has_payment_method))')
+          .select('restaurant_id, first_name, role, restaurants(subscriptions(status, has_payment_method))')
           .eq('id', user.id)
           .single()
 
@@ -258,15 +263,30 @@ export default async function middleware(request: NextRequest) {
 
         firstName        = profile?.first_name    ?? null
         restaurantId      = profile?.restaurant_id ?? null
+        role              = profile?.role          ?? null
         subStatus         = sub?.status            ?? null
         hasPaymentMethod  = sub?.has_payment_method ?? null
 
-        await writeDashboardCache(response, { uid: user.id, firstName, restaurantId, subStatus, hasPaymentMethod })
+        await writeDashboardCache(response, { uid: user.id, firstName, restaurantId, role, subStatus, hasPaymentMethod })
       } catch {
         // Fail-open : ne pas bloquer des utilisateurs valides en cas d'erreur DB
         return response
       }
     }
+
+    // Rôle staff → réservé à /employee, jamais /dashboard
+    if (isDashboardRoute && role === 'staff') {
+      return NextResponse.redirect(new URL('/employee/dashboard', request.url))
+    }
+
+    // Rôle owner/manager → pas d'accès à l'espace employé
+    if (isEmployeeRoute && role !== 'staff') {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+
+    // L'espace employé n'a ni onboarding ni abonnement à vérifier —
+    // ces notions sont propres au compte du patron, pas à un profil staff.
+    if (isEmployeeRoute) return response
 
     // 5. Onboarding incomplet → /onboarding
     if (!firstName) {

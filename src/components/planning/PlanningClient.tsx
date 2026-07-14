@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import {
   ChevronLeft, ChevronRight, CalendarDays,
-  BarChart2, FileDown, UserPlus, Loader2, RefreshCw, MessageSquareDiff,
+  BarChart2, FileDown, UserPlus, Loader2, RefreshCw, MessageSquareDiff, Mail,
 } from 'lucide-react'
 import { cn } from '@/lib/utils/cn'
 import {
@@ -17,6 +17,7 @@ import { EmployeeModal }       from '@/components/planning/EmployeeModal'
 import { WeeklySummary }       from '@/components/planning/WeeklySummary'
 import { MonthlyExport }       from '@/components/planning/MonthlyExport'
 import { ShiftRequestsPanel }  from '@/components/planning/ShiftRequestsPanel'
+import { InviteEmployeeModal } from '@/components/planning/InviteEmployeeModal'
 import type { WeekData, ShiftWithEmployee } from '@/types/planning'
 import type { Employee } from '@/types'
 
@@ -30,6 +31,7 @@ type ModalState =
   | { type: 'summary' }
   | { type: 'export' }
   | { type: 'shift_requests' }
+  | { type: 'invite_employee' }
   | null
 
 // ── Props ─────────────────────────────────────────────────────
@@ -251,6 +253,18 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
           <UserPlus className="w-4 h-4" />
           Employé
         </button>
+
+        {/* Inviter un employé */}
+        <button
+          onClick={() => setModal({ type: 'invite_employee' })}
+          disabled={employees.length === 0}
+          className="flex items-center gap-2 h-10 px-4 text-sm font-medium rounded-[10px] border transition-colors hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ color: '#FFFFFF', borderColor: 'rgba(255,255,255,0.06)', background: '#1A1A1A' }}
+          title={employees.length === 0 ? 'Ajoutez d\'abord un employé' : undefined}
+        >
+          <Mail className="w-4 h-4" />
+          Inviter
+        </button>
       </div>
 
       {/* ── Grille planning ── */}
@@ -324,6 +338,13 @@ export function PlanningClient({ initialData, initialWeek }: PlanningClientProps
           employee={modal.type === 'employee_edit' ? modal.employee : null}
           onClose={() => setModal(null)}
           onSaved={handleEmployeeSaved}
+        />
+      )}
+
+      {modal?.type === 'invite_employee' && (
+        <InviteEmployeeModal
+          employees={employees}
+          onClose={() => setModal(null)}
         />
       )}
 
