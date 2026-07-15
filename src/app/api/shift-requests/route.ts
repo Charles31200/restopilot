@@ -7,15 +7,21 @@ import { z } from 'zod'
 async function getCurrentUser() {
   const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return { supabase, user: null, restaurantId: null }
+  if (error || !user) return { supabase, user: null, restaurantId: null, role: null, employeeId: null }
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('restaurant_id')
+    .select('restaurant_id, role, employee_id')
     .eq('id', user.id)
     .single()
 
-  return { supabase, user, restaurantId: profile?.restaurant_id ?? null }
+  return {
+    supabase,
+    user,
+    restaurantId: profile?.restaurant_id ?? null,
+    role:         profile?.role          ?? null,
+    employeeId:   profile?.employee_id   ?? null,
+  }
 }
 
 // ── Schémas de validation ──────────────────────────────────────
@@ -82,7 +88,7 @@ export async function GET(_req: NextRequest) {
 // Crée une nouvelle demande de modification de créneau.
 
 export async function POST(req: NextRequest) {
-  const { supabase, restaurantId } = await getCurrentUser()
+  const { supabase, restaurantId, role, employeeId } = await getCurrentUser()
   if (!restaurantId) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
@@ -97,6 +103,17 @@ export async function POST(req: NextRequest) {
   }
 
   const { employee_id, shift_id, type, requested_start, requested_end, requested_date, reason } = parsed.data
+
+  // Un compte staff ne peut créer une demande que pour sa propre fiche employé
+  // (le manager/owner qui propose un changement pour un employé reste autorisé).
+  if (role === 'staff') {
+    if (!employeeId) {
+      return NextResponse.json({ error: 'Votre compte n\'est relié à aucune fiche employé' }, { status: 403 })
+    }
+    if (employee_id !== employeeId) {
+      return NextResponse.json({ error: 'Vous ne pouvez créer une demande que pour vous-même' }, { status: 403 })
+    }
+  }
 
   // Vérifier que le shift appartient au restaurant
   const { data: shift } = await supabase
