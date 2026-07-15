@@ -29,6 +29,23 @@ function getAdmin() {
   )
 }
 
+// Stripe a déplacé `current_period_end` de l'objet Subscription vers
+// chaque subscription item sur les API versions récentes (une souscription
+// peut avoir plusieurs items avec des périodes de facturation différentes).
+// Le champ top-level existe encore sur certains comptes/API versions —
+// on essaie les deux, sans jamais planter sur une valeur manquante
+// (auparavant : `new Date(undefined * 1000).toISOString()` levait
+// "Invalid time value" et empêchait tout l'upsert de l'abonnement,
+// laissant un client qui vient de payer bloqué sans abonnement actif).
+function getPeriodEndISO(sub: Stripe.Subscription): string | null {
+  const topLevel = (sub as unknown as { current_period_end?: number }).current_period_end
+  const itemLevel = (sub.items.data[0] as unknown as { current_period_end?: number } | undefined)?.current_period_end
+  const unixSeconds = topLevel ?? itemLevel
+  if (!unixSeconds || !Number.isFinite(unixSeconds)) return null
+  const date = new Date(unixSeconds * 1000)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
 // ── Envoi d'email d'alerte paiement ──────────────────────────
 
 async function sendPaymentFailedAlert(email: string, restaurantName: string) {
@@ -85,8 +102,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const plan       = planFromPriceId(priceId)
   const statusVal: import('@/types').SubscriptionStatus =
     stripeSub.status === 'trialing' ? 'trialing' : 'active'
-  // current_period_end is a unix timestamp on the Stripe object
-  const periodEnd  = new Date((stripeSub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
+  const periodEnd = getPeriodEndISO(stripeSub)
 
   // Une carte est toujours collectée (payment_method_collection: 'always')
   const hasPaymentMethod =
@@ -120,7 +136,7 @@ async function handleSubscriptionUpdated(stripeSub: Stripe.Subscription) {
 
   const priceId   = stripeSub.items.data[0]?.price.id ?? ''
   const plan      = planFromPriceId(priceId)
-  const periodEnd = new Date((stripeSub as unknown as { current_period_end: number }).current_period_end * 1000).toISOString()
+  const periodEnd = getPeriodEndISO(stripeSub)
 
   // Mapper le statut Stripe vers le statut PilotResto
   const statusMap: Record<string, import('@/types').SubscriptionStatus> = {
