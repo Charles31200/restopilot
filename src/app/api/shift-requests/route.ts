@@ -46,17 +46,19 @@ const patchSchema = z.object({
 })
 
 // ── GET /api/shift-requests ───────────────────────────────────
-// Retourne toutes les demandes pending du restaurant connecté,
-// avec join sur employees (first_name, last_name, color)
-// et shifts (start_time, end_time).
+// Owner/manager : toutes les demandes pending du restaurant (file d'attente
+// à traiter), avec join sur employees et shifts.
+// Staff : l'historique de SES PROPRES demandes (pending + approved +
+// rejected, les 20 plus récentes) — pour qu'il voie le statut de ce
+// qu'il a demandé, pas seulement tant que c'est en attente.
 
 export async function GET(_req: NextRequest) {
-  const { supabase, restaurantId } = await getCurrentUser()
+  const { supabase, restaurantId, role, employeeId } = await getCurrentUser()
   if (!restaurantId) {
     return NextResponse.json({ error: 'Non autorisé' }, { status: 401 })
   }
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('shift_requests')
     .select(`
       id,
@@ -74,8 +76,15 @@ export async function GET(_req: NextRequest) {
       shift:shifts ( id, start_time, end_time, position )
     `)
     .eq('restaurant_id', restaurantId)
-    .eq('status', 'pending')
-    .order('created_at', { ascending: true })
+
+  if (role === 'staff') {
+    if (!employeeId) return NextResponse.json({ requests: [] })
+    query = query.eq('employee_id', employeeId).order('created_at', { ascending: false }).limit(20)
+  } else {
+    query = query.eq('status', 'pending').order('created_at', { ascending: true })
+  }
+
+  const { data, error } = await query
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 })
