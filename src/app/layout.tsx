@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Plus_Jakarta_Sans, DM_Sans } from 'next/font/google'
+import { Calistoga, Inter } from 'next/font/google'
 import { ProgressBarProvider } from '@/components/ui/ProgressBarProvider'
 import PWARegister from '@/components/PWARegister'
 import PWAInstallBanner from '@/components/PWAInstallBanner'
@@ -7,17 +7,17 @@ import './globals.css'
 
 // ── Polices ───────────────────────────────────────────────────
 
-const jakarta = Plus_Jakarta_Sans({
+const calistoga = Calistoga({
   subsets:  ['latin'],
   variable: '--font-jakarta',
-  weight:   ['500', '600', '700'],
+  weight:   ['400'],
   display:  'swap',
 })
 
-const dmSans = DM_Sans({
+const inter = Inter({
   subsets:  ['latin'],
   variable: '--font-dm',
-  weight:   ['400', '500'],
+  weight:   ['400', '500', '600', '700'],
   display:  'swap',
 })
 
@@ -80,7 +80,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit:  'cover',
-  themeColor:   '#1B2A4A',
+  themeColor:   '#0F0F0F',
 }
 
 // ── Layout racine ─────────────────────────────────────────────
@@ -93,7 +93,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${jakarta.variable} ${dmSans.variable} h-full antialiased`}
+      className={`${calistoga.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-rp-page text-rp-navy font-body">
         <ProgressBarProvider>{children}</ProgressBarProvider>

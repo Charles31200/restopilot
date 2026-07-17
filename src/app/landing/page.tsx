@@ -4,32 +4,32 @@ import { useState, useEffect, useRef } from 'react'
 import {
   ArrowRight, Menu, X, ChevronDown,
   BarChart3, Package, CalendarDays, FileText, Plug, ScanLine,
-  Shield, MapPin, Phone, CheckCircle,
-  Clock, Users, Zap,
+  Shield, Lock, Headphones, CheckCircle,
+  TrendingUp, Clock, Users,
 } from 'lucide-react'
 
-// ── Constants ─────────────────────────────────────────────────────
+// ── Data ──────────────────────────────────────────────────────────
 
 const FEATURES = [
   {
     icon: BarChart3,
     title: 'Dashboard financier',
-    desc: "Chiffre d'affaires en temps réel, marges et ratios clés — tout sur un seul écran.",
+    desc: "CA en temps réel, marges et ratios clés — tout sur un seul écran. Plus de tableurs.",
   },
   {
     icon: Package,
     title: 'Gestion des stocks',
-    desc: 'Alertes automatiques, mouvements tracés, commandes suggérées. Fini les ruptures.',
+    desc: 'Alertes automatiques, mouvements tracés, commandes suggérées. Zéro rupture.',
   },
   {
     icon: CalendarDays,
-    title: 'Planning RH',
+    title: 'Planning HCR',
     desc: 'Planning visuel conforme convention HCR, calcul des heures sup et coûts en temps réel.',
   },
   {
     icon: FileText,
     title: 'Export FEC',
-    desc: 'Export comptable certifié pour votre expert-comptable. Déclarations en quelques clics.',
+    desc: 'Export comptable certifié. Déclarations prêtes pour votre expert-comptable en quelques clics.',
   },
   {
     icon: Plug,
@@ -43,517 +43,374 @@ const FEATURES = [
   },
 ]
 
-const PROBLEMS = [
-  {
-    emoji: '📊',
-    title: 'Les tableurs Excel ne sont pas faits pour gérer un restaurant',
-    desc: 'Formules qui cassent, données perdues, aucune vision en temps réel de vos marges.',
-  },
-  {
-    emoji: '🗂️',
-    title: 'Les données sont éparpillées entre 5 outils différents',
-    desc: "Caisse, RH, comptabilité, stocks... Chaque outil parle une langue différente.",
-  },
-  {
-    emoji: '⏰',
-    title: "Le temps passé en admin est du temps en moins en cuisine",
-    desc: "2h par jour à ressaisir des chiffres, c'est du temps volé à vos clients.",
-  },
+const STATS = [
+  { value: '14',   unit: 'jours',    label: "d'essai gratuit" },
+  { value: '3',    unit: 'min',      label: 'pour configurer' },
+  { value: '100%', unit: '',         label: 'données en France' },
 ]
 
-const STEPS = [
-  {
-    n: '01',
-    icon: Users,
-    title: 'Créez votre compte en 2 minutes',
-    desc: 'Inscription gratuite, pas de CB requise. Accès immédiat à toutes les fonctionnalités.',
-  },
-  {
-    n: '02',
-    icon: Zap,
-    title: 'Configurez votre restaurant',
-    desc: 'Ajoutez vos employés, votre stock, votre menu et vos intégrations caisse.',
-  },
-  {
-    n: '03',
-    icon: BarChart3,
-    title: 'Pilotez en temps réel',
-    desc: "Tableau de bord, alertes critiques, exports automatiques — votre restaurant en un coup d'œil.",
-  },
-]
-
-const BADGES = [
-  { icon: Shield,      label: 'Données hébergées en France' },
-  { icon: MapPin,      label: 'Conçu pour la restauration française' },
-  { icon: Phone,       label: 'Support réactif par email' },
-  { icon: CheckCircle, label: 'Conforme RGPD' },
+const TRUST = [
+  { icon: Shield,       label: 'Données hébergées en France' },
+  { icon: Lock,         label: 'Chiffrement de bout en bout' },
+  { icon: Headphones,   label: 'Support réactif par email' },
+  { icon: CheckCircle,  label: 'Conforme RGPD' },
 ]
 
 const FAQ = [
   {
     q: 'Est-ce que je dois installer quelque chose ?',
-    a: 'Non, PilotResto fonctionne entièrement dans votre navigateur web. Aucune installation, aucune mise à jour manuelle.',
+    a: 'Non, PilotResto fonctionne entièrement dans votre navigateur web et en PWA sur mobile. Aucune installation requise.',
   },
   {
     q: 'Puis-je annuler à tout moment ?',
-    a: 'Oui, sans engagement. Annulation en un clic depuis votre espace compte. Aucun frais cachés.',
+    a: 'Oui, sans engagement. Annulation en un clic depuis votre espace compte. Aucun frais caché.',
   },
   {
     q: 'Mes données sont-elles sécurisées ?',
-    a: 'Oui, toutes vos données sont chiffrées et hébergées en Europe, conformément au RGPD.',
+    a: 'Vos données sont chiffrées et hébergées en Europe, dans des datacenters conformes au RGPD. Elles ne sont jamais revendues.',
   },
   {
     q: "L'application fonctionne-t-elle sur téléphone ?",
-    a: "Oui, PilotResto est entièrement responsive et fonctionne sur tous les appareils : mobile, tablette, desktop.",
+    a: "Oui, PilotResto est conçu mobile-first. L'espace staff est optimisé pour être utilisé en cuisine avec une seule main.",
   },
   {
     q: "Que se passe-t-il après les 14 jours d'essai ?",
-    a: "Vous choisissez un plan et entrez vos coordonnées de paiement. Sinon, votre accès est suspendu sans frais.",
+    a: "Vous choisissez un plan et entrez vos coordonnées de paiement. Sinon, votre accès est suspendu sans aucun frais.",
   },
 ]
 
-// ── Helpers ───────────────────────────────────────────────────────
+// ── Mock dashboard UI ─────────────────────────────────────────────
 
-function animateCount(
-  from: number,
-  to: number,
-  duration: number,
-  callback: (v: number) => void
-) {
-  const start = performance.now()
-  const step = (now: number) => {
-    const progress = Math.min((now - start) / duration, 1)
-    const eased = 1 - Math.pow(1 - progress, 3)
-    callback(Math.round(from + (to - from) * eased))
-    if (progress < 1) requestAnimationFrame(step)
-  }
-  requestAnimationFrame(step)
+function DashboardMock() {
+  return (
+    <div
+      className="w-full rounded-2xl overflow-hidden border select-none"
+      style={{
+        background:   '#111117',
+        borderColor:  'rgba(255,255,255,0.08)',
+        boxShadow:    '0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04)',
+      }}
+    >
+      {/* TopBar */}
+      <div
+        className="flex items-center justify-between px-4 py-3 border-b"
+        style={{ background: '#18181F', borderColor: 'rgba(255,255,255,0.07)' }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-5 h-5 rounded bg-[#7798AB]/30 flex items-center justify-center">
+            <div className="w-2.5 h-2.5 rounded-sm bg-[#7798AB]" />
+          </div>
+          <span className="text-[11px] font-semibold text-white/60">Le Bistro du Coin</span>
+        </div>
+        <div className="flex items-center gap-2">
+          {['Dashboard','Stocks','Planning','Compta'].map((t, i) => (
+            <span key={t} className="text-[10px] px-2 py-1 rounded-md font-medium"
+              style={{ background: i === 0 ? '#7798AB' : 'transparent', color: i === 0 ? '#fff' : 'rgba(255,255,255,0.35)' }}>
+              {t}
+            </span>
+          ))}
+        </div>
+        <div className="w-6 h-6 rounded-full bg-[#7798AB]/20 border border-[#7798AB]/30" />
+      </div>
+
+      {/* KPI row */}
+      <div className="grid grid-cols-4 gap-3 p-4">
+        {[
+          { label: "CA aujourd'hui", value: '1 847 €', trend: '+12%', color: '#7798AB' },
+          { label: 'Couverts',       value: '82',       trend: '+5',   color: '#34D399' },
+          { label: 'Food cost',      value: '27,8 %',   trend: '–0.4', color: '#FBBF24' },
+          { label: 'Masse salariale',value: '32,1 %',   trend: '–1.2', color: '#A78BFA' },
+        ].map(kpi => (
+          <div key={kpi.label} className="rounded-xl p-3 border"
+            style={{ background: '#18181F', borderColor: 'rgba(255,255,255,0.06)' }}>
+            <div className="text-[9px] uppercase tracking-wider font-semibold mb-1"
+              style={{ color: 'rgba(255,255,255,0.35)' }}>{kpi.label}</div>
+            <div className="text-[15px] font-bold tabular-nums" style={{ color: '#F0F2F5' }}>{kpi.value}</div>
+            <div className="text-[9px] font-semibold mt-1" style={{ color: kpi.color }}>{kpi.trend}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart */}
+      <div className="mx-4 mb-3 rounded-xl border overflow-hidden"
+        style={{ background: '#18181F', borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="px-3 pt-2.5 pb-1 text-[9px] font-semibold uppercase tracking-wider"
+          style={{ color: 'rgba(255,255,255,0.35)' }}>CA hebdomadaire — 8 semaines</div>
+        <div className="flex items-end gap-1.5 px-3 pb-3" style={{ height: '60px' }}>
+          {[52, 68, 45, 78, 61, 83, 71, 95].map((h, i) => (
+            <div key={i} className="flex-1 rounded-t-sm transition-all"
+              style={{
+                height: `${h}%`,
+                background: i === 7 ? '#7798AB' : 'rgba(119,152,171,0.25)',
+              }} />
+          ))}
+        </div>
+      </div>
+
+      {/* Alerts + Next shifts */}
+      <div className="grid grid-cols-2 gap-3 px-4 pb-4">
+        <div className="rounded-xl border p-3" style={{ background: '#18181F', borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="text-[9px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>Alertes stocks</div>
+          {[
+            { name: 'Poulet (filet)', color: '#F87171' },
+            { name: 'Farine T55',     color: '#FBBF24' },
+          ].map(a => (
+            <div key={a.name} className="flex items-center gap-1.5 mb-1.5">
+              <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: a.color }} />
+              <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.55)' }}>{a.name}</span>
+            </div>
+          ))}
+        </div>
+        <div className="rounded-xl border p-3" style={{ background: '#18181F', borderColor: 'rgba(255,255,255,0.06)' }}>
+          <div className="text-[9px] font-semibold uppercase tracking-wider mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>Prochain service</div>
+          {['Marie D. · 9h–17h', 'Thomas R. · 11h–22h'].map(s => (
+            <div key={s} className="text-[9px] mb-1.5" style={{ color: 'rgba(255,255,255,0.55)' }}>{s}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ── Component ─────────────────────────────────────────────────────
 
 export default function LandingPage() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [openFaq, setOpenFaq] = useState<number | null>(null)
-  const [counts, setCounts] = useState({ days: 0, min: 0, pct: 0 })
-  const statsRef = useRef<HTMLDivElement>(null)
-  const statsAnimated = useRef(false)
+  const [openFaq,  setOpenFaq]  = useState<number | null>(null)
+  const statsRef                = useRef<HTMLDivElement>(null)
+  const statsAnimated           = useRef(false)
+  const [counts, setCounts]     = useState({ days: 0, min: 0 })
 
-  // Fade-up on scroll
+  // Scroll fade-up
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) entry.target.classList.add('visible')
-        })
-      },
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible') }),
       { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
     )
-    const els = document.querySelectorAll('.fade-up')
-    els.forEach(el => observer.observe(el))
-    return () => observer.disconnect()
+    document.querySelectorAll('.fade-up').forEach(el => io.observe(el))
+    return () => io.disconnect()
   }, [])
 
-  // Counter animation on stats section
+  // Counter animation
   useEffect(() => {
     const el = statsRef.current
     if (!el) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !statsAnimated.current) {
-          statsAnimated.current = true
-          animateCount(0, 14,  1200, v => setCounts(c => ({ ...c, days: v })))
-          animateCount(0, 3,   800,  v => setCounts(c => ({ ...c, min:  v })))
-          animateCount(0, 100, 1600, v => setCounts(c => ({ ...c, pct:  v })))
+    const io = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !statsAnimated.current) {
+        statsAnimated.current = true
+        const start = performance.now()
+        const step = (now: number) => {
+          const t = Math.min((now - start) / 1200, 1)
+          const e = 1 - Math.pow(1 - t, 3)
+          setCounts({ days: Math.round(14 * e), min: Math.round(3 * e) })
+          if (t < 1) requestAnimationFrame(step)
         }
-      },
-      { threshold: 0.3 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
+        requestAnimationFrame(step)
+      }
+    }, { threshold: 0.3 })
+    io.observe(el)
+    return () => io.disconnect()
   }, [])
 
   return (
-    <div className="min-h-screen bg-white" style={{ fontFamily: 'var(--font-body, system-ui)' }}>
+    <div className="min-h-screen overflow-x-hidden" style={{ background: '#0A0A0E', fontFamily: 'var(--font-body, system-ui)' }}>
 
       {/* ══ NAV ════════════════════════════════════════════════════ */}
-      <header className="absolute inset-x-0 top-0 z-50">
-        <div className="max-w-7xl mx-auto px-5 sm:px-6 h-18 flex items-center justify-between py-5">
+      <header className="fixed inset-x-0 top-0 z-50" style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', background: 'rgba(10,10,14,0.75)', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 h-14 flex items-center justify-between">
 
-          {/* Logo */}
-          <a href="/landing" className="flex-shrink-0">
-            <img src="/favicon.png" alt="PilotResto" style={{ height: '40px', width: 'auto' }} />
+          <a href="/landing" className="flex items-center gap-2.5 flex-shrink-0">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/favicon.png" alt="PilotResto" style={{ height: '28px', width: 'auto' }} />
+            <span className="font-bold text-[15px] text-white tracking-tight" style={{ fontFamily: 'var(--font-display)' }}>
+              PilotResto
+            </span>
           </a>
 
-          {/* Nav links — desktop */}
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#fonctionnalites" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
-              Fonctionnalités
-            </a>
-            <a href="/pricing" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
-              Tarifs
-            </a>
-            <a href="/contact" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
-              Contact
-            </a>
+          <nav className="hidden md:flex items-center gap-1">
+            {[
+              { label: 'Fonctionnalités', href: '#fonctionnalites' },
+              { label: 'Tarifs',          href: '/pricing' },
+              { label: 'Contact',         href: '/contact' },
+            ].map(item => (
+              <a key={item.href} href={item.href}
+                className="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors"
+                style={{ color: 'rgba(255,255,255,0.55)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+              >
+                {item.label}
+              </a>
+            ))}
           </nav>
 
-          {/* CTA — desktop */}
-          <div className="hidden md:flex items-center gap-4">
-            <a href="/login" className="text-white/80 hover:text-white text-sm font-medium transition-colors">
+          <div className="hidden md:flex items-center gap-3">
+            <a href="/login"
+              className="text-sm font-medium transition-colors"
+              style={{ color: 'rgba(255,255,255,0.55)' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
+              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.55)')}
+            >
               Connexion
             </a>
-            <a
-              href="/contact"
-              className="flex items-center gap-1.5 text-white font-semibold text-sm transition active:scale-95"
-              style={{ background: '#B8962E', borderRadius: '12px', padding: '10px 22px' }}
+            <a href="/register"
+              className="flex items-center gap-1.5 text-sm font-semibold text-white transition-all active:scale-95"
+              style={{ background: '#7798AB', borderRadius: '10px', padding: '8px 18px' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#8FADC0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#7798AB')}
             >
-              Demander une démo
+              Essai gratuit
               <ArrowRight className="w-3.5 h-3.5" />
             </a>
           </div>
 
-          {/* Hamburger — mobile */}
-          <div className="flex md:hidden items-center gap-3">
-            <a
-              href="/contact"
-              className="text-white font-semibold text-sm transition"
-              style={{ background: '#B8962E', borderRadius: '10px', padding: '8px 16px' }}
-            >
-              Démo
-            </a>
-            <button
-              onClick={() => setMenuOpen(v => !v)}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-white"
-              style={{ background: 'rgba(255,255,255,0.12)' }}
-              aria-label="Menu"
-            >
-              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-            </button>
-          </div>
+          <button
+            onClick={() => setMenuOpen(v => !v)}
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-xl transition-colors"
+            style={{ background: 'rgba(255,255,255,0.08)', color: '#fff' }}
+            aria-label={menuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
+          >
+            {menuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
 
-        {/* Mobile dropdown */}
         {menuOpen && (
-          <div
-            className="md:hidden mx-4 rounded-2xl shadow-2xl overflow-hidden"
-            style={{ background: '#1B2A4A', border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            <nav className="flex flex-col py-2">
-              {[
-                { href: '#fonctionnalites', label: 'Fonctionnalités' },
-                { href: '/pricing',         label: 'Tarifs' },
-                { href: '/contact',         label: 'Contact' },
-                { href: '/login',           label: 'Connexion' },
-              ].map(item => (
-                <a
-                  key={item.href}
-                  href={item.href}
+          <div className="md:hidden border-t" style={{ background: '#111117', borderColor: 'rgba(255,255,255,0.07)' }}>
+            <div className="px-4 py-4 flex flex-col gap-1">
+              {['#fonctionnalites', '/pricing', '/contact'].map((href, i) => (
+                <a key={href} href={href}
                   onClick={() => setMenuOpen(false)}
-                  className="px-6 py-3.5 text-white/80 hover:text-white hover:bg-white/5 text-base font-medium transition-colors"
+                  className="px-3 py-2.5 rounded-lg text-sm font-medium transition-colors"
+                  style={{ color: 'rgba(255,255,255,0.65)' }}
                 >
-                  {item.label}
+                  {['Fonctionnalités', 'Tarifs', 'Contact'][i]}
                 </a>
               ))}
-              <div className="px-4 pb-4 pt-2">
-                <a
-                  href="/contact"
-                  className="block text-center text-white font-bold text-base rounded-xl py-3.5 transition active:scale-95"
-                  style={{ background: '#B8962E', minHeight: '52px', lineHeight: '26px' }}
-                >
-                  Demander une démo
+              <div className="mt-2 pt-2 border-t flex flex-col gap-2" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+                <a href="/login" className="px-3 py-2.5 rounded-lg text-sm font-medium text-center" style={{ color: 'rgba(255,255,255,0.55)' }}>Connexion</a>
+                <a href="/register" className="py-2.5 rounded-xl text-sm font-semibold text-white text-center" style={{ background: '#7798AB' }}>
+                  Essai gratuit 14 jours
                 </a>
               </div>
-            </nav>
+            </div>
           </div>
         )}
       </header>
 
       {/* ══ HERO ═══════════════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&q=80&auto=format&fit=crop)' }}
-        />
-        <div className="absolute inset-0" style={{ background: 'rgba(27,42,74,0.75)' }} />
+      <section className="pt-32 pb-20 sm:pt-40 sm:pb-28 px-5 sm:px-6">
+        <div className="max-w-6xl mx-auto">
 
-        <div className="relative z-10 max-w-4xl mx-auto px-5 sm:px-6 text-center">
           {/* Badge */}
-          <div
-            className="inline-flex items-center gap-2 rounded-full text-sm font-semibold mb-8"
-            style={{ background: 'rgba(212,149,42,0.2)', color: '#F5C46A', border: '1px solid rgba(212,149,42,0.4)', padding: '6px 18px' }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: '#D4952A' }} />
-            Logiciel de gestion #1 pour restaurants indépendants
+          <div className="flex justify-center mb-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
+              style={{ background: 'rgba(119,152,171,0.12)', color: '#7798AB', border: '1px solid rgba(119,152,171,0.2)' }}>
+              <div className="w-1.5 h-1.5 rounded-full bg-[#7798AB] animate-pulse" />
+              Essai gratuit · Aucune CB requise
+            </div>
           </div>
 
-          {/* Titre */}
-          <h1
-            className="font-bold text-white leading-tight mb-6"
-            style={{
-              fontFamily: 'var(--font-display, system-ui)',
-              fontSize: 'clamp(32px, 6vw, 70px)',
-            }}
-          >
-            Gérez votre restaurant.<br />
-            <span style={{ color: '#F5C46A' }}>Enfin simplement.</span>
-          </h1>
-
-          {/* Sous-titre */}
-          <p
-            className="text-white/75 max-w-2xl mx-auto mb-10 leading-relaxed"
-            style={{ fontSize: 'clamp(15px, 2.5vw, 20px)' }}
-          >
-            PilotResto centralise stocks, planning et comptabilité en une seule plateforme.
-            Conçu pour les restaurateurs indépendants français.
-          </p>
-
-          {/* Boutons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="/contact"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 font-bold text-white transition active:scale-95 shadow-lg"
-              style={{
-                background: '#B8962E',
-                borderRadius: '12px',
-                padding: '16px 32px',
-                minHeight: '52px',
-                fontSize: '16px',
-              }}
+          {/* Headline */}
+          <div className="text-center max-w-4xl mx-auto mb-8">
+            <h1
+              className="text-4xl sm:text-5xl lg:text-6xl text-white leading-tight"
+              style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', textWrap: 'balance' }}
             >
-              Demander une démo
+              Pilotez votre restaurant depuis un seul endroit
+            </h1>
+            <p className="mt-5 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto"
+              style={{ color: 'rgba(255,255,255,0.5)' }}>
+              Stocks, planning, comptabilité et facturation centralisés. Conçu pour les restaurateurs indépendants français qui veulent récupérer du temps sur l'administratif.
+            </p>
+          </div>
+
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
+            <a href="/register"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 font-semibold text-white text-sm transition-all active:scale-95"
+              style={{ background: '#7798AB', borderRadius: '12px', padding: '13px 28px', minHeight: '48px', boxShadow: '0 4px 24px rgba(119,152,171,0.3)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#8FADC0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#7798AB')}
+            >
+              Démarrer gratuitement
               <ArrowRight className="w-4 h-4" />
             </a>
-            <a
-              href="/pricing"
-              className="w-full sm:w-auto flex items-center justify-center font-semibold text-white transition active:scale-95 backdrop-blur-sm"
-              style={{
-                border: '2px solid rgba(255,255,255,0.5)',
-                borderRadius: '12px',
-                padding: '16px 32px',
-                minHeight: '52px',
-                fontSize: '16px',
-              }}
+            <a href="/contact"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 font-medium text-sm transition-all active:scale-95"
+              style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.7)', borderRadius: '12px', padding: '13px 28px', minHeight: '48px', border: '1px solid rgba(255,255,255,0.1)' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#fff' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; e.currentTarget.style.color = 'rgba(255,255,255,0.7)' }}
             >
-              Voir les tarifs
+              Voir une démo
             </a>
           </div>
-        </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40">
-          <span className="text-white text-xs">Découvrir</span>
-          <div className="w-px h-8 bg-white/50" />
-        </div>
-      </section>
-
-      {/* ══ PROBLÈME ═══════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-24" style={{ background: '#F8F8F8' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6">
-          <div className="text-center mb-12 fade-up">
-            <h2
-              className="text-2xl sm:text-4xl font-bold mb-4 leading-tight"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              Les restaurateurs indépendants perdent<br className="hidden sm:block" />
-              en moyenne <span style={{ color: '#C0392B' }}>2h par jour</span> en gestion administrative
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {PROBLEMS.map((p, i) => (
-              <div
-                key={i}
-                className="rounded-2xl p-7 fade-up"
-                style={{
-                  background: 'white',
-                  border: '1px solid #FDDCDA',
-                  transitionDelay: `${i * 0.1}s`,
-                }}
-              >
-                <div className="text-4xl mb-4">{p.emoji}</div>
-                <h3
-                  className="font-bold mb-2 text-base leading-snug"
-                  style={{ color: '#C0392B' }}
-                >
-                  {p.title}
-                </h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#666' }}>
-                  {p.desc}
-                </p>
-              </div>
-            ))}
+          {/* Dashboard mock */}
+          <div className="fade-up max-w-4xl mx-auto">
+            <DashboardMock />
           </div>
         </div>
       </section>
 
       {/* ══ STATS ══════════════════════════════════════════════════ */}
-      <section className="py-20 bg-white" ref={statsRef}>
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-10 text-center">
+      <section ref={statsRef} className="py-16 border-y" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="max-w-3xl mx-auto px-5 sm:px-6">
+          <div className="grid grid-cols-3 divide-x divide-white/10">
             {[
-              { value: counts.days, suffix: ' jours', label: 'Essai gratuit sans engagement' },
-              { value: counts.min,  suffix: ' min',   label: 'Pour configurer votre restaurant' },
-              { value: counts.pct,  suffix: '%',      label: 'Données sécurisées en France' },
+              { count: `${counts.days}`, suffix: 'jours', label: "d'essai gratuit" },
+              { count: `${counts.min}`,  suffix: 'min',   label: 'pour configurer' },
+              { count: '100%',           suffix: '',       label: 'données en France' },
             ].map((s, i) => (
-              <div key={i} className="flex flex-col items-center gap-2 fade-up" style={{ transitionDelay: `${i * 0.12}s` }}>
-                <span
-                  className="font-bold"
-                  style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)', fontSize: 'clamp(36px, 5vw, 56px)' }}
-                >
-                  {s.value}{s.suffix}
-                </span>
-                <span className="text-base text-gray-500 font-medium">{s.label}</span>
-                <div className="w-8 h-0.5 rounded-full mt-1" style={{ background: '#D4952A' }} />
+              <div key={i} className="text-center px-4 sm:px-8">
+                <div className="text-2xl sm:text-3xl font-bold tabular-nums text-white" style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em' }}>
+                  {s.count}<span className="text-[#7798AB] ml-0.5">{s.suffix}</span>
+                </div>
+                <div className="text-xs mt-1.5" style={{ color: 'rgba(255,255,255,0.4)' }}>{s.label}</div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ══ SOLUTION ═══════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" style={{ background: '#F8F9FB' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6">
+      {/* ══ FEATURES ═══════════════════════════════════════════════ */}
+      <section id="fonctionnalites" className="py-20 sm:py-28 px-5 sm:px-6">
+        <div className="max-w-5xl mx-auto">
           <div className="text-center mb-14 fade-up">
-            <span
-              className="text-xs font-bold uppercase tracking-widest mb-3 block"
-              style={{ color: '#D4952A' }}
-            >
-              La solution
-            </span>
-            <h2
-              className="text-2xl sm:text-4xl font-bold mb-4"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              PilotResto centralise tout en un seul endroit
-            </h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-base sm:text-lg">
-              Un tableau de bord unique pour piloter votre restaurant au quotidien
-            </p>
-          </div>
-
-          {/* Mock dashboard */}
-          <div className="fade-up max-w-4xl mx-auto rounded-2xl overflow-hidden shadow-2xl" style={{ background: '#1B2A4A' }}>
-            {/* Window chrome */}
-            <div className="flex items-center gap-2 px-5 py-3.5" style={{ background: 'rgba(0,0,0,0.3)' }}>
-              <div className="w-3 h-3 rounded-full" style={{ background: '#FF5F57' }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: '#FFBD2E' }} />
-              <div className="w-3 h-3 rounded-full" style={{ background: '#28C840' }} />
-              <span className="ml-4 text-white/40 text-xs">PilotResto — Tableau de bord</span>
+            <div className="inline-block text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#7798AB' }}>
+              Fonctionnalités
             </div>
-
-            <div className="p-5 sm:p-7">
-              {/* Stat cards */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-                {[
-                  { label: "CA du jour",  value: "€2 847", trend: "+12%", up: true },
-                  { label: "Ticket moyen", value: "€24.60", trend: "+4%",  up: true },
-                  { label: "Coût matière",value: "28%",    trend: "-2%",  up: false },
-                  { label: "Stock alerte",value: "3 items", trend: "",    up: false },
-                ].map(card => (
-                  <div
-                    key={card.label}
-                    className="rounded-xl p-4"
-                    style={{ background: 'rgba(255,255,255,0.07)' }}
-                  >
-                    <div className="text-xs mb-1" style={{ color: 'rgba(255,255,255,0.45)' }}>{card.label}</div>
-                    <div className="text-lg sm:text-xl font-bold text-white mb-1">{card.value}</div>
-                    {card.trend && (
-                      <div className="text-xs font-semibold" style={{ color: card.up ? '#4ADE80' : '#F87171' }}>
-                        {card.up ? '↑' : '↓'} {card.trend}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-
-              {/* Chart bars */}
-              <div className="rounded-xl p-4 sm:p-5 mb-4" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm font-semibold text-white">CA semaine</span>
-                  <span className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Lun → Dim</span>
-                </div>
-                <div className="flex items-end gap-2 h-20">
-                  {[60, 75, 45, 90, 82, 95, 70].map((h, i) => (
-                    <div key={i} className="flex-1 rounded-t-md" style={{ height: `${h}%`, background: i === 5 ? '#D4952A' : 'rgba(212,149,42,0.3)' }} />
-                  ))}
-                </div>
-                <div className="flex gap-2 mt-2">
-                  {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((d, i) => (
-                    <div key={i} className="flex-1 text-center text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{d}</div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Bottom row */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <div className="text-xs mb-3 font-semibold" style={{ color: 'rgba(255,255,255,0.45)' }}>Stock critique</div>
-                  {['Farine T55', 'Huile tournesol', 'Viande hachée'].map(item => (
-                    <div key={item} className="flex items-center gap-2 mb-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#F87171' }} />
-                      <span className="text-xs text-white/60">{item}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="rounded-xl p-4" style={{ background: 'rgba(255,255,255,0.05)' }}>
-                  <div className="text-xs mb-3 font-semibold" style={{ color: 'rgba(255,255,255,0.45)' }}>Planning aujourd&rsquo;hui</div>
-                  {['Sophie M. — 10h-18h', 'Karim B. — 12h-22h', 'Lucas R. — 16h-23h'].map(emp => (
-                    <div key={emp} className="flex items-center gap-2 mb-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: '#4ADE80' }} />
-                      <span className="text-xs text-white/60">{emp}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ══ FONCTIONNALITÉS ════════════════════════════════════════ */}
-      <section id="fonctionnalites" className="py-20 sm:py-28 bg-white">
-        <div className="max-w-6xl mx-auto px-5 sm:px-6">
-          <div className="text-center mb-14 fade-up">
-            <span
-              className="text-xs font-bold uppercase tracking-widest mb-3 block"
-              style={{ color: '#D4952A' }}
-            >
-              Tout-en-un
-            </span>
-            <h2
-              className="text-2xl sm:text-4xl font-bold mb-4"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              Tout ce dont votre restaurant a besoin
+            <h2 className="text-2xl sm:text-4xl font-normal text-white" style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.015em', textWrap: 'balance' }}>
+              Tout ce dont un restaurant a besoin
             </h2>
-            <p className="text-gray-500 max-w-xl mx-auto text-base sm:text-lg">
-              Une plateforme pensée pour les contraintes réelles des restaurateurs indépendants.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => {
               const Icon = f.icon
               return (
                 <div
                   key={f.title}
-                  className="rounded-2xl p-6 sm:p-7 border hover:shadow-md transition-shadow fade-up"
-                  style={{ borderColor: '#E8ECF2', transitionDelay: `${i * 0.08}s` }}
+                  className="fade-up rounded-2xl p-5 border transition-all duration-300"
+                  style={{
+                    background:    '#111117',
+                    borderColor:   'rgba(255,255,255,0.07)',
+                    transitionDelay: `${i * 0.05}s`,
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.borderColor = 'rgba(119,152,171,0.3)'
+                    e.currentTarget.style.background  = '#18181F'
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.07)'
+                    e.currentTarget.style.background  = '#111117'
+                  }}
                 >
-                  <div
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-5"
-                    style={{ background: 'rgba(212,149,42,0.12)' }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: '#D4952A' }} />
+                  <div className="w-9 h-9 rounded-xl flex items-center justify-center mb-4 flex-shrink-0"
+                    style={{ background: 'rgba(119,152,171,0.12)' }}>
+                    <Icon className="w-4.5 h-4.5" style={{ color: '#7798AB' }} size={18} />
                   </div>
-                  <h3
-                    className="text-base font-bold mb-2"
-                    style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-                  >
-                    {f.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{f.desc}</p>
+                  <h3 className="text-[15px] font-semibold text-white mb-1.5">{f.title}</h3>
+                  <p className="text-[13.5px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{f.desc}</p>
                 </div>
               )
             })}
@@ -561,54 +418,51 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ COMMENT ÇA MARCHE ══════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" style={{ background: '#F8F9FB' }}>
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
+      {/* ══ HOW IT WORKS ═══════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 px-5 sm:px-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-14 fade-up">
-            <span
-              className="text-xs font-bold uppercase tracking-widest mb-3 block"
-              style={{ color: '#D4952A' }}
-            >
-              Simple & rapide
-            </span>
-            <h2
-              className="text-2xl sm:text-4xl font-bold"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
-              Comment ça marche ?
+            <div className="inline-block text-xs font-semibold uppercase tracking-widest mb-4" style={{ color: '#7798AB' }}>
+              Démarrage
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-normal text-white" style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.015em' }}>
+              Opérationnel en 3 minutes
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {STEPS.map((s, i) => {
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            {[
+              {
+                n: '1', icon: Users,
+                title: 'Créez votre compte',
+                desc: 'Email ou Google. Aucune carte bancaire. Accès immédiat à tout.',
+              },
+              {
+                n: '2', icon: TrendingUp,
+                title: 'Configurez votre restaurant',
+                desc: "Nom, employés, produits. Import depuis Excel si besoin. Assisté pas à pas.",
+              },
+              {
+                n: '3', icon: Clock,
+                title: 'Pilotez en temps réel',
+                desc: "Votre dashboard, vos stocks, votre planning — disponibles partout, tout de suite.",
+              },
+            ].map((s, i) => {
               const Icon = s.icon
               return (
-                <div
-                  key={s.n}
-                  className="flex flex-col items-center text-center fade-up"
-                  style={{ transitionDelay: `${i * 0.12}s` }}
-                >
-                  <div className="relative mb-6">
-                    <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg"
-                      style={{ background: '#1B2A4A' }}
-                    >
-                      <Icon className="w-7 h-7" style={{ color: '#D4952A' }} />
+                <div key={s.n} className="fade-up text-center" style={{ transitionDelay: `${i * 0.1}s` }}>
+                  <div className="relative inline-flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4"
+                      style={{ background: 'rgba(119,152,171,0.12)', border: '1px solid rgba(119,152,171,0.2)' }}>
+                      <Icon className="w-5 h-5" style={{ color: '#7798AB' }} />
                     </div>
-                    <span
-                      className="absolute -top-2 -right-2 w-6 h-6 rounded-full text-xs font-black flex items-center justify-center"
-                      style={{ background: '#D4952A', color: 'white' }}
-                    >
-                      {i + 1}
-                    </span>
+                    {i < 2 && (
+                      <div className="hidden sm:block absolute top-6 left-full w-full border-t border-dashed"
+                        style={{ borderColor: 'rgba(255,255,255,0.12)' }} />
+                    )}
                   </div>
-                  <h3
-                    className="text-lg font-bold mb-2"
-                    style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-                  >
-                    {s.title}
-                  </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{s.desc}</p>
+                  <h3 className="text-[15px] font-semibold text-white mb-2">{s.title}</h3>
+                  <p className="text-[13.5px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>{s.desc}</p>
                 </div>
               )
             })}
@@ -616,102 +470,72 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ══ RÉASSURANCE ════════════════════════════════════════════ */}
-      <section className="py-16 bg-white border-t border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-5 sm:px-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
-            {BADGES.map((b, i) => {
-              const Icon = b.icon
-              return (
-                <div
-                  key={i}
-                  className="flex flex-col items-center text-center gap-3 fade-up"
-                  style={{ transitionDelay: `${i * 0.1}s` }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center"
-                    style={{ background: 'rgba(212,149,42,0.10)' }}
-                  >
-                    <Icon className="w-5 h-5" style={{ color: '#D4952A' }} />
-                  </div>
-                  <span className="text-sm font-semibold leading-snug" style={{ color: '#1B2A4A' }}>
-                    {b.label}
-                  </span>
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ══ TÉMOIGNAGE ═════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" style={{ background: '#1B2A4A' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center fade-up">
-          <div
-            className="text-6xl mb-6 opacity-40 select-none"
-            style={{ color: '#D4952A', fontFamily: 'Georgia, serif', lineHeight: 1 }}
-          >
-            &ldquo;
-          </div>
-          <blockquote
-            className="text-xl sm:text-3xl font-medium text-white/90 leading-relaxed mb-8"
-            style={{ fontFamily: 'var(--font-display, system-ui)' }}
-          >
-            PilotResto nous a fait gagner 2h par jour sur la gestion
-            administrative. Le planning et les stocks en un seul endroit,
-            c&rsquo;est ce dont on avait besoin.
+      {/* ══ TESTIMONIAL ════════════════════════════════════════════ */}
+      <section className="py-20 sm:py-28 px-5 sm:px-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#0D0D12' }}>
+        <div className="max-w-2xl mx-auto text-center fade-up">
+          <div className="text-4xl mb-6 font-serif leading-none select-none" style={{ color: '#7798AB', opacity: 0.5 }}>&ldquo;</div>
+          <blockquote className="text-lg sm:text-2xl font-normal leading-relaxed text-white/85 mb-8"
+            style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.01em' }}>
+            PilotResto nous a fait gagner 2h par jour sur la gestion administrative. Le planning et les stocks en un seul endroit, c&rsquo;est ce dont on avait besoin.
           </blockquote>
-          <div className="flex items-center justify-center gap-4">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-              style={{ background: '#D4952A', color: 'white' }}
-            >
+          <div className="flex items-center justify-center gap-3">
+            <div className="w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+              style={{ background: '#7798AB' }}>
               PM
             </div>
             <div className="text-left">
-              <p className="text-white font-semibold">Pierre M.</p>
-              <p className="text-white/50 text-sm">Restaurant Le Comptoir, Lyon</p>
+              <p className="text-[13px] font-semibold text-white">Pierre M.</p>
+              <p className="text-[12px]" style={{ color: 'rgba(255,255,255,0.4)' }}>Restaurant Le Comptoir, Lyon</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ TRUST ══════════════════════════════════════════════════ */}
+      <section className="py-14 border-y" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+        <div className="max-w-3xl mx-auto px-5 sm:px-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            {TRUST.map((t, i) => {
+              const Icon = t.icon
+              return (
+                <div key={i} className="fade-up flex flex-col items-center text-center gap-2.5" style={{ transitionDelay: `${i * 0.07}s` }}>
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center"
+                    style={{ background: 'rgba(119,152,171,0.1)' }}>
+                    <Icon className="w-4.5 h-4.5" style={{ color: '#7798AB' }} size={18} />
+                  </div>
+                  <span className="text-xs font-medium leading-snug" style={{ color: 'rgba(255,255,255,0.5)' }}>{t.label}</span>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>
 
       {/* ══ FAQ ════════════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28 bg-white">
-        <div className="max-w-2xl mx-auto px-5 sm:px-6">
+      <section className="py-20 sm:py-28 px-5 sm:px-6">
+        <div className="max-w-2xl mx-auto">
           <div className="text-center mb-12 fade-up">
-            <h2
-              className="text-2xl sm:text-4xl font-bold"
-              style={{ color: '#1B2A4A', fontFamily: 'var(--font-display, system-ui)' }}
-            >
+            <h2 className="text-2xl sm:text-3xl font-normal text-white" style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.015em' }}>
               Questions fréquentes
             </h2>
           </div>
-
-          <div className="space-y-3">
+          <div className="space-y-2">
             {FAQ.map((item, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border overflow-hidden fade-up"
-                style={{ borderColor: '#E8ECF2', transitionDelay: `${i * 0.08}s` }}
-              >
+              <div key={i} className="rounded-2xl overflow-hidden fade-up border" style={{ background: '#111117', borderColor: 'rgba(255,255,255,0.07)', transitionDelay: `${i * 0.06}s` }}>
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 text-left px-6 py-5 font-semibold text-base transition-colors hover:bg-gray-50"
-                  style={{ color: '#1B2A4A' }}
+                  className="w-full flex items-center justify-between gap-4 text-left px-5 py-4 transition-colors"
+                  style={{ color: '#fff' }}
                 >
-                  {item.q}
+                  <span className="text-[14px] font-medium">{item.q}</span>
                   <ChevronDown
-                    className="w-5 h-5 flex-shrink-0 transition-transform duration-200"
-                    style={{
-                      color: '#D4952A',
-                      transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)',
-                    }}
+                    className="w-4 h-4 flex-shrink-0 transition-transform duration-200"
+                    style={{ color: '#7798AB', transform: openFaq === i ? 'rotate(180deg)' : 'rotate(0deg)' }}
                   />
                 </button>
                 {openFaq === i && (
-                  <div className="px-6 pb-5 text-sm leading-relaxed" style={{ color: '#555' }}>
-                    {item.a}
+                  <div className="px-5 pb-4 text-[13.5px] leading-relaxed" style={{ color: 'rgba(255,255,255,0.5)', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+                    <div className="pt-3">{item.a}</div>
                   </div>
                 )}
               </div>
@@ -721,58 +545,60 @@ export default function LandingPage() {
       </section>
 
       {/* ══ CTA FINAL ══════════════════════════════════════════════ */}
-      <section className="py-20 sm:py-28" style={{ background: '#B8962E' }}>
-        <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center fade-up">
-          <h2
-            className="text-2xl sm:text-5xl font-bold text-white mb-8 leading-tight"
-            style={{ fontFamily: 'var(--font-display, system-ui)' }}
-          >
+      <section className="py-20 sm:py-28 px-5 sm:px-6" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="max-w-2xl mx-auto text-center fade-up">
+          <h2 className="text-3xl sm:text-5xl font-normal text-white mb-5 leading-tight"
+            style={{ fontFamily: 'var(--font-display)', letterSpacing: '-0.02em', textWrap: 'balance' }}>
             Prêt à simplifier votre gestion ?
           </h2>
-          <p className="text-white/75 text-base sm:text-lg mb-10 max-w-lg mx-auto">
+          <p className="text-[15px] mb-10 max-w-md mx-auto leading-relaxed" style={{ color: 'rgba(255,255,255,0.45)' }}>
             14 jours gratuits. Aucune carte bancaire requise. Configuration en 3 minutes.
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center gap-2 font-bold bg-white transition hover:bg-white/90 active:scale-95 shadow-lg"
-              style={{ color: '#1B2A4A', borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <a href="/register"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 font-semibold text-white text-[15px] transition-all active:scale-95"
+              style={{ background: '#7798AB', borderRadius: '14px', padding: '15px 36px', minHeight: '52px', boxShadow: '0 8px 32px rgba(119,152,171,0.35)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#8FADC0')}
+              onMouseLeave={e => (e.currentTarget.style.background = '#7798AB')}
             >
-              Contacter PilotResto
+              Démarrer gratuitement
               <ArrowRight className="w-4 h-4" />
             </a>
-            <a
-              href="/downloads/PilotResto.dmg"
-              download
-              className="inline-flex items-center justify-center gap-2 font-semibold border-2 border-white/60 text-white transition hover:bg-white/10 active:scale-95"
-              style={{ borderRadius: '12px', padding: '18px 40px', fontSize: '16px', minHeight: '56px' }}
+            <a href="/contact"
+              className="w-full sm:w-auto flex items-center justify-center font-medium text-[15px] transition-all active:scale-95"
+              style={{ color: 'rgba(255,255,255,0.55)', borderRadius: '14px', padding: '15px 28px', minHeight: '52px', border: '1px solid rgba(255,255,255,0.1)' }}
+              onMouseEnter={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.55)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
             >
-              {/* Apple icon inline SVG */}
-              <svg width="18" height="18" viewBox="0 0 814 1000" fill="currentColor"><path d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-37.5-167.2-140.9c-52.3-88.2-87.5-231.7-87.5-375.8 0-231.9 151.6-354.3 300.5-354.3 79.7 0 145.9 52.3 195.4 52.3 47.5 0 122.4-55.5 210.9-55.5zm-105.9-157.1c-37.5 0-94.4-26.1-131.9-60.7-33.6-31.1-65.8-81.5-65.8-131.9 0-6.4.6-12.9 1.9-19.4 0-6.4 0-12.9-1.9-19.4 35.6-.9 96.1 34.9 135.9 74.3 33.6 33.6 60 83.5 60 131.9z"/></svg>
-              Télécharger pour Mac
+              Parler à un expert
             </a>
           </div>
         </div>
       </section>
 
       {/* ══ FOOTER ═════════════════════════════════════════════════ */}
-      <footer style={{ background: '#111827' }}>
-        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer style={{ borderTop: '1px solid rgba(255,255,255,0.06)', background: '#0A0A0E' }}>
+        <div className="max-w-6xl mx-auto px-5 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/favicon.png" alt="PilotResto" style={{ height: '28px', width: 'auto' }} />
-            <span className="text-white/50 text-sm">© 2026 PilotResto</span>
-            <span className="text-white/20 text-sm hidden sm:block">·</span>
-            <a
-              href="mailto:charles.lecussan@gmail.com"
-              className="text-white/35 text-sm hover:text-white/60 transition-colors hidden sm:block"
-            >
-              charles.lecussan@gmail.com
-            </a>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/favicon.png" alt="PilotResto" style={{ height: '22px', width: 'auto', opacity: 0.6 }} />
+            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>© 2026 PilotResto</span>
           </div>
-          <div className="flex items-center gap-6 text-xs text-white/35">
-            <a href="/cgu-cgv"                       className="hover:text-white/60 transition-colors">CGU / CGV</a>
-            <a href="/politique-de-confidentialite"   className="hover:text-white/60 transition-colors">Confidentialité</a>
-            <a href="/contact"                        className="hover:text-white/60 transition-colors">Contact</a>
+          <div className="flex items-center gap-5">
+            {[
+              { label: 'CGU / CGV',       href: '/cgu-cgv' },
+              { label: 'Confidentialité', href: '/politique-de-confidentialite' },
+              { label: 'Contact',         href: '/contact' },
+            ].map(l => (
+              <a key={l.href} href={l.href}
+                className="text-xs transition-colors"
+                style={{ color: 'rgba(255,255,255,0.3)' }}
+                onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.65)')}
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              >
+                {l.label}
+              </a>
+            ))}
           </div>
         </div>
       </footer>
