@@ -2,14 +2,18 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/logo";
 import { Button } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { nav, site } from "@/content/site";
+import { nav } from "@/content/site";
 import { cn } from "@/lib/utils";
 
+const AUTH_ROUTES = ["/login", "/forgot-password"];
+
 export function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -26,6 +30,10 @@ export function Header() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  if (AUTH_ROUTES.includes(pathname)) {
+    return null;
+  }
 
   return (
     <header
@@ -54,21 +62,13 @@ export function Header() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
-          <a
-            href="https://app.pilotresto.pro"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/login"
             className="text-[14px] font-medium text-ink-muted transition-colors hover:text-ink"
           >
             Connexion
-          </a>
-          <Button
-            href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(
-              "Demande de démonstration PilotResto"
-            )}`}
-            external
-            size="md"
-          >
+          </Link>
+          <Button href="/demo" size="md">
             Demander une démo
           </Button>
         </div>
@@ -99,20 +99,15 @@ export function Header() {
             ))}
           </nav>
           <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
-            <a
-              href="https://app.pilotresto.pro"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/login"
               className="px-3 text-[15px] font-medium text-ink-muted"
               onClick={() => setOpen(false)}
             >
               Connexion
-            </a>
+            </Link>
             <Button
-              href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(
-                "Demande de démonstration PilotResto"
-              )}`}
-              external
+              href="/demo"
               size="lg"
               className="w-full"
               onClick={() => setOpen(false)}

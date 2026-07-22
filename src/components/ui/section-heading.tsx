@@ -30,7 +30,7 @@ export function SectionHeading({
         <Reveal>
           <span
             className={cn(
-              "text-[13px] font-semibold uppercase tracking-[0.08em] text-accent-text",
+              "text-[13px] font-semibold uppercase tracking-[0.08em] text-ink-subtle",
               eyebrowClassName
             )}
           >

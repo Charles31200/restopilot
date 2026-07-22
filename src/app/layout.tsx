@@ -28,7 +28,7 @@ const siteUrl = "https://pilotresto.pro";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "PilotResto — Le centre de pilotage intelligent des restaurants",
+    default: "PilotResto — Le copilote IA conçu pour les restaurateurs",
     template: "%s — PilotResto",
   },
   description:
@@ -47,15 +47,17 @@ export const metadata: Metadata = {
     locale: "fr_FR",
     url: siteUrl,
     siteName: "PilotResto",
-    title: "PilotResto — Le centre de pilotage intelligent des restaurants",
+    title: "PilotResto — Le copilote IA conçu pour les restaurateurs",
     description:
       "Centralisez vos opérations, connectez vos outils et pilotez votre restaurant depuis une seule interface.",
+    images: ["/brand/social-share.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "PilotResto — Le centre de pilotage intelligent des restaurants",
+    title: "PilotResto — Le copilote IA conçu pour les restaurateurs",
     description:
       "Centralisez vos opérations, connectez vos outils et pilotez votre restaurant depuis une seule interface.",
+    images: ["/brand/social-share.png"],
   },
   robots: {
     index: true,
@@ -71,6 +73,7 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
+      data-scroll-behavior="smooth"
       className={`${geist.variable} ${inter.variable} ${geistMono.variable}`}
     >
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">

@@ -13,7 +13,7 @@ export function Solution() {
         <SectionHeading
           eyebrow="La solution"
           title="Une seule plateforme pour gérer votre restaurant"
-          subtitle="PilotResto réunit ce qui, ailleurs, est éparpillé entre cinq outils différents."
+          subtitle="PilotResto réunit ce qui, ailleurs, est éparpillé entre six outils différents — et laisse l'IA faire le travail de liaison."
         />
 
         <RevealGroup className="mt-14 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -22,7 +22,7 @@ export function Solution() {
             return (
               <RevealItem key={solution.title}>
                 <div className="h-full rounded-(--radius-lg) border border-line bg-surface p-6 transition-colors duration-300 hover:border-line-strong">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-(--radius-sm) bg-accent-soft text-accent-text">
+                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-(--radius-sm) bg-ink text-ink-inverse">
                     <Icon size={18} />
                   </span>
                   <h3 className="mt-5 font-display text-[17px] font-semibold text-ink">

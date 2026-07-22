@@ -10,12 +10,13 @@
   --ink-muted: #55565c;
   --ink-subtle: #75767c;
   --ink-inverse: #ffffff;
-  --accent: #c7791f;
-  --accent-strong: #a8631a;
-  --accent-text: #a85d1e;
-  --accent-soft: #fdf3e7;
+  --blue: #2563eb;
+  --blue-strong: #1d4ed8;
+  --blue-soft: #eff6ff;
   --success-text: #15803d;
   --success-soft: #ecfdf3;
+  --danger-text: #b91c1c;
+  --danger-soft: #fef2f2;
 }
 
 @theme inline {
@@ -28,12 +29,13 @@
   --color-ink-muted: var(--ink-muted);
   --color-ink-subtle: var(--ink-subtle);
   --color-ink-inverse: var(--ink-inverse);
-  --color-accent: var(--accent);
-  --color-accent-strong: var(--accent-strong);
-  --color-accent-text: var(--accent-text);
-  --color-accent-soft: var(--accent-soft);
+  --color-blue: var(--blue);
+  --color-blue-strong: var(--blue-strong);
+  --color-blue-soft: var(--blue-soft);
   --color-success-text: var(--success-text);
   --color-success-soft: var(--success-soft);
+  --color-danger-text: var(--danger-text);
+  --color-danger-soft: var(--danger-soft);
 
   --font-display: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -62,6 +64,8 @@
 
 html {
   color-scheme: light;
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
 }
 
 body {
@@ -73,12 +77,12 @@ body {
 }
 
 ::selection {
-  background: var(--accent-soft);
-  color: var(--accent-strong);
+  background: var(--blue-soft);
+  color: var(--blue-strong);
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--blue);
   outline-offset: 3px;
   border-radius: 4px;
 }

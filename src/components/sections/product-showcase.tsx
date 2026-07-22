@@ -1,12 +1,8 @@
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/motion/reveal";
-import { BrowserFrame } from "@/components/sections/product-visual/browser-frame";
-import { DashboardPanel } from "@/components/sections/product-visual/dashboard-panel";
-import { TabletFrame } from "@/components/sections/product-visual/tablet-frame";
 import { FloorplanPanel } from "@/components/sections/product-visual/floorplan-panel";
-import { PhoneFrame } from "@/components/sections/product-visual/phone-frame";
-import { NotificationsPanel } from "@/components/sections/product-visual/notifications-panel";
+import { RevenueChart } from "@/components/sections/product-visual/revenue-chart";
 
 export function ProductShowcase() {
   return (
@@ -14,35 +10,22 @@ export function ProductShowcase() {
       <Container>
         <SectionHeading
           eyebrow="Le produit"
-          title="Une plateforme pensée pour tous vos écrans"
-          subtitle="Dashboard sur ordinateur, plan de salle sur tablette, notifications sur mobile : la même donnée, partout, en temps réel."
+          title="Toute votre activité, lisible en un coup d'œil"
+          subtitle="Salle et performances suivies au même endroit, mises à jour en temps réel — pas de rapport à attendre pour savoir où vous en êtes."
         />
 
-        <Reveal
-          delay={0.1}
-          className="relative mx-auto mt-16 flex max-w-[860px] flex-col items-center gap-8 md:block md:gap-0 md:pb-40"
-        >
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-x-8 -bottom-8 top-8 -z-10 hidden rounded-[48px] bg-accent/[0.05] blur-[90px] md:block"
-          />
-
-          <BrowserFrame label="app.pilotresto.pro/dashboard" className="w-full">
-            <DashboardPanel />
-          </BrowserFrame>
-
-          <div className="w-[220px] sm:w-[260px] md:absolute md:-bottom-6 md:left-1/2 md:w-[260px] md:-translate-x-[calc(100%+20px)]">
-            <TabletFrame>
-              <FloorplanPanel compact />
-            </TabletFrame>
-          </div>
-
-          <div className="w-[150px] sm:w-[170px] md:absolute md:-bottom-[150px] md:left-1/2 md:w-[160px] md:translate-x-[70px]">
-            <PhoneFrame>
-              <NotificationsPanel />
-            </PhoneFrame>
-          </div>
-        </Reveal>
+        <div className="mt-16 grid grid-cols-1 gap-5 lg:grid-cols-[3fr_2fr]">
+          <Reveal>
+            <div className="h-full overflow-hidden rounded-(--radius-xl) border border-line bg-surface">
+              <FloorplanPanel />
+            </div>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <div className="h-full overflow-hidden rounded-(--radius-xl) border border-line bg-surface">
+              <RevenueChart />
+            </div>
+          </Reveal>
+        </div>
       </Container>
     </section>
   );

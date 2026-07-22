@@ -37,7 +37,7 @@ function CentralizeIllustration() {
           key={it.label}
           className="flex flex-col items-center justify-center gap-2 rounded-(--radius-md) border border-line bg-surface py-6"
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-(--radius-sm) bg-accent-soft text-accent-text">
+          <span className="flex h-9 w-9 items-center justify-center rounded-(--radius-sm) bg-ink text-ink-inverse">
             <it.icon size={16} />
           </span>
           <span className="text-[12px] font-medium text-ink-muted">{it.label}</span>
@@ -61,7 +61,7 @@ function AutomateIllustration() {
           className="flex items-center gap-3 rounded-(--radius-md) border border-line bg-surface px-4 py-3"
         >
           {it.done ? (
-            <CheckCircle2 size={16} className="shrink-0 text-accent-text" />
+            <CheckCircle2 size={16} className="shrink-0 text-ink" />
           ) : (
             <Circle size={16} className="shrink-0 text-ink-subtle" />
           )}
@@ -90,7 +90,7 @@ function AnalyzeIllustration() {
         {bars.map((h, i) => (
           <div
             key={i}
-            className="flex-1 rounded-t-[3px] bg-gradient-to-t from-accent/25 to-accent"
+            className="flex-1 rounded-t-[3px] bg-gradient-to-t from-ink/20 to-ink"
             style={{ height: `${h}%` }}
           />
         ))}
@@ -112,7 +112,7 @@ function ConnectIllustration() {
           key={tool.label}
           className="flex w-full max-w-[220px] items-center gap-3 rounded-full border border-line bg-surface py-2.5 pl-2.5 pr-4"
         >
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent-soft text-accent-text">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-ink-inverse">
             <tool.icon size={13} />
           </span>
           <span className="text-[13px] font-medium text-ink">{tool.label}</span>

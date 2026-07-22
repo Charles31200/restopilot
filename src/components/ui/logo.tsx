@@ -1,28 +1,38 @@
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export function Logo({ className }: { className?: string }) {
+export function Logo({
+  className,
+  inverted,
+}: {
+  className?: string;
+  inverted?: boolean;
+}) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      <svg
-        width="26"
-        height="26"
-        viewBox="0 0 26 26"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center gap-2",
+        inverted && "brightness-0 invert",
+        className
+      )}
+    >
+      <Image
+        src="/brand/logo-mark-transparent.png"
+        alt=""
         aria-hidden="true"
-      >
-        <rect width="26" height="26" rx="7" fill="var(--ink)" />
-        <path
-          d="M8 18V8h4.4a3.2 3.2 0 0 1 0 6.4H9.9"
-          stroke="var(--accent)"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-      <span className="font-display text-[17px] font-semibold tracking-[-0.01em] text-ink">
-        PilotResto
-      </span>
+        width={4500}
+        height={4500}
+        priority
+        className="h-7 w-7 shrink-0 self-start"
+      />
+      <Image
+        src="/brand/logo-wordmark-transparent.png"
+        alt="PilotResto"
+        width={5692}
+        height={3200}
+        priority
+        className="h-5 w-auto shrink-0 self-start"
+      />
     </span>
   );
 }

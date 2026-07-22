@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 const siteUrl = "https://pilotresto.pro";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const routes = ["", "/tarifs", "/cgu", "/confidentialite"];
+  const routes = ["", "/tarifs", "/demo", "/contact", "/cgu", "/confidentialite"];
 
   return routes.map((route) => ({
     url: `${siteUrl}${route}`,

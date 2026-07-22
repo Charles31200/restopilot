@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { Container } from "@/components/ui/container";
+import { InstagramIcon } from "@/components/ui/instagram-icon";
 import { nav, site } from "@/content/site";
 
 const legal = [
@@ -8,34 +12,44 @@ const legal = [
   { label: "Confidentialité", href: "/confidentialite" },
 ];
 
+const AUTH_ROUTES = ["/login", "/forgot-password"];
+
 export function Footer() {
+  const pathname = usePathname();
+
+  if (AUTH_ROUTES.includes(pathname)) {
+    return null;
+  }
+
   return (
     <footer className="border-t border-line bg-canvas">
       <Container className="py-16">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-4">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
             <Logo />
-            <p className="max-w-[220px] text-[14px] leading-[1.6] text-ink-subtle">
+            <p className="max-w-[240px] text-[14px] leading-[1.6] text-ink-subtle">
               {site.tagline} Fait en France, pour les restaurateurs modernes.
             </p>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="PilotResto sur Instagram"
-              className="mt-1 inline-flex h-9 w-9 items-center justify-center rounded-(--radius-sm) border border-line text-ink-subtle transition-colors hover:border-line-strong hover:text-ink"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" strokeWidth="1.8" />
-                <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
-                <circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" />
-              </svg>
-            </a>
+            <div className="mt-1 flex flex-col gap-2">
+              <a
+                href={site.instagramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="PilotResto sur Instagram"
+                className="inline-flex w-fit items-center gap-2 text-[14px] font-medium text-ink-muted transition-colors hover:text-ink"
+              >
+                <InstagramIcon size={17} />
+                @{site.instagramHandle}
+              </a>
+              <p className="max-w-[240px] text-[12.5px] leading-[1.5] text-ink-subtle">
+                {site.instagramBlurb}
+              </p>
+            </div>
           </div>
 
           <div className="flex flex-col gap-3">
             <span className="text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-subtle">
-              Produit
+              Navigation
             </span>
             {nav.map((item) => (
               <Link

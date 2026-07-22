@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Check, ArrowRight } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
-import { pricingPlans, site } from "@/content/site";
+import { pricingPlans } from "@/content/site";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -58,10 +59,7 @@ export default function TarifsPage() {
                 </p>
 
                 <Button
-                  href={`mailto:${site.contactEmail}?subject=${encodeURIComponent(
-                    `Demande d'information — Plan ${plan.name}`
-                  )}`}
-                  external
+                  href="/contact"
                   size="lg"
                   variant={plan.highlighted ? "primary" : "secondary"}
                   className="mt-6 w-full"
@@ -73,7 +71,7 @@ export default function TarifsPage() {
                 <ul className="mt-7 flex flex-col gap-3 border-t border-line pt-6">
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-[14px] text-ink-muted">
-                      <Check size={16} className="mt-0.5 shrink-0 text-accent-text" />
+                      <Check size={16} className="mt-0.5 shrink-0 text-ink" />
                       {f}
                     </li>
                   ))}
@@ -86,12 +84,12 @@ export default function TarifsPage() {
         <Reveal delay={0.1} className="mt-16 text-center">
           <p className="text-[14.5px] text-ink-subtle">
             Besoin d&apos;un accompagnement sur mesure ?{" "}
-            <a
-              href={`mailto:${site.contactEmail}`}
-              className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:text-accent-text"
+            <Link
+              href="/contact"
+              className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:text-blue"
             >
               Parlons-en directement
-            </a>
+            </Link>
           </p>
         </Reveal>
       </Container>

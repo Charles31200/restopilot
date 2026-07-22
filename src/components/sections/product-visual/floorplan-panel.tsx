@@ -1,60 +1,49 @@
 const tables = [
-  { x: 10, y: 12, size: 15, status: "free" },
-  { x: 32, y: 12, size: 15, status: "occupied" },
-  { x: 54, y: 12, size: 15, status: "reserved" },
-  { x: 76, y: 12, size: 15, status: "occupied" },
-  { x: 10, y: 40, size: 15, status: "occupied" },
-  { x: 32, y: 40, size: 15, status: "free" },
-  { x: 54, y: 40, size: 15, status: "occupied" },
-  { x: 76, y: 40, size: 15, status: "free" },
-  { x: 18, y: 68, size: 22, status: "reserved" },
-  { x: 58, y: 68, size: 22, status: "occupied" },
+  { x: 8, y: 10, size: 15, status: "free" },
+  { x: 30, y: 10, size: 15, status: "occupied" },
+  { x: 52, y: 10, size: 15, status: "reserved" },
+  { x: 74, y: 10, size: 15, status: "occupied" },
+  { x: 8, y: 38, size: 15, status: "occupied" },
+  { x: 30, y: 38, size: 15, status: "free" },
+  { x: 52, y: 38, size: 15, status: "occupied" },
+  { x: 74, y: 38, size: 15, status: "free" },
+  { x: 16, y: 66, size: 24, status: "reserved" },
+  { x: 60, y: 66, size: 24, status: "occupied" },
 ] as const;
 
 const statusStyles: Record<string, string> = {
   free: "bg-canvas-alt border-line-strong",
-  occupied: "bg-accent/20 border-accent/50",
-  reserved: "bg-[#3b6fe0]/12 border-[#3b6fe0]/40",
+  occupied: "bg-ink/15 border-ink/40",
+  reserved: "bg-blue/12 border-blue/40",
 };
 
 const legend = [
   { label: "Libre", swatch: "bg-canvas-alt border border-line-strong" },
-  { label: "Occupée", swatch: "bg-accent/20 border border-accent/50" },
-  { label: "Réservée", swatch: "bg-[#3b6fe0]/12 border border-[#3b6fe0]/40" },
+  { label: "Occupée", swatch: "bg-ink/15 border border-ink/40" },
+  { label: "Réservée", swatch: "bg-blue/12 border border-blue/40" },
 ];
 
-export function FloorplanPanel({ compact = false }: { compact?: boolean }) {
+export function FloorplanPanel() {
   return (
-    <div className={compact ? "bg-canvas-alt p-3" : "bg-canvas-alt p-5 sm:p-7"}>
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-        <span
-          className={
-            compact
-              ? "text-[11px] font-medium text-ink-muted"
-              : "text-[13px] font-medium text-ink-muted"
-          }
-        >
-          Plan de salle
-        </span>
-        {!compact && (
-          <div className="flex items-center gap-3">
-            {legend.map((l) => (
-              <span key={l.label} className="flex items-center gap-1.5 text-[11px] text-ink-subtle">
-                <span className={`h-2.5 w-2.5 rounded-[3px] ${l.swatch}`} />
-                {l.label}
-              </span>
-            ))}
-          </div>
-        )}
+    <div className="flex h-full flex-col p-6 sm:p-7">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <p className="text-[12.5px] font-medium text-ink-muted">Plan de salle</p>
+          <p className="mt-1 font-mono text-[26px] font-medium tracking-tight text-ink">
+            18 / 24
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          {legend.map((l) => (
+            <span key={l.label} className="flex items-center gap-1.5 text-[11px] text-ink-subtle">
+              <span className={`h-2.5 w-2.5 rounded-[3px] ${l.swatch}`} />
+              {l.label}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <div
-        className={
-          compact
-            ? "relative h-[150px] rounded-(--radius-sm) border border-line bg-surface"
-            : "relative h-[260px] rounded-(--radius-md) border border-line bg-surface"
-        }
-      >
+      <div className="relative min-h-[280px] flex-1 rounded-(--radius-md) border border-line bg-canvas-alt">
         {tables.map((t, i) => (
           <div
             key={i}

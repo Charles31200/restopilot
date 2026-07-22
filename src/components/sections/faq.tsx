@@ -1,8 +1,9 @@
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Accordion } from "@/components/ui/accordion";
 import { Reveal } from "@/components/motion/reveal";
-import { faqs, site } from "@/content/site";
+import { faqs } from "@/content/site";
 
 export function FAQ() {
   return (
@@ -18,12 +19,12 @@ export function FAQ() {
           <Accordion items={faqs} />
           <p className="mt-6 text-center text-[14px] text-ink-subtle">
             Une autre question ?{" "}
-            <a
-              href={`mailto:${site.contactEmail}`}
-              className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:text-accent-text"
+            <Link
+              href="/contact"
+              className="font-medium text-ink underline decoration-line-strong underline-offset-4 hover:text-blue"
             >
               Contactez l&apos;équipe
-            </a>
+            </Link>
           </p>
         </Reveal>
       </Container>

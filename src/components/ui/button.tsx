@@ -20,11 +20,11 @@ type ButtonAsButton = CommonProps &
   };
 
 const base =
-  "inline-flex items-center justify-center gap-2 font-medium tracking-[-0.01em] transition-all duration-200 ease-out focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
+  "inline-flex items-center justify-center gap-2 font-medium tracking-[-0.01em] transition-all duration-200 ease-out focus-visible:outline-2 focus-visible:outline-blue focus-visible:outline-offset-2 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]";
 
 const variants = {
   primary:
-    "bg-ink text-ink-inverse hover:bg-[#26262a] shadow-[0_1px_0_0_rgba(255,255,255,0.08)_inset,0_10px_24px_-12px_rgba(16,17,19,0.45)]",
+    "bg-blue text-white hover:bg-blue-strong shadow-[0_1px_0_0_rgba(255,255,255,0.12)_inset,0_10px_24px_-12px_rgba(37,99,235,0.45)]",
   secondary:
     "bg-surface text-ink border border-line-strong hover:border-ink hover:bg-canvas-alt",
   ghost: "text-ink-muted hover:text-ink",

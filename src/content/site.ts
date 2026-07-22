@@ -1,7 +1,12 @@
 export const site = {
   name: "PilotResto",
-  tagline: "Le centre de pilotage intelligent des restaurants.",
-  contactEmail: "charles.lecussan@gmail.com",
+  tagline: "Le copilote IA conçu pour les restaurateurs.",
+  contactEmail: "pilotresto.contact@gmail.com",
+  instagramHandle: "pilot.resto",
+  instagramUrl:
+    "https://www.instagram.com/pilot.resto?igsh=bTFsdHhyY202ZTNx&utm_source=qr",
+  instagramBlurb:
+    "Suivez PilotResto sur Instagram pour découvrir les nouveautés, conseils IA et mises à jour du produit.",
 };
 
 export const nav = [
@@ -9,6 +14,7 @@ export const nav = [
   { label: "Produit", href: "#produit" },
   { label: "Tarifs", href: "#tarifs" },
   { label: "FAQ", href: "#faq" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const problems = [
@@ -50,7 +56,7 @@ export const solutions = [
   },
   {
     title: "Analyse des performances",
-    description: "Chiffre d'affaires, marges et indicateurs clés, mis à jour en continu.",
+    description: "Chiffre d'affaires, marges et indicateurs clés, analysés par l'IA et mis à jour en continu.",
   },
   {
     title: "Gestion des équipes",
@@ -89,64 +95,112 @@ export const features = [
   },
 ] as const;
 
-export const advantages = [
+export const aiPillars = [
   {
-    title: "Gain de temps",
-    description: "Moins de ressaisie, moins d'allers-retours entre outils, chaque jour de service.",
+    icon: "Camera",
+    title: "Import intelligent des menus",
+    description:
+      "Une carte prise en photo ou déposée en PDF : l'IA en extrait chaque plat, chaque prix et chaque catégorie en quelques secondes.",
   },
   {
-    title: "Meilleure organisation",
-    description: "Équipes, salle et opérations coordonnées depuis un seul endroit.",
+    icon: "PiggyBank",
+    title: "Marges et prix sous contrôle",
+    description:
+      "L'IA analyse vos marges plat par plat, compare vos prix à la concurrence et vous indique précisément où les ajuster.",
   },
   {
-    title: "Vision complète du restaurant",
-    description: "Un seul écran pour comprendre où en est l'établissement, à tout moment.",
+    icon: "Truck",
+    title: "Fournisseurs et prévisions",
+    description:
+      "Recommandations de fournisseurs et prévisions de ventes ajustées à la météo, pour acheter juste, jamais en trop.",
   },
   {
-    title: "Décisions basées sur les données",
-    description: "Des chiffres fiables et à jour pour arbitrer, plutôt que des impressions.",
+    icon: "FileBarChart",
+    title: "Rapports et actions concrètes",
+    description:
+      "Des rapports PDF générés seuls, avec des actions précises pour augmenter vos bénéfices, pas de simples chiffres.",
   },
   {
-    title: "Solution évolutive",
-    description: "D'un établissement unique à plusieurs sites, PilotResto grandit avec vous.",
+    icon: "Database",
+    title: "Mémoire et agents spécialisés",
+    description:
+      "Chaque agent IA connaît votre restaurant par cœur — marges, stocks, ventes — et vous assiste au quotidien, sujet par sujet.",
   },
 ] as const;
 
-export const partners = [
-  "Le Petit Bistrot",
-  "Table Ronde",
-  "Chez Marcel",
-  "La Brasserie du Port",
-  "Bistrot Lumière",
-  "Maison Verdier",
+export const whyChoose = [
+  {
+    icon: "BrainCircuit",
+    title: "Intelligence artificielle intégrée",
+    description: "Une IA qui travaille avec vous, pas un logiciel de plus à apprendre.",
+  },
+  {
+    icon: "ScanSearch",
+    title: "Analyse automatique du restaurant",
+    description: "Votre activité analysée en continu, sans rapport à préparer.",
+  },
+  {
+    icon: "PiggyBank",
+    title: "Optimisation des marges",
+    description: "Repérez ce qui pèse sur vos marges avant que ça pèse sur le mois.",
+  },
+  {
+    icon: "Handshake",
+    title: "Analyse des fournisseurs",
+    description: "Comparez vos fournisseurs sur les prix, la fiabilité et les délais.",
+  },
+  {
+    icon: "CloudSun",
+    title: "Prévisions des ventes",
+    description: "Anticipez l'affluence pour ajuster achats et plannings à l'avance.",
+  },
+  {
+    icon: "PackageCheck",
+    title: "Gestion intelligente des stocks",
+    description: "Alertes automatiques avant la rupture, jamais après.",
+  },
+  {
+    icon: "Radar",
+    title: "Analyse de la concurrence",
+    description: "Une vision claire de votre positionnement prix dans votre zone.",
+  },
+  {
+    icon: "LayoutDashboard",
+    title: "Dashboard moderne",
+    description: "Toute l'activité du restaurant, lisible en un coup d'œil.",
+  },
+  {
+    icon: "Plug",
+    title: "Compatible avec les futures caisses",
+    description: "Une architecture pensée pour s'intégrer aux systèmes de demain.",
+  },
+  {
+    icon: "FileBarChart",
+    title: "Rapports automatiques",
+    description: "Des rapports clairs générés seuls, prêts à partager.",
+  },
+  {
+    icon: "Bot",
+    title: "Agents IA spécialisés",
+    description: "Un agent dédié à chaque sujet : marges, stocks, ventes, fournisseurs.",
+  },
+  {
+    icon: "ScanLine",
+    title: "Import intelligent des menus",
+    description: "Une carte prise en photo, analysée et intégrée en quelques secondes.",
+  },
+  {
+    icon: "Database",
+    title: "Mémoire propre à chaque restaurant",
+    description: "L'IA apprend les spécificités de votre établissement, pas d'un restaurant générique.",
+  },
+  {
+    icon: "Wand2",
+    title: "Recommandations personnalisées",
+    description: "Des actions concrètes, propres à votre activité, pas des conseils génériques.",
+  },
 ] as const;
 
-export const trustStats = [
-  { value: "1", label: "plateforme", description: "pour remplacer plusieurs outils du quotidien." },
-  { value: "100%", label: "temps réel", description: "sur les commandes, la salle et les performances." },
-  { value: "0", label: "double saisie", description: "entre vos outils une fois connectés." },
-] as const;
-
-export const testimonials = [
-  {
-    quote:
-      "On voit enfin l'activité du restaurant en un coup d'œil, sans attendre le rapport de fin de service.",
-    name: "Exemple — restaurant indépendant",
-    role: "Bistrot, centre-ville",
-  },
-  {
-    quote:
-      "Toutes nos commandes remontent au même endroit. Fini les allers-retours entre la caisse et le carnet de réservation.",
-    name: "Exemple — brasserie",
-    role: "Brasserie, équipe de 12",
-  },
-  {
-    quote:
-      "Les décisions se prennent sur des chiffres à jour, pas sur une impression de fin de mois.",
-    name: "Exemple — groupe de restauration",
-    role: "3 établissements",
-  },
-] as const;
 
 export const faqs = [
   {
@@ -174,12 +228,17 @@ export const faqs = [
     answer:
       "Oui. Vos données sont hébergées en France, chiffrées, et ne sont jamais partagées avec des tiers.",
   },
+  {
+    question: "Comment fonctionne l'intelligence artificielle de PilotResto ?",
+    answer:
+      "Elle apprend en continu à partir des données de votre restaurant — menus, marges, ventes, fournisseurs — pour vous proposer des analyses et des recommandations propres à votre établissement, pas des moyennes génériques.",
+  },
 ] as const;
 
 export const pricingPlans = [
   {
     name: "Starter",
-    description: "Pour un établissement qui centralise ses premiers outils.",
+    description: "Pour centraliser votre activité et gagner vos premières heures.",
     features: [
       "1 établissement",
       "Gestion des commandes",
@@ -190,10 +249,10 @@ export const pricingPlans = [
   },
   {
     name: "Professionnel",
-    description: "Pour un restaurant qui veut piloter finement son activité.",
+    description: "Pour piloter finement votre rentabilité grâce à l'IA.",
     features: [
       "Tout Starter, plus :",
-      "Analyse des performances",
+      "Analyse des performances par l'IA",
       "Automatisation des tâches",
       "Connexions à vos outils",
       "Support prioritaire",
@@ -202,7 +261,7 @@ export const pricingPlans = [
   },
   {
     name: "Entreprise",
-    description: "Pour les groupes de plusieurs établissements.",
+    description: "Pour piloter plusieurs établissements depuis une vue unique.",
     features: [
       "Tout Professionnel, plus :",
       "Multi-établissements",

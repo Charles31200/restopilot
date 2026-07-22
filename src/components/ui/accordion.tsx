@@ -36,7 +36,7 @@ export function Accordion({
                   size={18}
                   className={cn(
                     "shrink-0 text-ink-subtle transition-transform duration-300",
-                    isOpen && "rotate-180 text-accent-text"
+                    isOpen && "rotate-180 text-blue"
                   )}
                 />
               </button>
