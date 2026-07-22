@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { getLegalMetadata } from "@/lib/legal";
 import { LegalPageContent } from "@/components/legal/legal-page-content";
 
-const SLUG = "cgu";
+const SLUG = "charte-ia";
 
 export async function generateMetadata(): Promise<Metadata> {
   return getLegalMetadata(SLUG);
 }
 
-export default function CGUPage() {
+export default function AICharterPage() {
   return <LegalPageContent slug={SLUG} />;
 }

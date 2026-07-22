@@ -248,7 +248,7 @@ export function DemoForm() {
                           <>
                             J&apos;accepte que mes données soient utilisées par
                             PilotResto pour me recontacter, conformément à la{" "}
-                            <a href="/confidentialite" className="underline decoration-line-strong underline-offset-2 hover:text-ink">
+                            <a href="/politique-confidentialite" className="underline decoration-line-strong underline-offset-2 hover:text-ink">
                               politique de confidentialité
                             </a>
                             .
