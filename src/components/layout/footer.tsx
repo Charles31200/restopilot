@@ -1,7 +1,4 @@
-"use client";
-
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Logo } from "@/components/ui/logo";
 import { Container } from "@/components/ui/container";
 import { InstagramIcon } from "@/components/ui/instagram-icon";
@@ -12,15 +9,7 @@ const legal = [
   { label: "Confidentialité", href: "/confidentialite" },
 ];
 
-const AUTH_ROUTES = ["/login", "/forgot-password"];
-
 export function Footer() {
-  const pathname = usePathname();
-
-  if (AUTH_ROUTES.includes(pathname)) {
-    return null;
-  }
-
   return (
     <footer className="border-t border-line bg-canvas">
       <Container className="py-16">
