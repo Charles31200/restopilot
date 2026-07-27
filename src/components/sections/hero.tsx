@@ -1,7 +1,6 @@
 import { ArrowRight, Clock, Compass, Sparkles, TrendingUp } from "lucide-react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 
 const stats = [
@@ -31,13 +30,7 @@ export function Hero() {
       />
 
       <Container className="relative flex flex-col items-center text-center">
-        <Reveal>
-          <Badge icon={<Sparkles size={13} className="text-ink-subtle" />}>
-            Propulsé par l&apos;intelligence artificielle
-          </Badge>
-        </Reveal>
-
-        <Reveal delay={0.06} className="mt-6 max-w-[820px]">
+        <Reveal className="max-w-[820px]">
           <h1 className="text-balance font-display text-[36px] font-semibold leading-[1.1] tracking-[-0.03em] text-ink sm:text-[50px] md:text-[60px]">
             Le copilote IA conçu pour les restaurateurs
           </h1>
