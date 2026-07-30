@@ -235,6 +235,55 @@ export const faqs = [
   },
 ] as const;
 
+export const billingFaqs = [
+  {
+    question: "Puis-je changer de formule à tout moment ?",
+    answer:
+      "Oui. Vous pouvez passer à une formule supérieure ou inférieure depuis votre espace client — le montant est ajusté au prorata de la période en cours, sans créer de second abonnement.",
+  },
+  {
+    question: "Comment fonctionne l'essai gratuit ?",
+    answer:
+      "Chaque formule inclut une période d'essai gratuite. Aucun paiement n'est prélevé pendant l'essai, et vous pouvez annuler à tout moment avant son terme sans frais.",
+  },
+  {
+    question: "Puis-je annuler mon abonnement quand je veux ?",
+    answer:
+      "Oui, sans engagement. L'annulation prend effet à la fin de la période de facturation en cours et se fait directement depuis votre espace client.",
+  },
+  {
+    question: "Quand suis-je facturé ?",
+    answer:
+      "La facturation démarre automatiquement à la fin de la période d'essai, selon le rythme choisi (mensuel ou annuel), puis se renouvelle au même rythme jusqu'à annulation.",
+  },
+  {
+    question: "Que deviennent mes données si j'annule ?",
+    answer:
+      "Vos données restent accessibles pendant une période de conservation après annulation, le temps de les exporter si besoin, avant suppression définitive conformément à notre politique de confidentialité.",
+  },
+] as const;
+
+export const pricingBenefits = [
+  {
+    icon: "Clock",
+    title: "Des heures récupérées chaque semaine",
+    description:
+      "Les tâches répétitives — saisies, rapports, relances fournisseurs — sont prises en charge automatiquement, pour que votre équipe se concentre sur le service.",
+  },
+  {
+    icon: "TrendingUp",
+    title: "Des marges mieux maîtrisées",
+    description:
+      "L'IA repère en continu ce qui pèse sur vos marges — prix, gaspillage, fournisseurs — avant que ça pèse sur le résultat du mois.",
+  },
+  {
+    icon: "LayoutDashboard",
+    title: "Une gestion simplifiée au quotidien",
+    description:
+      "Un seul endroit pour piloter commandes, salle, équipes et performances, au lieu de jongler entre plusieurs outils déconnectés.",
+  },
+] as const;
+
 export const pricingPlans = [
   {
     name: "Starter",
