@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 const geist = Geist({
@@ -23,7 +24,7 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
-const siteUrl = "https://pilotresto.pro";
+const siteUrl = "https://restopilot.pro";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -77,9 +78,11 @@ export default function RootLayout({
       className={`${geist.variable} ${inter.variable} ${geistMono.variable}`}
     >
       <body className="min-h-full flex flex-col bg-canvas text-ink font-sans">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <ToastProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </ToastProvider>
       </body>
     </html>
   );

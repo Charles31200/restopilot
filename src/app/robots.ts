@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://pilotresto.pro/sitemap.xml",
+    sitemap: "https://restopilot.pro/sitemap.xml",
   };
 }

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: "Centre juridique",
   description:
     "Retrouvez tous les documents juridiques de PilotResto : CGV, CGU, politique de confidentialité, cookies, mentions légales, DPA, SLA et charte IA.",
-  alternates: { canonical: "https://pilotresto.pro/legal" },
+  alternates: { canonical: "https://restopilot.pro/legal" },
 };
 
 export default async function LegalPortalPage() {

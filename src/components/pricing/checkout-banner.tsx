@@ -13,8 +13,8 @@ export function CheckoutBanner() {
     return (
       <div className="mx-auto mb-10 flex max-w-[560px] items-center gap-2.5 rounded-(--radius-md) bg-success-soft px-4 py-3 text-[14px] text-success-text">
         <CheckCircle2 size={18} className="shrink-0" />
-        Votre essai gratuit a bien démarré. Un email de confirmation vous a
-        été envoyé.
+        Paiement réussi — votre abonnement PilotResto Pro est actif. Un
+        email de confirmation vous a été envoyé.
       </div>
     );
   }

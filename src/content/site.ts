@@ -237,24 +237,19 @@ export const faqs = [
 
 export const billingFaqs = [
   {
-    question: "Puis-je changer de formule à tout moment ?",
+    question: "Comment créer mon compte et m'abonner ?",
     answer:
-      "Oui. Vous pouvez passer à une formule supérieure ou inférieure depuis votre espace client — le montant est ajusté au prorata de la période en cours, sans créer de second abonnement.",
-  },
-  {
-    question: "Comment fonctionne l'essai gratuit ?",
-    answer:
-      "Chaque formule inclut une période d'essai gratuite. Aucun paiement n'est prélevé pendant l'essai, et vous pouvez annuler à tout moment avant son terme sans frais.",
+      "Créez d'abord votre compte, puis souscrivez à l'abonnement PilotResto Pro en quelques secondes via Stripe Checkout — l'accès à votre espace client est immédiat.",
   },
   {
     question: "Puis-je annuler mon abonnement quand je veux ?",
     answer:
-      "Oui, sans engagement. L'annulation prend effet à la fin de la période de facturation en cours et se fait directement depuis votre espace client.",
+      "Oui, sans engagement. L'annulation se fait directement depuis votre espace client via le portail de facturation Stripe, et prend effet à la fin de la période en cours.",
   },
   {
     question: "Quand suis-je facturé ?",
     answer:
-      "La facturation démarre automatiquement à la fin de la période d'essai, selon le rythme choisi (mensuel ou annuel), puis se renouvelle au même rythme jusqu'à annulation.",
+      "La facturation est mensuelle et démarre dès la souscription, puis se renouvelle chaque mois jusqu'à annulation.",
   },
   {
     question: "Que deviennent mes données si j'annule ?",
@@ -281,43 +276,5 @@ export const pricingBenefits = [
     title: "Une gestion simplifiée au quotidien",
     description:
       "Un seul endroit pour piloter commandes, salle, équipes et performances, au lieu de jongler entre plusieurs outils déconnectés.",
-  },
-] as const;
-
-export const pricingPlans = [
-  {
-    name: "Starter",
-    description: "Pour centraliser votre activité et gagner vos premières heures.",
-    features: [
-      "1 établissement",
-      "Gestion des commandes",
-      "Gestion de la salle",
-      "Support par email",
-    ],
-    highlighted: false,
-  },
-  {
-    name: "Professionnel",
-    description: "Pour piloter finement votre rentabilité grâce à l'IA.",
-    features: [
-      "Tout Starter, plus :",
-      "Analyse des performances par l'IA",
-      "Automatisation des tâches",
-      "Connexions à vos outils",
-      "Support prioritaire",
-    ],
-    highlighted: true,
-  },
-  {
-    name: "Entreprise",
-    description: "Pour piloter plusieurs établissements depuis une vue unique.",
-    features: [
-      "Tout Professionnel, plus :",
-      "Multi-établissements",
-      "Vue consolidée du groupe",
-      "Intégrations sur mesure",
-      "Accompagnement dédié",
-    ],
-    highlighted: false,
   },
 ] as const;

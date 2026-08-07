@@ -12,8 +12,9 @@ import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Reveal } from "@/components/motion/reveal";
 import { forgotPasswordSchema, type ForgotPasswordInput } from "@/lib/auth";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ configured }: { configured: boolean }) {
   const [submitted, setSubmitted] = useState(false);
   const {
     register,
@@ -21,8 +22,19 @@ export function ForgotPasswordForm() {
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordInput>({ resolver: zodResolver(forgotPasswordSchema) });
 
-  const onSubmit = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 500));
+  const onSubmit = async (data: ForgotPasswordInput) => {
+    if (configured) {
+      try {
+        const supabase = createSupabaseBrowserClient();
+        await supabase.auth.resetPasswordForEmail(data.email, {
+          redirectTo: `${window.location.origin}/auth/callback?redirect_to=/reinitialiser-mot-de-passe`,
+        });
+      } catch {
+        // Deliberately swallowed — the confirmation message below must stay
+        // identical whether or not the email is registered, to avoid
+        // leaking which addresses have an account.
+      }
+    }
     setSubmitted(true);
   };
 
@@ -58,7 +70,7 @@ export function ForgotPasswordForm() {
                 de réinitialisation sous quelques minutes.
               </p>
               <Link
-                href="/login"
+                href="/connexion"
                 className="mt-6 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-ink transition-colors hover:text-blue"
               >
                 <ArrowLeft size={14} />
@@ -74,6 +86,12 @@ export function ForgotPasswordForm() {
                 Indiquez votre email, nous vous enverrons un lien de
                 réinitialisation.
               </p>
+
+              {!configured && (
+                <p className="mt-6 rounded-(--radius-sm) bg-canvas-alt px-3.5 py-2.5 text-[13px] text-ink-subtle">
+                  La réinitialisation n&apos;est pas encore configurée.
+                </p>
+              )}
 
               <form onSubmit={handleSubmit(onSubmit)} noValidate className="mt-8 flex flex-col gap-5">
                 <FormField label="Email" htmlFor="email" error={errors.email?.message}>
@@ -103,7 +121,7 @@ export function ForgotPasswordForm() {
               </form>
 
               <Link
-                href="/login"
+                href="/connexion"
                 className="mt-8 inline-flex items-center gap-1.5 text-[13.5px] font-medium text-ink-muted transition-colors hover:text-ink"
               >
                 <ArrowLeft size={14} />

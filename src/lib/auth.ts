@@ -11,18 +11,33 @@ export const forgotPasswordSchema = z.object({
 });
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
-/**
- * PilotResto's actual product (authentication, dashboard, data) lives in a
- * separate application at this domain. The marketing site never handles
- * real credentials itself — /login and /forgot-password validate the form,
- * then hand off to the real app once a backend is connected.
- */
-export const APP_URL = "https://app.pilotresto.pro";
+export const signupSchema = z
+  .object({
+    email: z.string().email("Adresse email invalide."),
+    password: z.string().min(8, "8 caractères minimum."),
+    confirmPassword: z.string().min(1, "Confirmation requise."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["confirmPassword"],
+  });
+export type SignupInput = z.infer<typeof signupSchema>;
+
+export const resetPasswordSchema = z
+  .object({
+    password: z.string().min(8, "8 caractères minimum."),
+    confirmPassword: z.string().min(1, "Confirmation requise."),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Les mots de passe ne correspondent pas.",
+    path: ["confirmPassword"],
+  });
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
 /**
- * Hands off to the real app's login screen, pre-filling the email the
- * visitor already typed. No credentials ever travel through this redirect.
+ * PilotResto's product (POS, planning, stock, etc.) is used inside a
+ * separate application at this domain. The marketing site owns account
+ * creation, billing and login (via Supabase); once signed in, customers are
+ * offered a link to open the real app from their dashboard.
  */
-export function redirectToAppLogin(email: string) {
-  window.location.href = `${APP_URL}/login?email=${encodeURIComponent(email)}`;
-}
+export const APP_URL = "https://app.pilotresto.pro";

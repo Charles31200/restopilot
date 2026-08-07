@@ -6,17 +6,16 @@ import { Container } from "@/components/ui/container";
 import { Badge } from "@/components/ui/badge";
 import { Reveal, RevealGroup, RevealItem } from "@/components/motion/reveal";
 import { Accordion } from "@/components/ui/accordion";
-import { PricingCards } from "@/components/pricing/pricing-cards";
-import { ComparisonTable } from "@/components/pricing/comparison-table";
+import { PricingCard } from "@/components/pricing/pricing-card";
 import { RoiCalculator } from "@/components/pricing/roi-calculator";
 import { CheckoutBanner } from "@/components/pricing/checkout-banner";
-import { getPricingPlans } from "@/lib/stripe/pricing-service";
+import { getPrimaryPlan } from "@/lib/stripe/pricing-service";
 import { billingFaqs, pricingBenefits } from "@/content/site";
 
 export const metadata: Metadata = {
   title: "Tarifs",
   description:
-    "Une offre PilotResto adaptée à chaque établissement, du restaurant indépendant au groupe multi-sites. Essai gratuit, sans engagement.",
+    "Une offre PilotResto simple et unique, sans engagement, facturée chaque mois.",
 };
 
 const icons: Record<string, LucideIcon> = {
@@ -26,7 +25,7 @@ const icons: Record<string, LucideIcon> = {
 };
 
 export default async function TarifsPage() {
-  const plans = await getPricingPlans().catch(() => []);
+  const plan = await getPrimaryPlan().catch(() => null);
 
   return (
     <div className="pt-32 pb-24 md:pt-40 md:pb-32">
@@ -37,14 +36,13 @@ export default async function TarifsPage() {
           </Reveal>
           <Reveal delay={0.06} className="mt-6 max-w-[640px]">
             <h1 className="text-balance font-display text-[36px] font-semibold leading-[1.15] tracking-[-0.02em] text-ink md:text-[48px]">
-              Une offre adaptée à chaque établissement
+              Une offre simple, sans surprise
             </h1>
           </Reveal>
           <Reveal delay={0.12} className="mt-4 max-w-[520px]">
             <p className="text-balance text-[16px] leading-[1.6] text-ink-muted md:text-[17px]">
-              Du restaurant indépendant au groupe multi-sites, une formule
-              pensée pour votre taille et vos besoins — essai gratuit, sans
-              engagement.
+              Un seul prix, toutes les fonctionnalités incluses — sans
+              engagement, paiement mensuel.
             </p>
           </Reveal>
         </div>
@@ -56,21 +54,8 @@ export default async function TarifsPage() {
         </div>
 
         <div className="mt-2">
-          <PricingCards plans={plans} />
+          <PricingCard plan={plan} />
         </div>
-
-        {plans.length > 0 && (
-          <div className="mt-24">
-            <Reveal className="text-center">
-              <h2 className="font-display text-[26px] font-semibold tracking-[-0.01em] text-ink md:text-[30px]">
-                Comparez les fonctionnalités en détail
-              </h2>
-            </Reveal>
-            <div className="mt-8">
-              <ComparisonTable plans={plans} />
-            </div>
-          </div>
-        )}
 
         <div className="mt-24">
           <RoiCalculator />

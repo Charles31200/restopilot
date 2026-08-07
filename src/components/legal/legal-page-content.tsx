@@ -1,7 +1,7 @@
 import { getLegalContent } from "@/lib/legal";
 import { LegalLayout } from "@/components/legal/legal-layout";
 
-const SITE_URL = "https://pilotresto.pro";
+const SITE_URL = "https://restopilot.pro";
 
 export async function LegalPageContent({ slug }: { slug: string }) {
   const content = await getLegalContent(slug);

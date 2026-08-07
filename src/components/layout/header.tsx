@@ -10,7 +10,12 @@ import { Container } from "@/components/ui/container";
 import { nav } from "@/content/site";
 import { cn } from "@/lib/utils";
 
-const AUTH_ROUTES = ["/login", "/forgot-password"];
+const HIDDEN_HEADER_ROUTES = [
+  "/connexion",
+  "/inscription",
+  "/forgot-password",
+  "/reinitialiser-mot-de-passe",
+];
 
 export function Header() {
   const pathname = usePathname();
@@ -31,7 +36,7 @@ export function Header() {
     };
   }, [open]);
 
-  if (AUTH_ROUTES.includes(pathname)) {
+  if (HIDDEN_HEADER_ROUTES.includes(pathname) || pathname.startsWith("/dashboard")) {
     return null;
   }
 
@@ -63,7 +68,7 @@ export function Header() {
 
         <div className="hidden items-center gap-3 md:flex">
           <Link
-            href="/login"
+            href="/connexion"
             className="text-[14px] font-medium text-ink-muted transition-colors hover:text-ink"
           >
             Connexion
@@ -100,7 +105,7 @@ export function Header() {
           </nav>
           <div className="mt-4 flex flex-col gap-3 border-t border-line pt-4">
             <Link
-              href="/login"
+              href="/connexion"
               className="px-3 text-[15px] font-medium text-ink-muted"
               onClick={() => setOpen(false)}
             >

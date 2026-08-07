@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ForgotPasswordForm } from "@/components/sections/forgot-password-form";
+import { isSupabaseConfigured } from "@/lib/supabase/env";
 
 export const metadata: Metadata = {
   title: "Mot de passe oublié",
@@ -8,5 +9,5 @@ export const metadata: Metadata = {
 };
 
 export default function ForgotPasswordPage() {
-  return <ForgotPasswordForm />;
+  return <ForgotPasswordForm configured={isSupabaseConfigured()} />;
 }

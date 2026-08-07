@@ -214,7 +214,7 @@ export function getAllLegalContent(): Promise<
   );
 }
 
-const SITE_URL = "https://pilotresto.pro";
+const SITE_URL = "https://restopilot.pro";
 
 export async function getLegalMetadata(slug: string): Promise<Metadata> {
   const content = await getLegalContent(slug);
