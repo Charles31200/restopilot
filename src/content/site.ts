@@ -278,3 +278,13 @@ export const pricingBenefits = [
       "Un seul endroit pour piloter commandes, salle, équipes et performances, au lieu de jongler entre plusieurs outils déconnectés.",
   },
 ] as const;
+
+export const proPlanFeatures = [
+  "Connexion aux caisses et suivi en temps réel",
+  "Analyses avancées & briefing IA quotidien",
+  "Analyse des recettes & optimisation",
+  "Objectifs et missions IA personnalisés",
+  "Analyse concurrentielle & recherche fournisseurs",
+  "Rapports avancés & export",
+  "Support prioritaire",
+] as const;
