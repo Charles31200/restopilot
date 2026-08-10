@@ -54,6 +54,10 @@ export async function POST(request: NextRequest) {
       existingCustomerId = restaurant?.stripe_customer_id ?? null;
     }
 
+    // Premier mois offert : le nombre de jours d'essai vient de STRIPE_TRIAL_DAYS
+    // (.env.local / variables d'environnement Vercel), avec un repli à 30 jours si absent.
+    const trialDays = Number(process.env.STRIPE_TRIAL_DAYS) || 30;
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [{ price: price.id, quantity: 1 }],
@@ -63,6 +67,7 @@ export async function POST(request: NextRequest) {
         : { customer_email: user.email }),
       allow_promotion_codes: true,
       billing_address_collection: "auto",
+      subscription_data: { trial_period_days: trialDays },
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/tarifs?checkout=cancel`,
     });
