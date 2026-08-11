@@ -174,7 +174,14 @@ export default async function DashboardPage() {
               <SubscriptionStatusBadge status={liveStatus} />
             </div>
           </div>
-          <Button href={APP_URL} external size="md" variant="secondary">
+          {/* Desktop only — on mobile PilotResto is used via the downloadable app. */}
+          <Button
+            href={APP_URL}
+            external
+            size="md"
+            variant="secondary"
+            className="hidden md:inline-flex"
+          >
             Ouvrir l&apos;application
             <ArrowUpRight size={15} />
           </Button>

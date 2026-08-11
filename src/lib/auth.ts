@@ -35,9 +35,15 @@ export const resetPasswordSchema = z
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
 
 /**
- * PilotResto's product (POS, planning, stock, etc.) is used inside a
- * separate application at this domain. The marketing site owns account
- * creation, billing and login (via Supabase); once signed in, customers are
- * offered a link to open the real app from their dashboard.
+ * PilotResto's product (POS, planning, stock, etc.) is a separate deployed
+ * project at app.restopilot.pro. The marketing site owns account creation,
+ * billing and login (via Supabase, SSO'd to the app via a shared cookie
+ * domain — see cookie-options.ts); once signed in, customers are offered a
+ * link to open the real app from their dashboard.
+ *
+ * Configurable via NEXT_PUBLIC_APP_URL — production is
+ * NEXT_PUBLIC_APP_URL=https://app.restopilot.pro (set on Vercel); local
+ * development keeps NEXT_PUBLIC_APP_URL=http://localhost:3000 so the button
+ * opens the app running on the developer's machine instead.
  */
-export const APP_URL = "https://app.pilotresto.pro";
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://app.restopilot.pro";

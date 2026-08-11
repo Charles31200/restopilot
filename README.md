@@ -37,9 +37,17 @@ signup-first: create an account (`/inscription`), subscribe via Stripe
 Checkout, land in `/dashboard`. Anyone logged in without an active
 subscription is redirected to `/subscribe`. Billing (payment method,
 invoices, cancellation) is handled entirely by the **Stripe Customer
-Portal** — the site never reimplements that UI. The real application (at
-`https://app.pilotresto.pro`) is opened from the dashboard once a customer
-is subscribed.
+Portal** — the site never reimplements that UI. The real application is a
+separate deployed project at `app.restopilot.pro`, opened from the
+dashboard via `NEXT_PUBLIC_APP_URL` (production:
+`https://app.restopilot.pro`; local dev: `http://localhost:3000`, so the
+button opens the app running on the developer's machine instead — falls
+back to `https://app.restopilot.pro` if unset). Desktop only — the button
+is hidden on mobile, where PilotResto is a downloadable app instead. A
+shared Supabase cookie domain (`NEXT_PUBLIC_COOKIE_DOMAIN`, see
+`src/lib/supabase/cookie-options.ts`) SSOs a session from this site into
+the app — set to `.restopilot.pro` in production on both projects, left
+empty locally.
 
 This site shares its Stripe account and Supabase project with the existing
 PilotResto application ("V3") — see the operational notes below before
@@ -54,6 +62,8 @@ deploying.
 | `NEXT_PUBLIC_SUPABASE_URL` | auth, dashboard, webhook | The Supabase project's URL. |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | browser/server auth | Public anon key — safe to expose client-side. |
 | `SUPABASE_SERVICE_ROLE_KEY` | `/api/stripe/webhook` only | Secret. Bypasses RLS to create accounts and sync subscription status. Never expose client-side. |
+| `NEXT_PUBLIC_APP_URL` | `/dashboard` "Ouvrir l'application" button | Optional. Defaults to `https://app.restopilot.pro`. Prod: `https://app.restopilot.pro`. Local: `http://localhost:3000`. |
+| `NEXT_PUBLIC_COOKIE_DOMAIN` | Supabase SSO cookie (site ↔ app) | Optional. Prod: `.restopilot.pro` (both projects). Must stay empty locally — a cookie with an explicit domain can't target `localhost`. |
 
 `STRIPE_TRIAL_DAYS` is no longer read anywhere — there is no free trial.
 
